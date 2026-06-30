@@ -1,0 +1,83 @@
+@layer kt-aaa.tokens, kt-aaa.base, kt-aaa.components;
+
+/* Socle de design partagé — contrat racine du design system.
+   Source unique dont DÉRIVENT les tokens des composants (--field-*, --btn-*).
+   Surchargez un seul --kt-* (ex. --kt-primary) pour rebrander champs ET boutons d'un coup.
+
+   Chargé en PREMIER dans angular.json > styles (avant tokens.css / button-tokens.css). */
+@layer kt-aaa.base {
+  :root {
+    /* Palette des contrôles natifs (scrollbars, pickers date/time…). Seule déclaration non-token
+     du socle : un thème sombre DOIT redéclarer `color-scheme: dark` pour que le popup scrollable
+     du select et les pickers natifs suivent. */
+    color-scheme: light;
+
+    /* ============ Couleurs sémantiques (seeds) ============ */
+    --kt-primary: #0842a0; /* bleu profond (7.5:1 contre blanc) */
+    --kt-danger: #8c1d18; /* rouge carmin (7.1:1 contre blanc) */
+    --kt-neutral: #2e3133;
+
+    /* ============ Surfaces & texte ============ */
+    --kt-surface: #ffffff;
+    --kt-on-surface: #1f1f1f; /* texte principal */
+    --kt-muted: #474747; /* texte secondaire / hint / icônes (7.6:1 contre blanc) */
+    --kt-outline: #c4c7c5; /* bordure au repos */
+    --kt-outline-strong: #5f6368; /* bordure hover */
+
+    /* ============ Géométrie de contrôle partagée (md) ============ */
+    --kt-control-height: 44px; /* field-box ET bouton md — cible tactile AAA */
+    --kt-control-radius: 8px;
+    --kt-control-font: 1rem;
+
+    /* Police : token de BASCULE --kt-font (NON déclaré ici exprès, même principe que --btn-radius).
+     Non défini => la page garde la police héritée (défaut navigateur). Un thème le déclare pour
+     imposer sa stack (ex. Segoe UI pour Fluent). Consommé par l'app hôte (body), pas par la lib
+     (les contrôles sont en `font: inherit`). */
+
+    /* Sélection de texte : bascules --kt-selection-bg / --kt-selection-fg (NON déclarées).
+     Défauts = mots-clés système Highlight/HighlightText (sélection navigateur). Consommées
+     par l'app hôte (::selection dans styles.css). */
+
+    /* ============ Anneau de focus ============ */
+    /* Couleur + épaisseur partagées ; l'offset et l'opacité restent propres à chaque composant. */
+    --kt-focus-ring-color: var(--kt-primary);
+    --kt-focus-ring-width: 2px;
+
+    /* ============ Gouttières de défilement (scrollbars) ============ */
+    /* Propriétés standard `scrollbar-width` / `scrollbar-color` — toutes deux HÉRITÉES : posées
+     ici sur :root (= <html>), elles cascadent vers la page ET toute zone scrollable de la lib
+     (listbox du select, contenu du dialog) sans règle d'application dédiée par composant.
+     Thumb et track DÉRIVÉS du socle (mélange on-surface ↔ surface) : la gouttière suit donc
+     automatiquement chaque thème — clair comme sombre — tant qu'il ne redéclare rien.
+     Bascules --kt-scrollbar-color (« thumb track ») / --kt-scrollbar-width : un thème impose sa
+     gouttière signature en les surchargeant (ex. néon Synthwave, gris chunky Windows 98).
+     NB : propriétés standard (pas les pseudo ::-webkit-scrollbar) — elles respectent
+     color-scheme et s'alignent sur le socle CSS moderne déjà utilisé (anchor, popover, oklch). */
+    --kt-scrollbar-thumb: color-mix(in srgb, var(--kt-on-surface) 30%, var(--kt-surface));
+    --kt-scrollbar-track: color-mix(in srgb, var(--kt-on-surface) 7%, var(--kt-surface));
+    scrollbar-width: var(--kt-scrollbar-width, thin);
+    scrollbar-color: var(--kt-scrollbar-color, var(--kt-scrollbar-thumb) var(--kt-scrollbar-track));
+
+    /* ============ Bottom-sheet PARTAGÉ (Select + Dialog) ============ */
+    /* La feuille modale glissant du bas est un concept de premier rang, mutualisé entre le popup
+     mobile du Select et le mode `sheet` du Dialog. Un thème thématise « la feuille » une fois ;
+     les deux composants suivent. (Le Dialog dérive aussi --dialog-radius/--dialog-scrim d'ici.) */
+    --kt-sheet-radius: 16px; /* rayon des coins HAUTS de la feuille */
+    --kt-sheet-shadow: 0 -4px 16px rgb(0 0 0 / 12%);
+    --kt-sheet-scrim: rgb(0 0 0 / 40%); /* voile du fond */
+    --kt-sheet-anim-duration: 120ms; /* glissement + fondu du scrim (entrée) */
+    --kt-sheet-exit-duration: 90ms; /* glissement + fondu du scrim (sortie) */
+    --kt-sheet-grab-color: var(--kt-outline, #c4c7c5); /* poignée de préhension */
+    --kt-sheet-max-block-size: 85svh; /* svh : tient compte du clavier virtuel / barres mobiles */
+  }
+
+  /* Entrée PARTAGÉE de la feuille : glissement du bas. Pendant « animation » des tokens --kt-sheet-*
+   ci-dessus — une seule keyframe, jouée par le mode `sheet` du Dialog (conteneur CDK) ET le popup
+   compact du Select (Popover `:popover-open`). Une keyframe est globale et indépendante du moteur :
+   fiable dans les deux contextes, contrairement à @starting-style + translate. */
+  @keyframes kt-sheet-in {
+    from {
+      translate: 0 100%;
+    }
+  }
+}

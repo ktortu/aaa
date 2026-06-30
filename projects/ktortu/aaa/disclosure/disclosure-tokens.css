@@ -1,0 +1,18 @@
+/* Design tokens du disclosure (famille ktDisclosure) — contrat public de theming.
+
+   Même architecture que --card-* / --snackbar-* : tout DÉRIVE du socle --kt-*.
+   Chargé APRÈS foundation.css (qui pose les --kt-*). */
+@layer kt-aaa.tokens {
+  :root {
+    /* Durée de l'animation d'ouverture/fermeture (grid-template-rows). Neutralisée sous
+       prefers-reduced-motion. */
+    --disclosure-anim-duration: 0.2s;
+
+    /* Cible tactile minimale du déclencheur (WCAG 2.5.5, AAA). */
+    --disclosure-toggle-min-size: 44px;
+
+    /* Chevron (input `chevron` de [ktDisclosureToggle], affiché par défaut). */
+    --disclosure-chevron-size: 1em;
+    --disclosure-chevron-gap: 0.5rem;
+  }
+}

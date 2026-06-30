@@ -1,0 +1,6 @@
+@layer kt-aaa.tokens, kt-aaa.base, kt-aaa.components;
+
+/* Dialog (moteur @angular/cdk/dialog + directives kt). Nécessite le socle, ET l'overlay CDK :
+   pensez à importer aussi '@angular/cdk/overlay-prebuilt.css'.
+     @import '@ktortu/aaa/dialog.css'; */
+@import '../dialog/dialog.css';

@@ -1,0 +1,70 @@
+/* Design tokens des champs de formulaire — contrat public de theming.
+   Surchargez ces variables (globalement sur :root, ou localement sur un conteneur)
+   pour adapter la lib à la charte graphique du projet d'accueil.
+
+   Les couleurs et la géométrie de contrôle DÉRIVENT du socle partagé (--kt-*, voir
+   src/app/styles/foundation.css) : rebrander --kt-primary met à jour champs ET boutons.
+   Surcharger un --field-* ici reste possible pour un réglage propre aux champs. */
+@layer kt-aaa.tokens {
+  :root {
+    /* Couleurs (dérivées du socle) */
+    --field-color: var(--kt-on-surface);
+    --field-bg: var(--kt-surface);
+    --field-border-color: var(--kt-outline);
+    --field-border-color-hover: var(--kt-outline-strong);
+    --field-border-color-focus: var(--kt-primary);
+    --field-label-color: var(--kt-on-surface);
+    --field-hint-color: var(--kt-muted);
+    --field-error-color: var(--kt-danger);
+    --field-required-color: var(--kt-danger);
+    --field-icon-color: var(--kt-muted);
+    /* Dérivé (et non #f1f3f4 en dur) : reste correct quand un thème passe la surface en sombre.
+     En light défaut : 6% de #1f1f1f dans #fff ≈ #f2f2f2. */
+    --field-disabled-bg: color-mix(in srgb, var(--kt-on-surface) 6%, var(--kt-surface));
+
+    /* Géométrie */
+    --field-radius: var(--kt-control-radius);
+    --field-min-height: var(--kt-control-height); /* hauteur unifiée avec le bouton md */
+    /* Bordure en LONGHANDS côté consommation : width (et --field-border-style, bascule non
+     déclarée, défaut solid) acceptent 1 à 4 valeurs => underline (`0 0 2px 0`), styles mixtes
+     (`solid dashed`)… --field-border-color reste UNE couleur. Le popup du select suit
+     --field-border-width sauf si --select-popup-border-width est défini (utile quand les
+     champs passent en underline : un menu flottant garde sa bordure complète). */
+    --field-border-width: 1px;
+    --field-padding-x: 0.75rem;
+    --field-padding-y: 0.5rem;
+    --field-gap: 0.375rem;
+    --field-control-gap: 0.5rem;
+    /* Largeur du champ : un seul réglage pilote tous les champs. Défaut `auto` (remplit le
+     conteneur en bloc, se dimensionne au contenu en flex). Ex. global : --field-width: 320px. */
+    --field-width: auto;
+
+    /* Typo */
+    --field-font-size: var(--kt-control-font);
+    --field-label-font-size: 0.875rem;
+    --field-hint-font-size: 0.8125rem;
+
+    /* Focus */
+    --field-focus-ring-width: var(--kt-focus-ring-width);
+    /* Halo TRANSLUCIDE par défaut : le contraste du focus est porté par le BORDER opaque
+     (--field-border-color-focus) ; l'anneau n'est qu'un voile doux. Un thème peut le rendre
+     opaque (cf. win98). */
+    --field-focus-ring: color-mix(in srgb, var(--field-border-color-focus) 35%, transparent);
+
+    /* Ombres par état : tokens de BASCULE (NON déclarés ici exprès, même principe que
+     --btn-radius). Non définis => box-shadow: none (rendu actuel). Un thème les déclare
+     pour un glow/elevation : --field-shadow (repos), --field-shadow-hover, --field-shadow-focus
+     (hover/focus retombent sur --field-shadow si absents). Disabled force toujours `none`. */
+
+    /* Mouvement : --field-transition, token de BASCULE (NON déclaré) => boîte inerte par défaut.
+     Pas de transform sur la boîte (le trigger du select est une ancre, cf. field-box.css). */
+
+    /* Autres BASCULES non déclarées (défauts entre parenthèses) :
+     - Focus ring : --field-focus-ring-style (solid), --field-focus-ring-offset (1px).
+     - Caret : --field-caret-color (auto).
+     - Typo du label : --field-label-weight (500), --field-label-transform (none),
+       --field-label-letter-spacing (normal).
+     - Select : --select-option-selected-weight (600),
+       --select-option-selected-color (inherit — à poser si le bg sélectionné est plein). */
+  }
+}

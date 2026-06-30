@@ -1,0 +1,6 @@
+@layer kt-aaa.tokens, kt-aaa.base, kt-aaa.components;
+
+/* Disclosure (ktDisclosure + déclencheur + panneau) : tokens + apparence. Nécessite le socle.
+     @import '@ktortu/aaa/disclosure.css'; */
+@import '../disclosure/disclosure-tokens.css';
+@import '../disclosure/disclosure.css';

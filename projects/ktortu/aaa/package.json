@@ -1,0 +1,54 @@
+{
+  "name": "@ktortu/aaa",
+  "version": "0.9.1",
+  "description": "Bibliothèque de composants Angular headless + thémés par tokens CSS.",
+  "keywords": [
+    "angular",
+    "headless",
+    "components",
+    "css-tokens",
+    "design-system",
+    "accessibility"
+  ],
+  "author": "ktortu",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ktortu/aaa.git"
+  },
+  "bugs": {
+    "url": "https://github.com/ktortu/aaa/issues"
+  },
+  "homepage": "https://github.com/ktortu/aaa#readme",
+  "publishConfig": {
+    "access": "public"
+  },
+  "peerDependencies": {
+    "@angular/aria": "^22.0.0",
+    "@angular/cdk": "^22.0.0",
+    "@angular/common": "^22.0.0",
+    "@angular/core": "^22.0.0",
+    "@angular/forms": "^22.0.0",
+    "temporal-polyfill": "^0.3.2"
+  },
+  "dependencies": {
+    "tslib": "^2.3.0"
+  },
+  "sideEffects": [
+    "**/*.css"
+  ],
+  "exports": {
+    "./styles.css": {
+      "default": "./styles/styles.css"
+    },
+    "./themes/*.css": {
+      "default": "./themes/*.css"
+    },
+    "./cdk/styles/*.css": {
+      "default": "./cdk/styles/*.css"
+    },
+    "./*.css": {
+      "default": "./styles/*.css"
+    }
+  }
+}

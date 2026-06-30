@@ -1,0 +1,89 @@
+<article class="page">
+  <header class="page__head">
+    <p class="page__eyebrow">Formulaires</p>
+    <h1 class="page__title">Chips</h1>
+    <p class="page__lead">
+      <code>&lt;kt-chip&gt;</code> est une pilule (tag) dont le libellé vient du contenu projeté.
+      <code>&lt;kt-chip-list&gt;</code> est une liste révocable <strong>contrôlée</strong> : elle ne possède pas la
+      donnée — au retrait elle émet <code>removed</code> et c'est le parent qui met à jour <code>items</code>.
+      Accessibilité incluse : <code>role="list"</code>, libellé de liste, navigation au clavier, gestion du focus au
+      retrait et annonce en <em>live region</em>.
+    </p>
+  </header>
+
+  <kt-doc-section title="Exemples" subtitle="Les retraits sont réels (pattern contrôlé) — réinitialisez pour rejouer.">
+    <kt-doc-example label="Tags statiques (kt-chip)">
+      <kt-chip>Angular</kt-chip>
+      <kt-chip>TypeScript</kt-chip>
+      <kt-chip>RxJS</kt-chip>
+    </kt-doc-example>
+
+    <kt-doc-example label="Chip révocable autonome">
+      @if (draftVisible()) {
+        <kt-chip removable removeLabel="Retirer le brouillon" (remove)="draftVisible.set(false)">Brouillon</kt-chip>
+      } @else {
+        <button ktButton mode="text" (click)="draftVisible.set(true)">Réafficher le chip</button>
+      }
+    </kt-doc-example>
+
+    <kt-doc-example label="Liste révocable (pattern contrôlé)">
+      <kt-chip-list [items]="tags()" listLabel="Technologies" (removed)="removeTag($event)" />
+      <button ktButton mode="text" (click)="resetAll()">Réinitialiser</button>
+    </kt-doc-example>
+
+    <kt-doc-example label="Repli au-delà de 3 (maxVisible)">
+      <kt-chip-list [items]="manyTags()" [maxVisible]="3" listLabel="Sujets" (removed)="removeMany($event)" />
+    </kt-doc-example>
+
+    <kt-doc-example label="Rendu custom (ng-template[ktChipItem])">
+      <kt-chip-list [items]="frameworks()" itemKey="id" listLabel="Frameworks" (removed)="removeFramework($event)">
+        <ng-template [ktChipItem]="frameworks()" let-fw let-remove="remove">
+          <kt-chip removable removeLabel="Retirer {{ fw.name }}" (remove)="remove()">{{ fw.name }}</kt-chip>
+        </ng-template>
+      </kt-chip-list>
+    </kt-doc-example>
+
+    <kt-doc-example label="États — lecture seule & désactivé">
+      <div class="chips-states">
+        <kt-chip-list [items]="states()" readonly listLabel="Liste en lecture seule" />
+        <kt-chip-list [items]="states()" disabled listLabel="Liste désactivée" />
+      </div>
+    </kt-doc-example>
+  </kt-doc-section>
+
+  <kt-doc-section title="Utilisation" subtitle="Pattern contrôlé : la liste émet, le parent met à jour les items.">
+    <div class="page__codes">
+      <kt-doc-code language="ts" [code]="tsSnippet" />
+      <kt-doc-code language="html" [code]="htmlSnippet" />
+    </div>
+  </kt-doc-section>
+
+  <kt-doc-section
+    title="Internationalisation"
+    subtitle="Libellés anglais par défaut, surchargeables par token KT_CHIPS_CONFIG ou globalement."
+  >
+    <kt-doc-code language="ts" [code]="i18nSnippet" />
+  </kt-doc-section>
+
+  <kt-doc-section title="Propriétés — kt-chip" subtitle="Pilule individuelle (le libellé vient du contenu projeté).">
+    <kt-doc-props [rows]="chipProps" />
+  </kt-doc-section>
+
+  <kt-doc-section
+    title="Propriétés — kt-chip-list"
+    subtitle="Liste révocable contrôlée (la liste ne possède pas la donnée)."
+  >
+    <kt-doc-props [rows]="listProps" />
+  </kt-doc-section>
+
+  <kt-doc-section
+    title="Rendu custom — ng-template[ktChipItem]"
+    subtitle="Contexte typé reçu par le template d'un chip."
+  >
+    <kt-doc-props [rows]="templateProps" />
+  </kt-doc-section>
+
+  <kt-doc-section title="Tokens CSS" subtitle="Surchargez ces variables pour ajuster l'apparence des chips.">
+    <kt-doc-tokens [groups]="tokens" />
+  </kt-doc-section>
+</article>

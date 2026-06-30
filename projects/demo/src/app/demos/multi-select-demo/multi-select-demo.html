@@ -1,0 +1,94 @@
+<article class="page">
+  <header class="page__head">
+    <p class="page__eyebrow">Composant</p>
+    <h1 class="page__title">Multi-Select</h1>
+    <p class="page__lead">
+      <code>&lt;kt-multi-select&gt;</code> est un combobox de sélection <em>multiple</em> (WCAG 2.2 AAA / RGAA) bâti sur
+      <code>@angular/aria</code> avec <code>[multi]="true"</code>. Le trigger affiche un résumé textuel et les choix se
+      matérialisent en chips révocables sous le champ (focus management, repli <code>+N</code>, région live délégués à
+      <code>kt-chip-list</code>). Présentation adaptative (dropdown desktop ↔ bottom-sheet téléphone). Clavier APG :
+      <kbd>Espace</kbd>/<kbd>Entrée</kbd> togglent, <kbd>Shift</kbd>+flèches étend la plage, <kbd>Ctrl</kbd>+<kbd
+        >A</kbd
+      >
+      (dé)sélectionne tout, typeahead. Options de masse (« Tout sélectionner / Tout effacer ») et filtre opt-in.
+    </p>
+  </header>
+
+  <kt-doc-section
+    title="Exemples"
+    subtitle="Options simples ou objets, effacement, filtre + actions de masse, repli des chips et états."
+  >
+    <kt-doc-example label="Base (options simples)">
+      <kt-multi-select
+        label="Compétences"
+        [options]="tags"
+        [(value)]="selectedTags"
+        hint="Plusieurs choix possibles."
+      />
+    </kt-doc-example>
+
+    <kt-doc-example label="Options objets (optionLabel / optionValue / optionDisabled)">
+      <kt-multi-select
+        label="Compétences"
+        [options]="skills"
+        optionLabel="name"
+        optionValue="id"
+        optionDisabled="disabled"
+        [(value)]="selectedSkillIds"
+      />
+    </kt-doc-example>
+
+    <kt-doc-example label="Effacement rapide (clearable)">
+      <kt-multi-select label="Compétences" [options]="tags" [(value)]="selectedClearable" clearable />
+    </kt-doc-example>
+
+    <kt-doc-example label="Filtre + actions de masse + repli des chips">
+      <kt-multi-select
+        label="Compétences"
+        [options]="tags"
+        [(value)]="selectedMany"
+        [filterable]="true"
+        selectionActions
+        [maxVisibleChips]="2"
+      />
+    </kt-doc-example>
+
+    <kt-doc-example label="États">
+      <kt-multi-select label="Désactivé" [options]="tags" [value]="['Angular']" [disabled]="true" />
+      <kt-multi-select label="Lecture seule" [options]="tags" [value]="['CSS', 'A11y']" [readonly]="true" />
+      <kt-multi-select label="Requis" [options]="tags" [required]="true" />
+      <kt-multi-select label="Invalide" [options]="tags" [invalid]="true" [touched]="true" [errors]="demoErrors" />
+    </kt-doc-example>
+  </kt-doc-section>
+
+  <kt-doc-section
+    title="Utilisation"
+    subtitle="Importer le composant, fournir [options] et lier la valeur (tableau) à un signal."
+  >
+    <div class="page__codes">
+      <kt-doc-code language="ts" [code]="tsSnippet" />
+      <kt-doc-code language="html" [code]="htmlSnippet" />
+    </div>
+  </kt-doc-section>
+
+  <kt-doc-section
+    title="Propriétés (spécifiques multi)"
+    subtitle="clearable et selectionActions portent booleanAttribute (attribut nu). Textes par défaut via KT_SELECT_CONFIG."
+  >
+    <kt-doc-props [rows]="props" />
+  </kt-doc-section>
+
+  <kt-doc-section
+    title="Propriétés communes"
+    subtitle="Héritées de KtBaseSelect, partagées avec kt-select. Les booléens hérités exigent une liaison de propriété."
+  >
+    <kt-doc-props [rows]="commonProps" />
+  </kt-doc-section>
+
+  <kt-doc-section
+    title="Tokens CSS"
+    subtitle="Contrat de personnalisation : surchargez ces variables sur :root ou un conteneur de spécificité ≥."
+  >
+    <kt-doc-tokens [groups]="tokens" />
+  </kt-doc-section>
+</article>

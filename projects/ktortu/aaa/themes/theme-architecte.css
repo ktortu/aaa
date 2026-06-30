@@ -1,0 +1,83 @@
+/* Thème « Architecte » (dark, blueprint) — uniquement des tokens.
+   La démonstration des bordures PAR CÔTÉ (longhands : 1 à 4 valeurs par token) :
+   - champs = LIGNE DE COTE : underline seule (`--field-border-width: 0 0 2px 0`),
+     on écrit SUR la ligne comme sur un plan ; le popup du select garde sa bordure
+     complète via --select-popup-border-width (un menu flottant n'est pas un champ) ;
+   - boutons = CARTOUCHE : `--btn-border-style: solid dashed` => traits pleins
+     haut/bas, tirets sur les côtés, comme le cadre d'un cartouche de plan.
+   Bleu de Prusse, traits cyan crayon, sanguine en danger, Architects Daughter. */
+[data-theme='architecte'] {
+  color-scheme: dark;
+
+  /* ============ Socle ============ */
+  --kt-surface: #16344f; /* bleu de Prusse (blueprint) */
+  --kt-on-surface: #e8f1f8; /* 11.2:1 */
+  --kt-muted: #9dbdd4; /* 6.5:1 */
+  --kt-outline: #6f9dbd; /* trait de plan (4.4:1 non-texte) */
+  --kt-outline-strong: #a8cce4;
+  --kt-primary: #7fc8f0; /* crayon cyan, 7.0:1 en texte */
+  --kt-danger: #f0907c; /* sanguine, 5.5:1 */
+  --kt-neutral: #3e5c75;
+  --kt-focus-ring-color: #7fc8f0;
+  --kt-font: 'Architects Daughter', 'Segoe Print', cursive;
+
+  /* Gouttière = trait de plan : thumb bleu crayon (outline) sur le lavis des champs. */
+  --kt-scrollbar-color: #6f9dbd #1b3c5a;
+
+  /* ============ Géométrie : tracé technique ============ */
+  --kt-control-radius: 0; /* champs = lignes, pas de coins */
+  /* Coins COUPÉS des cartouches (hérité du thème Papier craft, supprimé) : bevel + radius
+     visible = chanfrein technique, cohérent avec le lettrage de plan. */
+  --btn-radius: 8px;
+  --btn-corner-shape: bevel;
+  --kt-sheet-radius: 8px;
+  --chip-radius: 2px;
+
+  /* ============ Champs : ligne de cote (underline par côté) ============ */
+  --field-border-width: 0 0 2px 0; /* SEULE la ligne du bas existe */
+  --field-bg: #1b3c5a; /* lavis léger au-dessus de la ligne */
+  --field-focus-ring: color-mix(in srgb, #7fc8f0 55%, transparent);
+  --field-focus-ring-style: dashed; /* trait de construction (rétrofit lot 6) */
+  /* Menu flottant du select : bordure complète et fine, lui. */
+  --select-popup-border-width: 1px;
+  /* Lettrage technique des cartouches (rétrofit lot 6). */
+  --field-label-transform: uppercase;
+  --field-label-letter-spacing: 0.06em;
+  --field-caret-color: #7fc8f0;
+  --kt-selection-bg: #7fc8f0;
+  --kt-selection-fg: #0d2438;
+
+  /* ============ Boutons : cartouche (style par côté) ============ */
+  --btn-border-style: solid dashed; /* haut/bas pleins, côtés en tirets */
+  --btn-border-width: 1.5px;
+  --btn-text-transform: uppercase; /* lettrage de plan (rétrofit lot 6) */
+  --btn-letter-spacing: 0.08em;
+  --btn-on-primary: #0d2438; /* 8.6:1 sur cyan */
+  --btn-on-danger: #381208; /* 7.1:1 sur sanguine */
+  --btn-on-neutral: #ffffff; /* 7.0:1 */
+  --btn-on-primary-container: #c9e6f8;
+  --btn-on-neutral-container: #d4e2ee;
+  --btn-on-danger-container: #f8cfc4;
+  --btn-fg-weight: 100%;
+  --btn-neutral-fg: #a9c4da;
+  --btn-tonal-weight: 24%;
+
+  /* ============ Select / tooltip ============ */
+  --select-popup-bg: #1b3c5a;
+  --select-popup-shadow: 0 8px 24px rgb(4 14 24 / 55%);
+  --kt-sheet-shadow: 0 -8px 24px rgb(4 14 24 / 55%);
+  --kt-sheet-scrim: rgb(4 14 24 / 60%);
+  --tooltip-bg: #0f2438;
+  --tooltip-fg: #dceaf5;
+
+  /* ============ Dialog (blueprint : cartouche cyan) ============ */
+  --dialog-radius: 8px;
+  --dialog-border-color: #6f9dbd;
+
+  /* ============ Card : cartouche blueprint (lavis + trait cyan via l'ombre) ============ */
+  --card-bg: #1b3c5a;
+  --card-filled-bg: #214a6e;
+  --card-radius: 8px;
+  --card-border-color: #6f9dbd;
+  --card-shadow: 0 0 0 1px rgb(111 157 189 / 30%), 0 8px 24px rgb(4 14 24 / 45%);
+}

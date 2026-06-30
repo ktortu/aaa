@@ -1,0 +1,44 @@
+/* Thème « Ant Design » (light) — uniquement des redéclarations de tokens.
+   Signature Ant : bleu vif, radius 6px, gris légers, look B2B/admin.
+   AA-corrigé : les officiels #1677ff (~4.0:1) et #ff4d4f (~3.2:1) échouent sur blanc en texte
+   → on prend les crans -7 de leurs palettes (blue-7 #0958d9, red-7 #cf1322), AA des deux côtés. */
+[data-theme='ant'] {
+  /* ============ Socle ============ */
+  --kt-primary: #0958d9; /* blue-7 — blanc 6.2:1 */
+  --kt-danger: #cf1322; /* red-7 — blanc 5.6:1 */
+  --kt-neutral: #434343;
+  --kt-surface: #ffffff;
+  --kt-on-surface: #1f1f1f; /* ≈ rgba(0,0,0,.88) Ant */
+  --kt-muted: #595959; /* ≈ rgba(0,0,0,.65) */
+  --kt-outline: #d9d9d9;
+  --kt-outline-strong: #8c8c8c;
+  --kt-font: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+
+  /* ============ Géométrie ============ */
+  --kt-control-radius: 6px; /* borderRadius par défaut Ant v5 */
+  --btn-radius: 6px;
+  --chip-radius: 6px;
+
+  /* ============ Champs ============ */
+  --field-transition: border-color 0.2s ease; /* motionDurationMid Ant (rétrofit lot 3) */
+
+  /* ============ Boutons ============ */
+  --btn-tonal-weight: 12%; /* containers discrets façon Ant (color-bg variants) */
+  --btn-on-primary-container: #003eb3;
+  --btn-on-danger-container: #820014;
+  --btn-on-neutral-container: #1f1f1f;
+
+  /* ============ Select / tooltip ============ */
+  --select-popup-shadow: 0 6px 16px rgb(0 0 0 / 8%), 0 3px 6px rgb(0 0 0 / 12%);
+  --tooltip-bg: #1f1f1f; /* ≈ rgba(0,0,0,.85) */
+  --tooltip-fg: #ffffff;
+
+  /* ============ Dialog (Ant Design : rayon 8, sans bord) ============ */
+  --dialog-radius: 8px;
+  --dialog-border-width: 0;
+
+  /* ============ Card (Ant : rayon 8, boxShadowCard discret) ============ */
+  --card-radius: 8px;
+  --card-filled-bg: #fafafa; /* colorFillAlter */
+  --card-shadow: 0 1px 2px rgb(0 0 0 / 3%), 0 1px 6px -1px rgb(0 0 0 / 2%), 0 2px 4px rgb(0 0 0 / 2%);
+}

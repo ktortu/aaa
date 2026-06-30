@@ -1,0 +1,216 @@
+:host {
+  display: block;
+  --field-width: 100%;
+}
+
+.page {
+  max-width: 72rem;
+}
+
+.page__head {
+  padding: 1rem 0 1.5rem;
+  border-bottom: 1px solid var(--kt-outline);
+}
+
+.page__eyebrow {
+  margin: 0 0 0.6rem;
+  font:
+    600 0.8125rem/1 ui-monospace,
+    monospace;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--kt-primary);
+}
+
+.page__title {
+  margin: 0;
+  font-size: clamp(1.75rem, 4vw, 2.25rem);
+  font-weight: 700;
+  color: var(--kt-on-surface);
+}
+
+.page__lead {
+  margin: 0.85rem 0 0;
+  max-width: 70ch;
+  font-size: 1.0625rem;
+  color: var(--kt-muted);
+}
+
+.page__codes {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 1rem;
+}
+
+.page__note {
+  margin: 0 0 1rem;
+  max-width: 70ch;
+  font-size: 0.9375rem;
+  line-height: 1.6;
+  color: var(--kt-muted);
+}
+
+.page__note code {
+  font:
+    0.875rem/1.5 ui-monospace,
+    monospace;
+  color: var(--kt-primary);
+}
+
+.page__note--warn {
+  margin: 1rem 0;
+  padding: 0.75rem 1rem;
+  border-radius: var(--kt-control-radius, 8px);
+  border: 1px solid color-mix(in srgb, var(--kt-error, #d32f2f) 40%, var(--kt-outline));
+  background: color-mix(in srgb, var(--kt-error, #d32f2f) 8%, transparent);
+  color: var(--kt-on-surface);
+}
+
+/* ---- Disposition formulaire + inspecteur ---- */
+.showcase {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 22rem;
+  gap: 1.5rem;
+  align-items: start;
+}
+
+@media (max-width: 60rem) {
+  .showcase {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+.showcase__form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  min-width: 0;
+}
+
+.showcase__group {
+  display: grid;
+  margin: 0;
+  padding: 1.25rem;
+  border: 1px solid var(--kt-outline);
+  border-radius: var(--kt-control-radius, 8px);
+  background: var(--kt-surface);
+}
+
+.showcase__group > legend {
+  padding: 0 0.5rem;
+  font-weight: 600;
+  color: var(--kt-on-surface);
+}
+
+.showcase__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+}
+
+.showcase__alert {
+  margin: 0;
+  padding: 0.75rem 1rem;
+  border-radius: var(--kt-control-radius, 8px);
+  font-weight: 500;
+}
+
+.showcase__alert--ok {
+  color: var(--kt-on-surface);
+  background: color-mix(in srgb, var(--kt-primary) 16%, transparent);
+  border: 1px solid var(--kt-primary);
+}
+
+.showcase__alert--err {
+  color: var(--kt-on-surface);
+  background: color-mix(in srgb, var(--kt-error, #d32f2f) 14%, transparent);
+  border: 1px solid var(--kt-error, #d32f2f);
+}
+
+/* ---- Inspecteur d'état ---- */
+.inspector {
+  position: sticky;
+  top: 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  padding: 1.25rem;
+  border: 1px solid var(--kt-outline);
+  border-radius: var(--kt-control-radius, 8px);
+  background: var(--kt-surface);
+}
+
+@media (max-width: 60rem) {
+  .inspector {
+    position: static;
+  }
+}
+
+.inspector__title {
+  margin: 0;
+  font-size: 1rem;
+  color: var(--kt-on-surface);
+}
+
+.inspector__subtitle {
+  margin: 0.5rem 0 0;
+  font-size: 0.8125rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--kt-muted);
+}
+
+.inspector__badges {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.inspector__badges > li {
+  padding: 0.2rem 0.55rem;
+  border-radius: 999px;
+  font:
+    600 0.75rem/1.4 ui-monospace,
+    monospace;
+  color: var(--kt-muted);
+  background: color-mix(in srgb, var(--kt-on-surface) 8%, transparent);
+}
+
+.inspector__badges > li.is-on {
+  color: var(--kt-on-surface);
+  background: color-mix(in srgb, var(--kt-primary) 22%, transparent);
+}
+
+.inspector__errors {
+  margin: 0;
+  padding-left: 1.1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  color: var(--kt-error, #d32f2f);
+  font-size: 0.875rem;
+}
+
+.inspector__none {
+  margin: 0;
+  color: var(--kt-muted);
+  font-size: 0.875rem;
+}
+
+.inspector__json {
+  margin: 0;
+  max-height: 22rem;
+  overflow: auto;
+  padding: 0.75rem;
+  border-radius: var(--kt-control-radius, 8px);
+  background: color-mix(in srgb, var(--kt-on-surface) 6%, transparent);
+  font:
+    0.75rem/1.5 ui-monospace,
+    monospace;
+  color: var(--kt-on-surface);
+  white-space: pre-wrap;
+  word-break: break-word;
+}

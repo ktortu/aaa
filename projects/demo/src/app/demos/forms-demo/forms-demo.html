@@ -1,0 +1,143 @@
+<article class="page">
+  <header class="page__head">
+    <p class="page__eyebrow">Composants</p>
+    <h1 class="page__title">Formulaires</h1>
+    <p class="page__lead">
+      Trois champs de saisie simples — <code>&lt;kt-text-field&gt;</code> (valeur <code>string</code>),
+      <code>&lt;kt-text-area&gt;</code> (multi-ligne, autosize) et <code>&lt;kt-number-field&gt;</code> (<code
+        >number | null</code
+      >) — intégrés aux Signal Forms via <code>FormValueControl</code>. Présentation commune (label, indice, aide,
+      préfixe/suffixe, effacement, erreurs). Accessibilité : libellé associé (<code>&lt;label for&gt;</code>),
+      <code>aria-describedby</code>, région live pour l'erreur, cibles tactiles 44px (AAA).
+    </p>
+  </header>
+
+  <kt-doc-section
+    title="Apparence — outline (POC, transition Material)"
+    subtitle="Bordure + label flottant qui se loge dans la bordure. Opt-in via [appearance]='outline' (ou KT_FIELD_CONFIG.appearance) ; le défaut « fill » est inchangé."
+  >
+    <kt-doc-example label="Outline — vide / rempli / erreur / aide">
+      <kt-text-field appearance="outline" label="Nom complet" [(value)]="outlineEmpty" />
+      <kt-text-field appearance="outline" label="Nom complet" [(value)]="outlineFilled" />
+      <kt-text-field
+        appearance="outline"
+        label="E-mail"
+        type="email"
+        [value]="'invalide'"
+        [invalid]="true"
+        [touched]="true"
+        [errors]="demoErrors"
+      />
+      <kt-text-field appearance="outline" label="Avec aide" helpText="Le label se loge dans la bordure haute." />
+    </kt-doc-example>
+
+    <kt-doc-example label="Outline — number & text-area">
+      <kt-number-field appearance="outline" label="Quantité" [min]="0" [step]="1" />
+      <kt-text-area appearance="outline" label="Bio" [rows]="3" />
+      <kt-text-field appearance="outline" label="Recherche" type="search" />
+    </kt-doc-example>
+
+    <kt-doc-example label="Comparaison fill (défaut) vs outline">
+      <kt-text-field label="fill (défaut)" placeholder="Votre nom" />
+      <kt-text-field appearance="outline" label="outline" />
+    </kt-doc-example>
+
+    <kt-doc-example label="Bascule interactive (appearance lié à un signal)">
+      <kt-switch label="Apparence outline" [(value)]="outlineMode" style="width: 100%" />
+      <kt-text-field [appearance]="appr()" label="Champ piloté" [(value)]="outlineEmpty" />
+    </kt-doc-example>
+
+    <kt-doc-code language="ts" [code]="migrationSnippet" />
+  </kt-doc-section>
+
+  <kt-doc-section title="Exemples" subtitle="Variantes des trois champs : types, décorations, états et numérique.">
+    <kt-doc-example label="Champ texte — types">
+      <kt-text-field label="Texte" type="text" placeholder="Votre nom" />
+      <kt-text-field label="E-mail" type="email" placeholder="vous@exemple.fr" />
+      <kt-text-field label="Mot de passe" type="password" />
+      <kt-text-field label="Recherche" type="search" />
+      <kt-text-field label="URL" type="url" placeholder="https://…" />
+    </kt-doc-example>
+
+    <kt-doc-example label="Icône, préfixe & suffixe">
+      <kt-text-field label="Recherche" type="search" icon="search" placeholder="Rechercher…" />
+      <kt-text-field label="Site" type="url" prefix="https://" placeholder="exemple.fr" />
+      <kt-text-field label="Poids" suffix="kg" placeholder="0" />
+    </kt-doc-example>
+
+    <kt-doc-example label="Effaçable & indice">
+      <kt-text-field label="Pseudo" [value]="'ktortu'" [clearable]="true" hint="Échap ou la croix pour effacer." />
+    </kt-doc-example>
+
+    <kt-doc-example label="Aide contextuelle">
+      <kt-text-field label="Code IBAN" helpText="27 caractères, sans espaces, commençant par FR." />
+    </kt-doc-example>
+
+    <kt-doc-example label="Suggestions (datalist)">
+      <kt-text-field label="Fruit" [suggestions]="fruits" hint="Saisie libre, suggestions proposées." />
+    </kt-doc-example>
+
+    <kt-doc-example label="États">
+      <kt-text-field label="Désactivé" [value]="'Non modifiable'" [disabled]="true" />
+      <kt-text-field label="Lecture seule" [value]="'Lecture seule'" [readonly]="true" />
+      <kt-text-field label="Requis" type="text" [required]="true" />
+      <kt-text-field
+        label="E-mail"
+        type="email"
+        [value]="'invalide'"
+        [invalid]="true"
+        [touched]="true"
+        [errors]="demoErrors"
+      />
+    </kt-doc-example>
+
+    <kt-doc-example label="Zone de texte">
+      <kt-text-area
+        label="Biographie"
+        [rows]="4"
+        [maxLength]="280"
+        [clearable]="true"
+        hint="280 caractères max ; la zone s'agrandit à la saisie."
+      />
+    </kt-doc-example>
+
+    <kt-doc-example label="Champ numérique">
+      <kt-number-field label="Âge" [min]="0" [max]="120" [step]="1" />
+      <kt-number-field label="Prix" [min]="0" [step]="0.5" suffix="€" [clearable]="true" />
+      <kt-number-field label="Quantité" [value]="3" [min]="0" hint="Flèches ↑/↓ pour ajuster." />
+    </kt-doc-example>
+  </kt-doc-section>
+
+  <kt-doc-section title="Utilisation" subtitle="Importer les composants, puis les placer dans le template.">
+    <div class="page__codes">
+      <kt-doc-code language="ts" [code]="tsSnippet" />
+      <kt-doc-code language="html" [code]="htmlSnippet" />
+    </div>
+  </kt-doc-section>
+
+  <kt-doc-section
+    title="Propriétés communes"
+    subtitle="Héritées de KtBaseInputField, partagées par les trois champs. Défauts i18n via KT_FIELD_CONFIG."
+  >
+    <kt-doc-props [rows]="commonProps" />
+  </kt-doc-section>
+
+  <kt-doc-section title="KtTextField" subtitle="Propriétés spécifiques au champ texte (kt-text-field).">
+    <kt-doc-props [rows]="textProps" />
+  </kt-doc-section>
+
+  <kt-doc-section title="KtTextArea" subtitle="Propriétés spécifiques à la zone de texte (kt-text-area).">
+    <kt-doc-props [rows]="textareaProps" />
+  </kt-doc-section>
+
+  <kt-doc-section title="KtNumberField" subtitle="Propriétés spécifiques au champ numérique (kt-number-field).">
+    <kt-doc-props [rows]="numberProps" />
+  </kt-doc-section>
+
+  <kt-doc-section
+    title="Tokens CSS"
+    subtitle="Contrat de personnalisation : surchargez ces variables sur :root ou un conteneur de spécificité ≥."
+  >
+    <kt-doc-tokens [groups]="tokens" />
+  </kt-doc-section>
+</article>

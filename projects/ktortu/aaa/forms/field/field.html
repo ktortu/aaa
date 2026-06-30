@@ -1,0 +1,54 @@
+<div class="kt-field__header">
+  @if (label(); as labelText) {
+    <label class="kt-field__label" [id]="labelId()" [for]="baseId()">
+      {{ labelText }}
+      @if (required()) {
+        <span class="kt-field__required" aria-hidden="true">*</span>
+      }
+    </label>
+  }
+
+  @if (helpText(); as help) {
+    <button
+      type="button"
+      class="kt-field__help"
+      [ktTooltip]="help"
+      [attr.aria-label]="helpLabel()"
+      [attr.aria-describedby]="null"
+      (click)="onHelpClick($event)"
+    >
+      <span class="kt-field__help-icon" aria-hidden="true">help</span>
+    </button>
+  }
+
+  <ng-content select="[ktFieldHelp]" />
+</div>
+
+<div class="kt-field__control">
+  <ng-content />
+</div>
+
+@if (hasHelp()) {
+  <!-- Copie de l'aide TOUJOURS présente (visually-hidden) : cible stable d'aria-describedby du
+       contrôle, alors que la bulle visuelle du tooltip n'existe dans le DOM qu'à l'affichage. -->
+  <span [id]="helpId()" class="kt-field__help-description">
+    @if (helpTemplate(); as tpl) {
+      <ng-container [ngTemplateOutlet]="tpl" />
+    } @else {
+      {{ helpString() }}
+    }
+  </span>
+}
+
+@if (showHint()) {
+  <p class="kt-field__hint" [id]="hintId()">{{ hint() }}</p>
+}
+
+<!-- Région live toujours présente : les AT annoncent l'erreur dès son apparition. -->
+<p class="kt-field__error" [id]="errorId()" aria-live="polite">
+  @if (hasError()) {
+    @for (error of displayedErrors(); track $index) {
+      <span class="kt-field__error-message">{{ error.message }}</span>
+    }
+  }
+</p>

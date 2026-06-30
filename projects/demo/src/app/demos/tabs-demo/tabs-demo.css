@@ -1,0 +1,198 @@
+:host {
+  display: block;
+}
+
+/* ===== Châssis de page (commun aux pages de doc) ===== */
+.page {
+  max-width: 64rem;
+}
+
+.page__head {
+  padding: 1rem 0 1.5rem;
+  border-bottom: 1px solid var(--kt-outline);
+}
+
+.page__eyebrow {
+  margin: 0 0 0.6rem;
+  font:
+    600 0.8125rem/1 ui-monospace,
+    monospace;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--kt-primary);
+}
+
+.page__title {
+  margin: 0;
+  font-size: clamp(1.75rem, 4vw, 2.25rem);
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  color: var(--kt-on-surface);
+}
+
+.page__title-sub {
+  font-size: 0.55em;
+  font-weight: 600;
+  color: var(--kt-muted);
+}
+
+.page__lead {
+  margin: 0.85rem 0 0;
+  max-width: 64ch;
+  font-size: 1.0625rem;
+  line-height: 1.6;
+  color: var(--kt-muted);
+}
+
+.page__lead code,
+.page__lead strong {
+  color: var(--kt-on-surface);
+}
+
+.page__lead code {
+  font-family: ui-monospace, monospace;
+  font-size: 0.9375em;
+}
+
+.page__codes {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 1rem;
+}
+
+/* ===== Scènes de démo ===== */
+/* Le composant tabs gère son propre layout ; on ne fait que contraindre l'espace pour
+   provoquer le débordement et donner un peu de largeur de lecture aux panneaux. */
+.demo-tabs {
+  width: 100%;
+  min-width: 0;
+}
+
+/* Exemple 2 : largeur bornée → la liste horizontale déborde et scrolle. */
+.demo-overflow {
+  inline-size: min(100%, 26rem);
+}
+
+/* Exemple 2 bis (headless) : affordance sur mesure impossible avec le composant clé-en-main.
+   Conteneur positionné → les chevrons flottent EN ABSOLU sur les bords de la liste, et n'existent
+   dans le DOM que lorsqu'on peut scroller de ce côté (rendu conditionnel via les signaux). */
+.demo-edge {
+  position: relative;
+  min-inline-size: 0;
+}
+
+/* Capuchon de bord : un fond dégradé (couleur de surface → transparent) qui estompe les onglets
+   passant derrière le bouton, pour qu'ils ne semblent pas déborder dessous. Posé en absolu, il
+   s'arrête au-dessus de la bordure basse de la liste pour la préserver. */
+.demo-edge__cap {
+  position: absolute;
+  inset-block-start: 0;
+  inset-block-end: var(--tab-list-border-width, 2px);
+  inline-size: 4.5rem;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  pointer-events: none; /* le fade ne capture pas les clics ; seul le bouton est cliquable */
+}
+
+.demo-edge__cap > .demo-edge__btn {
+  pointer-events: auto;
+}
+
+.demo-edge__cap--start {
+  inset-inline-start: 0;
+  justify-content: flex-start;
+  padding-inline-start: 0.25rem;
+  background: linear-gradient(to right, var(--kt-surface), transparent);
+}
+
+.demo-edge__cap--end {
+  inset-inline-end: 0;
+  justify-content: flex-end;
+  padding-inline-end: 0.25rem;
+  background: linear-gradient(to left, var(--kt-surface), transparent);
+}
+
+/* Pilule ronde flottante, détachée du flux : ce que le layout flanqué (clé-en-main) ne fait pas. */
+.demo-edge__btn {
+  --btn-radius: 999px;
+  box-shadow: 0 2px 10px rgb(0 0 0 / 22%);
+}
+
+.demo-edge__counter {
+  margin: 0.6rem 0 0;
+  font-size: 0.875rem;
+  font-variant-numeric: tabular-nums;
+  color: var(--kt-muted);
+}
+
+/* Exemple 3 : hauteur bornée sur la liste → débordement vertical et scroll.
+   (Hors `@layer` : l'emporte sur les styles composant posés dans `kt-aaa.components`.) */
+.demo-vertical {
+  width: 100%;
+}
+
+.demo-vertical__list {
+  max-block-size: 12rem;
+}
+
+/* Exemple 5 : contrôles + état + légende clavier. */
+.demo-knobs {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  width: 100%;
+}
+
+.demo-knobs__controls {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+}
+
+.demo-knobs__state {
+  margin: 0;
+  font-size: 0.9375rem;
+  color: var(--kt-muted);
+}
+
+.demo-knobs__state code {
+  color: var(--kt-on-surface);
+  font-family: ui-monospace, monospace;
+}
+
+.demo-keys {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 0.4rem 1rem;
+  margin: 0;
+  padding: 0.9rem 1rem;
+  border: 1px solid var(--kt-outline);
+  border-radius: var(--kt-control-radius, 8px);
+  background: color-mix(in oklab, var(--kt-on-surface) 3%, var(--kt-surface));
+}
+
+.demo-keys > div {
+  display: flex;
+  gap: 0.75rem;
+  align-items: baseline;
+}
+
+.demo-keys dt {
+  flex: 0 0 6.5rem;
+  font:
+    600 0.8125rem/1.5 ui-monospace,
+    monospace;
+  color: var(--kt-on-surface);
+}
+
+.demo-keys dd {
+  margin: 0;
+  font-size: 0.9375rem;
+  color: var(--kt-muted);
+}
+
+.demo-keys dd code {
+  font-family: ui-monospace, monospace;
+  color: var(--kt-on-surface);
+}

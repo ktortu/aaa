@@ -1,0 +1,9 @@
+@layer kt-aaa.tokens, kt-aaa.base, kt-aaa.components;
+
+/* Snackbar (service KtSnackbar, overlay CDK). Nécessite le socle (@ktortu/aaa/foundation.css),
+   ET côté hôte l'overlay CDK + le masquage du LiveAnnouncer :
+     @import '@angular/cdk/overlay-prebuilt.css';
+     @import '@angular/cdk/a11y-prebuilt.css';
+     @import '@ktortu/aaa/snackbar.css'; */
+@import '../snackbar/snackbar-tokens.css';
+@import '../snackbar/snackbar.css';

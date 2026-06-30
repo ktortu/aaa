@@ -1,0 +1,188 @@
+@layer kt-aaa.components {
+  :host {
+    display: block;
+  }
+
+  .kt-switch-field {
+    display: flex;
+    flex-direction: column;
+    gap: var(--field-gap, 0.375rem);
+  }
+
+  .kt-switch-row {
+    display: flex;
+    align-items: center;
+    gap: var(--field-control-gap, 0.5rem);
+  }
+
+  /* Le bouton switch (la glissière / track) */
+  .kt-switch {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    box-sizing: border-box;
+    inline-size: var(--switch-width, 2.75rem);
+    block-size: var(--switch-height, 1.5rem);
+    padding: var(--switch-padding, 2px);
+    border-radius: var(--switch-radius, 999px);
+    border: var(--switch-border-width, 2px) solid
+      var(--switch-border-color, var(--field-border-color, var(--kt-outline, #c4c7c5)));
+    background-color: var(--switch-bg, var(--field-bg, var(--kt-surface, #ffffff)));
+    cursor: pointer;
+    outline: none;
+    /* Élévation/glow de repos : retombe sur le token de thème des champs (--field-shadow). */
+    box-shadow: var(--switch-shadow, var(--field-shadow, none));
+    /* Token de BASCULE (non déclaré => valeur ci-dessous). Comme --btn-transition : ne pas y
+     mettre box-shadow si un thème anime déjà l'ombre en continu. */
+    transition: var(
+      --switch-transition,
+      background-color 0.2s cubic-bezier(0.4, 0, 0.2, 1),
+      border-color 0.2s cubic-bezier(0.4, 0, 0.2, 1),
+      box-shadow 0.2s ease
+    );
+  }
+
+  /* Zone de clic étendue à 44px de haut (AAA 2.5.5) via un pseudo-élément transparent */
+  .kt-switch::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 100%;
+    height: 44px;
+  }
+
+  /* La pastille mobile (le curseur / thumb) */
+  .kt-switch__thumb {
+    display: block;
+    inline-size: var(--switch-thumb-size, 1rem);
+    block-size: var(--switch-thumb-size, 1rem);
+    border-radius: var(--switch-thumb-radius, 50%);
+    background-color: var(--switch-thumb-bg, var(--kt-outline-strong, #5f6368));
+    box-shadow: var(--switch-thumb-shadow, 0 1px 3px rgba(0, 0, 0, 0.2));
+    /* Token de BASCULE (non déclaré => glissement actuel, rebond léger). */
+    transition: var(
+      --switch-thumb-transition,
+      transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1),
+      background-color 0.2s ease
+    );
+    transform: translateX(0);
+  }
+
+  /* État ACTIVÉ (aria-checked="true") + HALO coloré dérivé du primaire du thème (glow visible,
+   en fondu via la transition). Surchargeable/désactivable par --switch-shadow-active. */
+  .kt-switch[aria-checked='true'] {
+    background-color: var(--switch-bg-active, var(--kt-primary, #0b57d0));
+    border-color: var(--switch-border-color-active, var(--kt-primary, #0b57d0));
+    box-shadow: var(
+      --switch-shadow-active,
+      0 0 8px color-mix(in srgb, var(--switch-bg-active, var(--kt-primary, #0b57d0)) 50%, transparent)
+    );
+  }
+
+  .kt-switch[aria-checked='true'] .kt-switch__thumb {
+    background-color: var(--switch-thumb-bg-active, #ffffff);
+    /* Décale le curseur vers la droite : width de la track - size du thumb - padding*2 - border*2 */
+    transform: translateX(
+      calc(
+        var(--switch-width, 2.75rem) - var(--switch-thumb-size, 1rem) - (var(--switch-padding, 2px) * 2) -
+          (var(--switch-border-width, 2px) * 2)
+      )
+    );
+  }
+
+  /* État HOVER */
+  .kt-switch:hover:not(:disabled) {
+    border-color: var(--switch-border-color-hover, var(--field-border-color-hover, var(--kt-outline-strong, #5f6368)));
+    box-shadow: var(--switch-shadow-hover, var(--field-shadow-hover, var(--switch-shadow, var(--field-shadow, none))));
+  }
+
+  .kt-switch[aria-checked='true']:hover:not(:disabled) {
+    background-color: var(--switch-bg-active-hover, color-mix(in srgb, var(--kt-primary, #0b57d0) 90%, black));
+    border-color: var(--switch-border-color-active-hover, color-mix(in srgb, var(--kt-primary, #0b57d0) 90%, black));
+  }
+
+  /* État FOCUS : anneau via `outline` (comme les champs/checkbox/radio → pas de conflit avec le
+   glow box-shadow du thème), + glow de focus du thème (--field-shadow-focus). */
+  .kt-switch:focus-visible {
+    outline: var(--kt-focus-ring-width, 2px) solid var(--kt-focus-ring-color, #0b57d0);
+    outline-offset: var(--switch-focus-ring-offset, 2px);
+    box-shadow: var(--switch-shadow-focus, var(--field-shadow-focus, var(--switch-shadow, var(--field-shadow, none))));
+  }
+
+  /* État DÉSACTIVÉ (disabled) */
+  .kt-switch:disabled {
+    cursor: not-allowed;
+    opacity: 0.5;
+    background-color: var(--field-disabled-bg, #f1f3f4);
+    border-color: var(--field-border-color, #c4c7c5);
+  }
+
+  .kt-switch:disabled .kt-switch__thumb {
+    background-color: var(--kt-outline, #c4c7c5);
+    box-shadow: none;
+  }
+
+  /* État INVALID */
+  .kt-switch-field--invalid .kt-switch {
+    border-color: var(--field-error-color, var(--kt-danger, #b3261e));
+  }
+
+  .kt-switch-field--invalid .kt-switch[aria-checked='true'] {
+    background-color: var(--field-error-color, var(--kt-danger, #b3261e));
+    border-color: var(--field-error-color, var(--kt-danger, #b3261e));
+  }
+
+  /* Typo Label */
+  .kt-switch-label {
+    font-size: var(--field-label-font-size, 0.875rem);
+    font-weight: var(--field-label-weight, 500);
+    color: var(--field-label-color, inherit);
+    cursor: pointer;
+    user-select: none;
+  }
+
+  .kt-switch-field--disabled .kt-switch-label {
+    cursor: not-allowed;
+    color: var(--field-hint-color, #5f6368);
+    opacity: 0.6;
+  }
+
+  .kt-switch-label__required {
+    margin-inline-start: 0.125rem;
+    color: var(--field-required-color, #8c1d18);
+  }
+
+  /* Hint & Error */
+  .kt-switch-hint {
+    margin: 0;
+    font-size: var(--field-hint-font-size, 0.8125rem);
+    color: var(--field-hint-color, #474747);
+  }
+
+  .kt-switch-error {
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    font-size: var(--field-hint-font-size, 0.8125rem);
+    color: var(--field-error-color, #8c1d18);
+  }
+
+  /* Apparition d'un message d'erreur : même token que les champs (cf. field.css).
+   Sur le MESSAGE (inséré à l'invalidation), pas sur le conteneur. */
+  .kt-switch-error-message {
+    animation: var(--field-error-animation, none);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .kt-switch,
+    .kt-switch__thumb {
+      transition: none;
+    }
+
+    .kt-switch-error-message {
+      animation: none;
+    }
+  }
+}

@@ -1,0 +1,73 @@
+<article class="page">
+  <header class="page__head">
+    <p class="page__eyebrow">Directives &amp; API</p>
+    <h1 class="page__title">Dialog</h1>
+    <p class="page__lead">
+      Fenêtre modale bâtie sur <code>&#64;angular/cdk/dialog</code>. On définit le <strong>contrat typé</strong> du
+      dialog avec <code>defineKtDialog&lt;Data, Résultat&gt;()</code> (données, référence et ouvreur liés aux mêmes
+      types, déclarés une seule fois), co-localisé avec le composant ; le contenu se compose avec des directives
+      structurelles (<code>[ktDialogTitle]</code>, <code>[ktDialogContent]</code>, <code>[ktDialogActions]</code>…). La
+      <code>presentation</code> (centré, plein écran, bottom-sheet, ou variantes responsive) est choisie par le dev.
+      Accessibilité : <code>role="dialog"</code>, <code>aria-modal</code>, piège + restauration du focus,
+      <code>aria-labelledby</code>/<code>aria-describedby</code> câblés automatiquement, Reflow AAA (titre et actions
+      fixes, contenu seul scrollable), respect de <code>prefers-reduced-motion</code> et du mode contraste élevé.
+    </p>
+  </header>
+
+  <kt-doc-section
+    title="Exemples"
+    subtitle="Boutons déclencheurs : confirmation, présentations, fermeture verrouillée."
+  >
+    <kt-doc-example label="Confirmation (centré, résultat typé)">
+      <button ktButton color="danger" (click)="confirm()">Supprimer le fichier…</button>
+      @if (lastResult(); as result) {
+        <p class="page__result">
+          Dernier résultat : <code>{{ result }}</code>
+        </p>
+      }
+    </kt-doc-example>
+
+    <kt-doc-example label="Présentations">
+      <button ktButton mode="tonal" (click)="showCentered()">Centré</button>
+      <button ktButton mode="tonal" (click)="showFullscreen()">Plein écran</button>
+      <button ktButton mode="tonal" (click)="showSheet()">Bottom-sheet</button>
+      <button ktButton mode="tonal" (click)="showCenteredFullscreen()">Centré → plein écran</button>
+      <button ktButton mode="tonal" (click)="showCenteredSheet()">Centré → bottom-sheet</button>
+    </kt-doc-example>
+
+    <kt-doc-example label="Fermeture verrouillée (disableClose)">
+      <button ktButton mode="outlined" (click)="showLocked()">Ouvrir (résolution par action)</button>
+    </kt-doc-example>
+  </kt-doc-section>
+
+  <kt-doc-section
+    title="Utilisation"
+    subtitle="Définir le contrat typé (defineKtDialog), le composant, l'ouvreur co-localisé, puis l'appeler."
+  >
+    <div class="page__codes">
+      <kt-doc-code language="ts" [code]="tsSnippet" />
+      <kt-doc-code language="html" [code]="htmlSnippet" />
+    </div>
+  </kt-doc-section>
+
+  <kt-doc-section
+    title="Directives structurelles"
+    subtitle="Posées sur le contenu du dialog. Importées en bloc via KtDialogImports."
+  >
+    <kt-doc-props [rows]="directiveProps" />
+  </kt-doc-section>
+
+  <kt-doc-section
+    title="API TypeScript"
+    subtitle="Ouverture, donnée injectée et configuration. provideKtDialogDefaults est branché dans app.config.ts."
+  >
+    <kt-doc-props [rows]="apiProps" />
+  </kt-doc-section>
+
+  <kt-doc-section
+    title="Tokens CSS"
+    subtitle="Contrat de personnalisation : surchargez ces variables sur :root (le dialog est rendu dans l'overlay CDK, hors de toute vue)."
+  >
+    <kt-doc-tokens [groups]="tokens" />
+  </kt-doc-section>
+</article>

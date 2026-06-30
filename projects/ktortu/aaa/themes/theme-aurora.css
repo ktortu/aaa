@@ -1,0 +1,97 @@
+/* Thème « Aurora » (light, effets d'OMBRES) — vitrine des tokens --*-shadow* du système.
+   Identité = halos COLORÉS multicouches (indigo + rose) sous chaque surface, élévation au survol.
+   AUCUNE animation continue (≠ cyberpunk) : tout est statique, seules des transitions au survol.
+   Surfaces claires + texte navy => AA sans compromis (les halos sont décoratifs, jamais porteurs
+   d'information ni de contraste de texte). Inter, rondeurs douces. */
+[data-theme='aurora'] {
+  color-scheme: light;
+
+  /* ============ Socle ============ */
+  --kt-primary: #4f46e5; /* indigo — blanc ~6.6:1 */
+  --kt-danger: #be185d; /* rose profond — blanc ~6.2:1 */
+  --kt-neutral: #475569;
+  --kt-surface: #f7f9fc;
+  --kt-on-surface: #16203a; /* ~13:1 */
+  --kt-muted: #4a5878; /* ~6:1 */
+  --kt-outline: #cdd6e8;
+  --kt-outline-strong: #8493b3;
+  --kt-focus-ring-color: #4f46e5;
+  --kt-font: 'Inter', system-ui, sans-serif;
+
+  /* Gouttière indigo douce. */
+  --kt-scrollbar-color: color-mix(in srgb, #4f46e5 35%, #cdd6e8) #eef1f8;
+
+  /* Feuille / popup : halos colorés. */
+  --kt-sheet-radius: 24px;
+  --kt-sheet-shadow: 0 -16px 48px rgb(79 70 229 / 16%), 0 -4px 16px rgb(190 24 93 / 10%);
+  --kt-sheet-scrim: rgb(22 32 58 / 35%);
+
+  /* Caret + sélection. */
+  --field-caret-color: #4f46e5;
+  --kt-selection-bg: #ddd6fe;
+  --kt-selection-fg: #2e1065;
+
+  /* ============ Géométrie douce ============ */
+  --kt-control-radius: 12px;
+  --btn-radius: 12px;
+  --chip-radius: 999px;
+
+  /* ============ Champs : halo indigo au survol/focus ============ */
+  --field-bg: #ffffff;
+  --field-focus-ring: color-mix(in srgb, #4f46e5 50%, transparent);
+  --field-transition: border-color 180ms ease, box-shadow 180ms ease;
+  --field-shadow: 0 2px 8px rgb(22 32 58 / 6%);
+  --field-shadow-hover: 0 4px 14px rgb(79 70 229 / 12%);
+  --field-shadow-focus: 0 6px 20px rgb(79 70 229 / 22%);
+
+  /* ============ Boutons : élévation colorée, lève au survol ============ */
+  --btn-tonal-weight: 16%;
+  --btn-on-primary-container: #2e1065;
+  --btn-on-danger-container: #6b0f3a;
+  --btn-on-neutral-container: #16203a;
+  --btn-transition: transform 180ms ease, box-shadow 180ms ease;
+  --btn-transform-hover: translateY(-2px);
+  --btn-transform-active: translateY(0) scale(0.98);
+
+  /* ============ Chips : pilules à halo doux ============ */
+  --chip-shadow: 0 2px 8px rgb(79 70 229 / 12%);
+  --chip-shadow-hover: 0 4px 14px rgb(79 70 229 / 20%);
+
+  /* ============ Select / tooltip : panneaux à halo ============ */
+  --select-popup-bg: #ffffff;
+  --select-popup-shadow: 0 16px 48px rgb(79 70 229 / 18%), 0 4px 16px rgb(190 24 93 / 10%);
+  --tooltip-bg: #16203a;
+  --tooltip-fg: #f7f9fc;
+
+  /* ============ Dialog : halo aurora ample ============ */
+  --dialog-bg: #ffffff;
+  --dialog-radius: 20px;
+  --dialog-border-width: 0;
+  --dialog-shadow: 0 24px 64px rgb(79 70 229 / 22%), 0 8px 24px rgb(190 24 93 / 12%);
+
+  /* ============ Card : LA vitrine — double halo coloré, lève au survol ============ */
+  --card-bg: #ffffff;
+  --card-filled-bg: #f1f0fe; /* teinte indigo très pâle */
+  --card-radius: 16px;
+  --card-shadow: 0 6px 24px rgb(79 70 229 / 14%), 0 2px 8px rgb(190 24 93 / 8%);
+  --card-shadow-hover: 0 14px 40px rgb(79 70 229 / 22%), 0 6px 18px rgb(190 24 93 / 12%);
+  --card-transition: transform 200ms ease, box-shadow 200ms ease;
+  --card-transform-hover: translateY(-3px);
+}
+
+/* Élévation COLORÉE des boutons — la couleur suit le mode résolu (var(--btn-fill)), donc au
+   niveau ÉLÉMENT. Voile aurora subtil sur les filled (label blanc AA conservé : voile translucide
+   violet sur un fill déjà sombre). Disabled : la lib force background-image/box-shadow à none. */
+[data-theme='aurora'] [ktButton][data-mode='filled'] {
+  --btn-fill-image: linear-gradient(135deg, transparent 40%, rgb(124 58 237 / 35%));
+  --btn-shadow:
+    0 4px 14px color-mix(in srgb, var(--btn-fill) 38%, transparent),
+    0 2px 6px color-mix(in srgb, var(--btn-fill) 24%, transparent);
+  --btn-shadow-hover:
+    0 8px 22px color-mix(in srgb, var(--btn-fill) 50%, transparent),
+    0 4px 10px color-mix(in srgb, var(--btn-fill) 32%, transparent);
+}
+[data-theme='aurora'] [ktButton]:is([data-mode='tonal'], [data-mode='outlined'], [data-mode='text']) {
+  --btn-shadow: 0 2px 8px rgb(22 32 58 / 8%);
+  --btn-shadow-hover: 0 6px 18px color-mix(in srgb, var(--btn-fg) 22%, transparent);
+}

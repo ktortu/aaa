@@ -1,0 +1,17 @@
+# Sorties de build & artefacts générés
+/dist
+/coverage
+/.angular
+/out-tsc
+
+# Rapports & résultats de tests
+/playwright-report
+/test-results
+
+# Dépendances & lockfile (généré)
+/node_modules
+package-lock.json
+
+# Divers
+*.min.js
+*.min.css

@@ -1,0 +1,174 @@
+<article class="page">
+  <header class="page__head">
+    <p class="page__eyebrow">Directives</p>
+    <h1 class="page__title">Menu</h1>
+    <p class="page__lead">
+      La famille <code>[ktMenu]</code> est une couche de <strong>thème</strong> posée sur les hôtes d’<code
+        >&#64;angular/aria/menu</code
+      >
+      (<code>[ngMenu]</code>, <code>[ngMenuItem]</code>, <code>[ngMenuTrigger]</code>) : elle ne style que la
+      <strong>surface</strong> et la <strong>rangée</strong>, et positionne le dropdown via un
+      <strong>overlay CDK</strong> ancré au déclencheur (les sous-menus, eux, sont placés en JS à côté de leur item).
+      Tout le comportement accessible — <code>role="menu"</code>, navigation clavier, focus roving, retour de focus,
+      sous-menus, typeahead, Échap et clic-dehors — vient d’aria. Les items à état comblent le seul trou d’aria : ils
+      posent <code>aria-checked</code>
+      (WCAG 4.1.2). Rangées à cible tactile AAA (≥44px).
+    </p>
+  </header>
+
+  <kt-doc-section title="Exemples" subtitle="Menu d’actions, items à état (checkbox / radio) et sous-menus.">
+    <kt-doc-example label="Menu de base (séparateur, item désactivé, tonalité destructrice)">
+      <button
+        ngMenuTrigger
+        ktMenuTrigger
+        [menu]="actionsMenu"
+        ktButton
+        mode="tonal"
+        icon="expand_more"
+        iconPosition="end"
+      >
+        Actions
+      </button>
+      <div ngMenu ktMenu #actionsMenu="ngMenu" (itemSelected)="onAction($event)" aria-label="Actions sur le fichier">
+        <button ngMenuItem ktMenuItem value="rename">Renommer</button>
+        <button ngMenuItem ktMenuItem value="duplicate">Dupliquer</button>
+        <button ngMenuItem ktMenuItem value="archive" [disabled]="true">Archiver</button>
+        <hr ktMenuSeparator />
+        <button ngMenuItem ktMenuItem value="delete" data-tone="danger">Supprimer</button>
+      </div>
+      @if (lastAction(); as action) {
+        <p class="page__result">
+          Dernière action : <code>{{ action }}</code>
+        </p>
+      }
+    </kt-doc-example>
+
+    <kt-doc-example label="Cases à cocher (aria-checked, bascule indépendante)">
+      <button ngMenuTrigger ktMenuTrigger [menu]="viewMenu" ktButton mode="outlined">Affichage</button>
+      <div ngMenu ktMenu #viewMenu="ngMenu" aria-label="Options d’affichage">
+        <button
+          ngMenuItem
+          ktMenuItem
+          ktMenuItemCheckbox
+          role="menuitemcheckbox"
+          value="wrap"
+          [(checked)]="wrap"
+          [attr.aria-checked]="wrap()"
+        >
+          Retour à la ligne
+        </button>
+        <button
+          ngMenuItem
+          ktMenuItem
+          ktMenuItemCheckbox
+          role="menuitemcheckbox"
+          value="minimap"
+          [(checked)]="minimap"
+          [attr.aria-checked]="minimap()"
+        >
+          Minimap
+        </button>
+      </div>
+      <p class="page__result">
+        Retour à la ligne : <code>{{ wrap() }}</code> · Minimap : <code>{{ minimap() }}</code>
+      </p>
+    </kt-doc-example>
+
+    <kt-doc-example label="Groupe radio (mutuellement exclusif)">
+      <button ngMenuTrigger ktMenuTrigger [menu]="sortMenu" ktButton mode="outlined">Trier par</button>
+      <div ngMenu ktMenu #sortMenu="ngMenu" aria-label="Trier par">
+        <div role="group" ktMenuRadioGroup [(value)]="sortBy" aria-label="Trier par">
+          <button
+            ngMenuItem
+            ktMenuItem
+            ktMenuItemRadio
+            role="menuitemradio"
+            [value]="'name'"
+            [attr.aria-checked]="sortBy() === 'name'"
+          >
+            Nom
+          </button>
+          <button
+            ngMenuItem
+            ktMenuItem
+            ktMenuItemRadio
+            role="menuitemradio"
+            [value]="'date'"
+            [attr.aria-checked]="sortBy() === 'date'"
+          >
+            Date
+          </button>
+          <button
+            ngMenuItem
+            ktMenuItem
+            ktMenuItemRadio
+            role="menuitemradio"
+            [value]="'size'"
+            [attr.aria-checked]="sortBy() === 'size'"
+          >
+            Taille
+          </button>
+        </div>
+      </div>
+      <p class="page__result">
+        Tri courant : <code>{{ sortBy() }}</code>
+      </p>
+    </kt-doc-example>
+
+    <kt-doc-example label="Sous-menus imbriqués (multi-niveaux, ouverture latérale, chevron CSS)">
+      <button ngMenuTrigger ktMenuTrigger [menu]="fileMenu" ktButton mode="tonal">Fichier</button>
+      <div ngMenu ktMenu #fileMenu="ngMenu" (itemSelected)="onAction($event)" aria-label="Fichier">
+        <button ngMenuItem ktMenuItem value="new">Nouveau</button>
+        <button ngMenuItem ktMenuItem value="open">Ouvrir…</button>
+        <button ngMenuItem ktMenuItem value="share" [submenu]="shareMenu">Partager</button>
+        <!-- Le [ngMenu] du sous-menu DOIT être un descendant DOM du menu parent. -->
+        <div ngMenu ktMenu #shareMenu="ngMenu" (itemSelected)="onAction($event)" aria-label="Partager">
+          <button ngMenuItem ktMenuItem value="email">E-mail</button>
+          <button ngMenuItem ktMenuItem value="link">Copier le lien</button>
+          <button ngMenuItem ktMenuItem value="social" [submenu]="socialMenu">Réseaux sociaux</button>
+          <!-- 3ᵉ niveau : descendant DOM du sous-menu de 2ᵉ niveau. -->
+          <div ngMenu ktMenu #socialMenu="ngMenu" (itemSelected)="onAction($event)" aria-label="Réseaux sociaux">
+            <button ngMenuItem ktMenuItem value="twitter">Twitter / X</button>
+            <button ngMenuItem ktMenuItem value="linkedin">LinkedIn</button>
+            <button ngMenuItem ktMenuItem value="more" [submenu]="moreMenu">Autres réseaux</button>
+            <!-- 4ᵉ niveau : descendant DOM du sous-menu de 3ᵉ niveau. -->
+            <div ngMenu ktMenu #moreMenu="ngMenu" (itemSelected)="onAction($event)" aria-label="Autres réseaux">
+              <button ngMenuItem ktMenuItem value="mastodon">Mastodon</button>
+              <button ngMenuItem ktMenuItem value="bluesky">Bluesky</button>
+            </div>
+          </div>
+        </div>
+        <hr ktMenuSeparator />
+        <button ngMenuItem ktMenuItem value="export">Exporter…</button>
+      </div>
+    </kt-doc-example>
+  </kt-doc-section>
+
+  <kt-doc-section title="Utilisation" subtitle="Composer les directives de thème avec les hôtes @angular/aria.">
+    <div class="page__codes">
+      <kt-doc-code language="ts" [code]="tsSnippet" />
+      <kt-doc-code language="html" [code]="htmlSnippet" />
+    </div>
+  </kt-doc-section>
+
+  <kt-doc-section
+    title="Directives"
+    subtitle="Marqueurs de thème & de positionnement, importés en bloc via KtMenuImports."
+  >
+    <kt-doc-props [rows]="directiveProps" />
+  </kt-doc-section>
+
+  <kt-doc-section
+    title="Items à état"
+    subtitle="Checkbox / radio : posent aria-checked, le trou laissé par @angular/aria."
+  >
+    <kt-doc-props [rows]="toggleProps" />
+  </kt-doc-section>
+
+  <kt-doc-section
+    title="Tokens CSS"
+    subtitle="Contrat de personnalisation : surchargez ces variables sur :root ou un conteneur de spécificité ≥."
+  >
+    <kt-doc-tokens [groups]="tokens" />
+  </kt-doc-section>
+</article>

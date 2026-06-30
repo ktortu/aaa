@@ -1,0 +1,87 @@
+<div class="shell" [attr.data-drawer]="drawerOpen() ? '' : null">
+  <!-- Overlay (mobile) : ferme le drawer au tap. `inert` quand le drawer est fermé → hors
+       tabulation et hors arbre d'accessibilité (le scrim n'existe visuellement qu'ouvert). -->
+  <button
+    type="button"
+    class="shell__scrim"
+    aria-label="Fermer le menu"
+    [attr.inert]="drawerOpen() ? null : ''"
+    (click)="closeDrawer()"
+  ></button>
+
+  <aside id="shell-sidebar" class="shell__sidebar" [class.shell__sidebar--open]="drawerOpen()">
+    <a class="shell__brand" routerLink="/" (click)="closeDrawer()">
+      <span class="shell__brand-mark">aaa</span>
+      <span class="shell__brand-name">&#64;ktortu/aaa</span>
+    </a>
+    <nav class="shell__nav" aria-label="Composants">
+      @for (item of nav; track item.link) {
+        <a
+          class="shell__link"
+          [routerLink]="item.link"
+          [routerLinkActiveOptions]="{ exact: item.path === '' }"
+          routerLinkActive="shell__link--active"
+          (click)="closeDrawer()"
+          >{{ item.label }}</a
+        >
+        @if (item.children) {
+          <div class="shell__sub-nav">
+            @for (sub of item.children; track sub.label) {
+              <a
+                class="shell__sub-link"
+                [routerLink]="sub.link"
+                routerLinkActive="shell__sub-link--active"
+                (click)="closeDrawer()"
+                >{{ sub.label }}</a
+              >
+            }
+          </div>
+        }
+      }
+    </nav>
+  </aside>
+
+  <div class="shell__main">
+    <header class="shell__header">
+      <button
+        ktButton
+        iconOnly
+        icon="menu"
+        ariaLabel="Menu"
+        mode="text"
+        class="shell__burger"
+        aria-controls="shell-sidebar"
+        [attr.aria-expanded]="drawerOpen()"
+        (click)="toggleDrawer()"
+      ></button>
+      <h1 class="shell__page-title">{{ pageTitle() }}</h1>
+      <div class="shell__header__right">
+        @if (theme.current() === 'material-you') {
+          <label class="shell__seed-picker">
+            <input
+              type="color"
+              #picker
+              style="opacity: 0; height: 44px; width: 44px; cursor: pointer"
+              aria-label="Couleur de seed Material You"
+              [value]="theme.seedColor()"
+              (input)="onSeedColorChange($event)"
+            />
+          </label>
+        }
+        <kt-select
+          class="shell__theme"
+          label="Thème"
+          [options]="themes"
+          optionLabel="label"
+          optionValue="id"
+          [value]="theme.current()"
+          (valueChange)="onThemeChange($event)"
+        />
+      </div>
+    </header>
+
+    <main class="shell__content">
+      <router-outlet />
+    </main>
+  </div>
+</div>

@@ -1,0 +1,132 @@
+<article class="page">
+  <header class="page__head">
+    <p class="page__eyebrow">Composants</p>
+    <h1 class="page__title">Temporal</h1>
+    <p class="page__lead">
+      Cinq champs de saisie adossés à l'API <code>Temporal</code> (typage fort, jamais de <code>Date</code>) :
+      <code>&lt;kt-date-field&gt;</code> (<code>PlainDate</code>),
+      <code>&lt;kt-time-field&gt;</code> (<code>PlainTime</code>),
+      <code>&lt;kt-date-time-field&gt;</code> (<code>PlainDateTime</code>),
+      <code>&lt;kt-year-month-field&gt;</code> (<code>PlainYearMonth</code>) et
+      <code>&lt;kt-instant-field&gt;</code> (<code>Instant</code> UTC affiché en heure locale via <code>KtClock</code>).
+      Pickers natifs HTML5, parsing tolérant (saisie invalide → <code>null</code>, jamais d'exception), intégration
+      Signal Forms (<code>FormValueControl</code>). Accessibilité héritée du système champ : libellé associé (<code
+        >&lt;label for&gt;</code
+      >), <code>aria-describedby</code>, région live pour l'erreur, cibles tactiles 44px (AAA).
+    </p>
+  </header>
+
+  <kt-doc-section
+    title="Apparence — outline"
+    subtitle="Même axe que les champs simples ([appearance]='outline'). Les inputs date/heure affichent leur format natif → le label reste flotté."
+  >
+    <kt-doc-example label="Outline — date / heure / année-mois">
+      <kt-date-field appearance="outline" label="Date de naissance" [(value)]="birthDate" />
+      <kt-time-field appearance="outline" label="Ouverture" [(value)]="openingTime" />
+      <kt-year-month-field appearance="outline" label="Expiration" [(value)]="cardExpiry" />
+    </kt-doc-example>
+  </kt-doc-section>
+
+  <kt-doc-section
+    title="Exemples"
+    subtitle="Un champ par type Temporal, puis décorations, états, suggestions et affichage formaté."
+  >
+    <kt-doc-example label="Date — kt-date-field">
+      <kt-date-field label="Date de naissance" />
+      <kt-date-field label="Pré-remplie" [(value)]="birthDate" hint="Liée à un signal PlainDate." />
+    </kt-doc-example>
+
+    <kt-doc-example label="Heure — kt-time-field">
+      <kt-time-field label="Ouverture" [(value)]="openingTime" hint="Précision minute." />
+    </kt-doc-example>
+
+    <kt-doc-example label="Date & heure — kt-date-time-field">
+      <kt-date-time-field label="Début de l'événement" [(value)]="eventStart" hint="Heure « au mur », sans fuseau." />
+    </kt-doc-example>
+
+    <kt-doc-example label="Année / mois — kt-year-month-field">
+      <kt-year-month-field label="Expiration de carte" [(value)]="cardExpiry" />
+    </kt-doc-example>
+
+    <kt-doc-example label="Instant (UTC ↔ local) — kt-instant-field">
+      <kt-instant-field label="Horodatage" [(value)]="recordedAt" hint="Saisi en heure locale, stocké en UTC." />
+    </kt-doc-example>
+
+    <kt-doc-example label="Précision : minute (défaut) vs seconde">
+      <kt-time-field label="Heure (minute)" [(value)]="openingTime" hint="Précision par défaut." />
+      <kt-time-field label="Heure (seconde)" [(value)]="preciseTime" precision="second" hint="Sélecteur de secondes." />
+      <kt-instant-field label="Horodatage précis" [(value)]="recordedAt" precision="second" />
+    </kt-doc-example>
+
+    <kt-doc-example label="Décorations">
+      <kt-date-field label="Échéance" icon="event" />
+      <kt-date-field
+        label="Rendez-vous"
+        [(value)]="birthDate"
+        [clearable]="true"
+        hint="Échap ou la croix pour effacer."
+      />
+      <kt-date-field label="Code IBAN renouvelé le" helpText="Date du dernier renouvellement du mandat." />
+    </kt-doc-example>
+
+    <kt-doc-example label="États">
+      <kt-date-field label="Désactivé" [(value)]="birthDate" [disabled]="true" />
+      <kt-date-field label="Lecture seule" [(value)]="birthDate" [readonly]="true" />
+      <kt-date-field label="Requis" [required]="true" />
+      <kt-date-field label="Échéance" [(value)]="birthDate" [invalid]="true" [touched]="true" [errors]="demoErrors" />
+    </kt-doc-example>
+
+    <kt-doc-example label="Suggestions (datalist)">
+      <kt-year-month-field
+        label="Expiration"
+        [suggestions]="expiryHints"
+        hint="Saisie libre, échéances usuelles proposées."
+      />
+    </kt-doc-example>
+
+    <kt-doc-example label="Affichage avec le pipe temporalDate">
+      <p>Date complète : {{ today() | temporalDate: { dateStyle: 'full' } }}</p>
+      <p>Mois &amp; année : {{ today() | temporalDate: { month: 'long', year: 'numeric' } }}</p>
+      <p>Instant en heure locale : {{ recordedAt() | temporalDate: { dateStyle: 'medium', timeStyle: 'short' } }}</p>
+    </kt-doc-example>
+  </kt-doc-section>
+
+  <kt-doc-section title="Utilisation" subtitle="Importer les champs, puis les lier à des signaux typés Temporal.">
+    <div class="page__codes">
+      <kt-doc-code language="ts" [code]="tsSnippet" />
+      <kt-doc-code language="html" [code]="htmlSnippet" />
+    </div>
+  </kt-doc-section>
+
+  <kt-doc-section
+    title="Propriétés communes"
+    subtitle="Héritées de KtBaseInputField (+ suggestions de KtBaseTemporalField), partagées par les cinq champs. Défauts i18n via KT_FIELD_CONFIG."
+  >
+    <kt-doc-props [rows]="commonProps" />
+  </kt-doc-section>
+
+  <kt-doc-section
+    title="Composants & valeur"
+    subtitle="Seul le type de la valeur (two-way) change d'un champ à l'autre."
+  >
+    <kt-doc-props [rows]="fieldsProps" />
+  </kt-doc-section>
+
+  <kt-doc-section
+    title="Précision de l'heure"
+    subtitle="Propre aux champs avec heure (kt-time-field, kt-date-time-field, kt-instant-field)."
+  >
+    <kt-doc-props [rows]="timeProps" />
+  </kt-doc-section>
+
+  <kt-doc-section title="Pipe & horloge" subtitle="Affichage formaté et lecture des dates courantes.">
+    <kt-doc-props [rows]="utilsProps" />
+  </kt-doc-section>
+
+  <kt-doc-section
+    title="Tokens CSS"
+    subtitle="Contrat de personnalisation : surchargez ces variables sur :root ou un conteneur de spécificité ≥."
+  >
+    <kt-doc-tokens [groups]="tokens" />
+  </kt-doc-section>
+</article>

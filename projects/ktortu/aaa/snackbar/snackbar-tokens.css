@@ -1,0 +1,53 @@
+/* Design tokens de la snackbar (service KtSnackbar) — contrat public de theming.
+
+   PRINCIPE (identique au reste de la lib) : tout DÉRIVE du socle --kt-*. Surcharger un --kt-*
+   rethématise la snackbar en même temps que les champs, boutons et dialog. Chaque valeur reste
+   surchargeable en redéclarant son token --snackbar-* (sur :root ou un conteneur de spécificité ≥).
+
+   La snackbar est posée sur une « surface inversée » (fond sombre, texte clair) façon Material —
+   d'où des on-* dérivés de --kt-on-surface / --kt-surface, qui suivent automatiquement un thème.
+   Les variantes ne recolorisent PAS la pastille (le texte reste à contraste AAA) : elles ne pilotent
+   que l'accent + l'icône. Un thème qui veut des pastilles pleinement colorées surcharge simplement
+   --snackbar-bg / --snackbar-fg sous [data-variant='…']. */
+@layer kt-aaa.tokens {
+  :root {
+    /* Surface inversée : fond ~ on-surface, texte ~ surface (contraste ≈ 16:1 → AAA 1.4.6). */
+    --snackbar-bg: color-mix(in oklab, var(--kt-on-surface, #1f1f1f) 92%, var(--kt-surface, #ffffff));
+    --snackbar-fg: var(--kt-surface, #ffffff);
+
+    --snackbar-radius: var(--kt-control-radius, 8px);
+    --snackbar-shadow: 0 4px 12px rgb(0 0 0 / 24%);
+
+    /* Géométrie interne */
+    --snackbar-padding-block: 0.625rem;
+    --snackbar-padding-inline: 1rem;
+    --snackbar-gap: 0.75rem;
+    --snackbar-font: var(--kt-control-font, 1rem);
+
+    /* Placement : distance au bord du viewport, avec marge de sécurité mobile (encoches / barres). */
+    --snackbar-offset: 16px;
+    --snackbar-offset-bottom: calc(var(--snackbar-offset) + env(safe-area-inset-bottom, 0px));
+    --snackbar-offset-top: calc(var(--snackbar-offset) + env(safe-area-inset-top, 0px));
+    --snackbar-max-inline-size: 560px;
+
+    /* Bouton de fermeture : cible 44px (AAA 2.5.5). */
+    --snackbar-close-size: var(--kt-control-height, 44px);
+    --snackbar-close-icon-size: 1rem;
+
+    /* Variantes : accent (icône) clair pour contraster sur la pastille sombre (≥ 3:1), et glyphe
+       (ligature de la police d'icônes --kt-icon-font). Couleur + FORME : la forme distincte est
+       l'indice non coloré (WCAG 1.4.1). Surchargez accent/glyphe pour rebrander une variante. */
+    --snackbar-icon-size: 1.25rem;
+    --snackbar-accent-info: #8ab4f8;
+    --snackbar-accent-success: #81c995;
+    --snackbar-accent-warning: #fdd663;
+    --snackbar-accent-error: #f28b82;
+    --snackbar-glyph-info: 'info';
+    --snackbar-glyph-success: 'check_circle';
+    --snackbar-glyph-warning: 'warning';
+    --snackbar-glyph-error: 'error';
+
+    /* Animation d'entrée/sortie. Token de durée surchargeable ; neutralisée en prefers-reduced-motion. */
+    --snackbar-anim-duration: 150ms;
+  }
+}

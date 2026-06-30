@@ -1,0 +1,231 @@
+<article class="page">
+  <header class="page__head">
+    <p class="page__eyebrow">Formulaire</p>
+    <h1 class="page__title">Formulaire vitrine — Signal Forms</h1>
+    <p class="page__lead">
+      Un seul modèle typé et un <code>schema()</code> ; chaque contrôle est lié par <code>[formField]</code>.
+      Validation, contraintes natives, accessibilité, <code>pending</code> et focus du premier champ invalide sont
+      <strong>automatiques</strong>.
+    </p>
+  </header>
+
+  <kt-doc-section
+    title="Démo interactive"
+    subtitle="Remplissez (ou pré-remplissez) le formulaire et observez l'inspecteur d'état se mettre à jour en direct."
+  >
+    <div class="showcase">
+      <!-- ============ FORMULAIRE ============ -->
+      <div class="showcase__form">
+        <fieldset class="showcase__group">
+          <legend>Identité</legend>
+          <kt-radio-group
+            label="Civilité"
+            [formField]="f.civility"
+            hint="Sélectionnez une option avec les flèches du clavier."
+          >
+            <div style="display: flex; gap: 1rem">
+              <kt-radio [optionValue]="'mme'" label="Madame" />
+              <kt-radio [optionValue]="'m'" label="Monsieur" />
+              <kt-radio [optionValue]="'autre'" label="Autre" />
+            </div>
+          </kt-radio-group>
+
+          <kt-text-field label="Prénom" [formField]="f.firstName" hint="2 caractères minimum." />
+          <kt-text-field label="Nom" [formField]="f.lastName" hint="Tel qu'il figure sur vos documents." />
+          <kt-number-field label="Âge" [formField]="f.age" suffix="ans" hint="Entre 18 et 120 ans." />
+        </fieldset>
+
+        <fieldset class="showcase__group">
+          <legend>Compte</legend>
+          <kt-text-field
+            label="Nom d'utilisateur"
+            [formField]="f.username"
+            hint="Disponibilité vérifiée en direct pendant la saisie."
+            helpText="Choisissez un identifiant unique de 2 caractères ou plus. La disponibilité est contrôlée automatiquement ; un message vous indique s'il est déjà pris."
+            helpLabel="Aide : nom d'utilisateur"
+          />
+          <kt-text-field
+            label="E-mail"
+            type="email"
+            [formField]="f.email"
+            icon="mail"
+            hint="Format attendu : nom@domaine.fr"
+          />
+          <kt-text-field
+            label="Mot de passe"
+            type="password"
+            [formField]="f.password"
+            hint="8 caractères minimum, dont une majuscule et un chiffre."
+            helpText="Pour votre sécurité, utilisez au moins 8 caractères mêlant majuscules, minuscules et chiffres. Évitez un mot de passe déjà employé sur un autre site."
+            helpLabel="Aide : mot de passe"
+          />
+          <kt-text-field
+            label="Confirmer le mot de passe"
+            type="password"
+            [formField]="f.confirmPassword"
+            hint="Resaisissez exactement le même mot de passe."
+          />
+        </fieldset>
+
+        <fieldset class="showcase__group">
+          <legend>Dates &amp; heures</legend>
+          <kt-date-field
+            label="Date de naissance"
+            [formField]="f.birthDate"
+            hint="La date ne peut pas être dans le futur."
+          />
+          <kt-time-field
+            label="Heure préférée"
+            [formField]="f.preferredTime"
+            hint="Créneau auquel vous préférez être contacté."
+          />
+          <kt-date-time-field label="Rendez-vous" [formField]="f.appointment" hint="Date et heure souhaitées." />
+          <kt-year-month-field label="Expiration carte" [formField]="f.cardExpiry" hint="Mois et année (MM/AAAA)." />
+          <kt-instant-field
+            label="Horodatage (lecture seule)"
+            [formField]="f.recordedAt"
+            hint="Renseigné automatiquement."
+            helpText="Cet horodatage est figé à l'ouverture du formulaire et n'est pas modifiable. Il sert d'horodatage de création."
+            helpLabel="Aide : horodatage"
+          />
+        </fieldset>
+
+        <fieldset class="showcase__group">
+          <legend>Profil</legend>
+          <kt-select
+            label="Pays"
+            [options]="countries"
+            [formField]="f.country"
+            filterable
+            placeholder="Choisir…"
+            hint="Tapez pour filtrer la liste."
+          />
+          <kt-multi-select
+            label="Compétences"
+            [options]="skillOptions"
+            optionLabel="name"
+            optionValue="id"
+            [formField]="f.skills"
+            [maxVisibleChips]="3"
+            filterable
+            hint="Sélectionnez-en au moins une ; plusieurs choix possibles."
+          />
+          <kt-checkbox-group
+            label="Centres d'intérêt"
+            [formField]="f.interests"
+            hint="Plusieurs choix possibles (facultatif)."
+          >
+            <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 0">
+              <kt-checkbox [optionValue]="'sport'" label="Sport" />
+              <kt-checkbox [optionValue]="'musique'" label="Musique" />
+              <kt-checkbox [optionValue]="'cinema'" label="Cinéma" />
+              <kt-checkbox [optionValue]="'voyage'" label="Voyage" />
+            </div>
+          </kt-checkbox-group>
+          <kt-text-area label="Bio" [formField]="f.bio" [rows]="3" hint="280 caractères maximum." />
+        </fieldset>
+
+        <fieldset class="showcase__group">
+          <legend>Contact &amp; préférences</legend>
+          <kt-radio-group
+            label="Moyen de contact préféré"
+            [formField]="f.contactMethod"
+            hint="Détermine les informations demandées ensuite."
+          >
+            <kt-radio [optionValue]="'email'" label="E-mail" />
+            <kt-radio [optionValue]="'phone'" label="Téléphone" />
+          </kt-radio-group>
+          <!-- Caché tant que le moyen de contact n'est pas « Téléphone ». `hidden()` (schema) exclut
+               déjà le champ de la validation ; le masquage visuel se fait avec @if. -->
+          @if (!f.phone().hidden()) {
+            <kt-text-field label="Téléphone" type="tel" [formField]="f.phone" hint="Format : +33 6 12 34 56 78" />
+          }
+
+          <kt-switch
+            label="Recevoir la newsletter"
+            [formField]="f.newsletter"
+            hint="Vous pourrez vous désabonner à tout moment."
+          />
+          <kt-checkbox
+            label="J'accepte les conditions générales"
+            [formField]="f.acceptTerms"
+            hint="Obligatoire pour créer le compte."
+          />
+        </fieldset>
+
+        <div class="showcase__actions">
+          <button ktButton type="button" mode="filled" [loading]="f().submitting()" (click)="onSubmit()">
+            Envoyer
+          </button>
+          <button ktButton type="button" mode="tonal" (click)="prefill()">Pré-remplir</button>
+          <button ktButton type="button" mode="text" (click)="onReset()">Réinitialiser</button>
+        </div>
+
+        @if (submitOk()) {
+          <p class="showcase__alert showcase__alert--ok" role="status">✓ Formulaire envoyé avec succès.</p>
+        }
+        @if (submitError(); as err) {
+          <p class="showcase__alert showcase__alert--err" role="alert">{{ err }}</p>
+        }
+      </div>
+
+      <!-- ============ INSPECTEUR D'ÉTAT LIVE ============ -->
+      <aside class="inspector" aria-label="État du formulaire">
+        <h3 class="inspector__title">État du formulaire</h3>
+
+        <ul class="inspector__badges">
+          <li [class.is-on]="f().valid()">valide {{ f().valid() ? '✓' : '✗' }}</li>
+          <li [class.is-on]="f().dirty()">modifié {{ f().dirty() ? '✓' : '✗' }}</li>
+          <li [class.is-on]="f().touched()">visité {{ f().touched() ? '✓' : '✗' }}</li>
+          <li [class.is-on]="f().submitting()">envoi {{ f().submitting() ? '✓' : '✗' }}</li>
+        </ul>
+
+        <h4 class="inspector__subtitle">Erreurs ({{ f().errorSummary().length }})</h4>
+        @if (f().errorSummary().length) {
+          <ul class="inspector__errors">
+            @for (error of f().errorSummary(); track $index) {
+              <li>{{ error.message || error.kind }}</li>
+            }
+          </ul>
+        } @else {
+          <p class="inspector__none">Aucune erreur.</p>
+        }
+
+        <h4 class="inspector__subtitle">Valeur du modèle (live)</h4>
+        <pre class="inspector__json">{{ f().value() | json }}</pre>
+      </aside>
+    </div>
+  </kt-doc-section>
+
+  <kt-doc-section title="Ce qui est automatique" subtitle="Déclaré une fois dans le schema, reflété partout.">
+    <kt-doc-props [rows]="caps" />
+  </kt-doc-section>
+
+  <kt-doc-section
+    title="Messages d'erreur par défaut"
+    subtitle="Chaque validateur Signal Forms peut porter son propre message ; quand il l'omet, la lib affiche un message par défaut résolu selon le type d'erreur (kind)."
+  >
+    <p class="page__note">
+      Les défauts sont embarqués (anglais), passent en français d'un seul appel avec
+      <code>provideKtDefaultFR()</code>, et se surchargent kind par kind via
+      <code>provideKtField(&#123; errorMessages &#125;)</code>. Dans ce formulaire, <strong>Nom</strong> et
+      <strong>Bio</strong> n'ont pas de message explicite : laissez-les invalides pour voir le défaut s'afficher.
+    </p>
+    <kt-doc-props [rows]="errorModes" />
+    <p class="page__note page__note--warn" role="note">
+      ⚠️ Accessibilité : un champ rouge sans message (<code>message: ''</code>) ne se justifie que si l'erreur est
+      <strong>surfacée ailleurs</strong> (récapitulatif, tooltip, message lié). Sinon, laissez le message par défaut
+      s'afficher.
+    </p>
+    <div class="page__codes">
+      <kt-doc-code language="ts" [code]="errorsSnippet" />
+    </div>
+  </kt-doc-section>
+
+  <kt-doc-section title="Le code" subtitle="Le modèle + le schema, puis la liaison par [formField].">
+    <div class="page__codes">
+      <kt-doc-code language="ts" [code]="tsSnippet" />
+      <kt-doc-code language="html" [code]="htmlSnippet" />
+    </div>
+  </kt-doc-section>
+</article>

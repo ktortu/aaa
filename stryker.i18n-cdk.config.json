@@ -1,0 +1,20 @@
+{
+  "$schema": "./node_modules/@stryker-mutator/core/schema/stryker-schema.json",
+  "_comment": "i18n FR (fr.ts, texte + pluriels) + générateur d'ids (id-generator). TS pur/service ; typescript-checker écarte les non-compilables ; hors CI, à la demande via npm run mutation:i18n-cdk.",
+  "packageManager": "npm",
+  "testRunner": "command",
+  "commandRunner": {
+    "command": "npm run test:mutation:i18n-cdk"
+  },
+  "mutate": ["projects/ktortu/aaa/i18n/fr.ts", "projects/ktortu/aaa/cdk/id-generator.ts"],
+  "checkers": ["typescript"],
+  "tsconfigFile": "projects/ktortu/aaa/tsconfig.mutation-checker.json",
+  "reporters": ["html", "clear-text", "progress", "json"],
+  "concurrency": 4,
+  "timeoutMS": 60000,
+  "thresholds": {
+    "high": 90,
+    "low": 80,
+    "break": 80
+  }
+}

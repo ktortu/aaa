@@ -1,0 +1,26 @@
+@layer kt-aaa.tokens, kt-aaa.base, kt-aaa.components;
+
+/* Feuille de styles AGRÉGÉE de @ktortu/aaa — socle + styles de base de tous les composants.
+   Import unique pour le consommateur :  @import '@ktortu/aaa/styles.css';
+   (ou, côté Angular, ajout dans la section "styles" de angular.json).
+
+   Préférez cet import si vous utilisez plusieurs composants. Pour n'embarquer QUE certains
+   composants, importez plutôt le socle + les bundles voulus (cf. README) :
+     @import '@ktortu/aaa/foundation.css';   // requis
+     @import '@ktortu/aaa/menu.css';          // + uniquement ce qui vous intéresse
+
+   ORDRE DE CASCADE garanti ici : socle d'abord, puis chaque bundle composant (qui inclut ses
+   propres tokens). Les THÈMES (theme-*.css) ne sont PAS inclus : optionnels, à importer APRÈS
+   (ex. @import '@ktortu/aaa/themes/theme-material.css';). Le Dialog s'appuie sur l'overlay CDK :
+   importez aussi '@angular/cdk/overlay-prebuilt.css'. */
+
+@import './foundation.css';
+@import './tabs.css';
+@import './forms.css';
+@import './button.css';
+@import './card.css';
+@import './tooltip.css';
+@import './dialog.css';
+@import './menu.css';
+@import './snackbar.css';
+@import './disclosure.css';

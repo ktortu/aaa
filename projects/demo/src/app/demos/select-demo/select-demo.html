@@ -1,0 +1,117 @@
+<article class="page">
+  <header class="page__head">
+    <p class="page__eyebrow">Composant</p>
+    <h1 class="page__title">Select</h1>
+    <p class="page__lead">
+      <code>&lt;kt-select&gt;</code> est un « select-only combobox » WAI-ARIA bâti sur <code>@angular/aria</code> :
+      choix unique dans une liste fermée, sans saisie libre. Présentation responsive via un seul Popover (top-layer) :
+      dropdown ancré sur desktop, bottom-sheet modale sur téléphone (focus roving, cibles ≥44px, scrim,
+      drag-to-dismiss). Filtrage opt-in avec annonce live du nombre de résultats, fermeture au <kbd>Échap</kbd> / clic
+      extérieur / <kbd>Tab</kbd> (APG). Composé avec <code>Field</code> et intégrable aux Signal Forms via
+      <code>FormValueControl</code>.
+    </p>
+  </header>
+
+  <kt-doc-section
+    title="Apparence — outline"
+    subtitle="Même axe que les champs ([appearance]='outline'). Le trigger n'étant pas un input, le label flotte via le hook data-filled (sélection présente) ; le placeholder propre du select est masqué en outline."
+  >
+    <kt-doc-example label="Outline — vide vs sélectionné">
+      <kt-select appearance="outline" label="Pays" [options]="countries" />
+      <kt-select appearance="outline" label="Pays" [options]="countries" [value]="'France'" />
+    </kt-doc-example>
+  </kt-doc-section>
+
+  <kt-doc-section title="Exemples" subtitle="Options simples ou objets, filtrage, états et templates personnalisés.">
+    <kt-doc-example label="Base (options simples)">
+      <kt-select label="Pays" [options]="countries" [(value)]="country" hint="Sélection unique." />
+    </kt-doc-example>
+
+    <kt-doc-example label="Options objets (optionLabel / optionValue / optionDisabled)">
+      <kt-select
+        label="Responsable"
+        [options]="users"
+        optionLabel="name"
+        optionValue="id"
+        optionDisabled="disabled"
+        [(value)]="userId"
+      />
+    </kt-doc-example>
+
+    <kt-doc-example label="Filtrable (liste longue)">
+      <kt-select label="Ville" [options]="cities" [filterable]="true" [(value)]="city" />
+    </kt-doc-example>
+
+    <kt-doc-example label="États">
+      <kt-select label="Désactivé" [options]="countries" [disabled]="true" />
+      <kt-select label="Lecture seule" [options]="countries" [value]="'France'" [readonly]="true" />
+      <kt-select label="Requis" [options]="countries" [required]="true" />
+      <kt-select label="Invalide" [options]="countries" [invalid]="true" [touched]="true" [errors]="demoErrors" />
+    </kt-doc-example>
+
+    <kt-doc-example label="Templates personnalisés (option & trigger)">
+      <kt-select label="Responsable" [options]="users" optionValue="id" [(value)]="userIdTpl">
+        <ng-template [ktSelectTrigger]="users" let-user>
+          @if (user) {
+            👤 {{ user.name }}
+          } @else {
+            Choisir un responsable…
+          }
+        </ng-template>
+        <ng-template [ktSelectOption]="users" let-user let-selected="selected">
+          {{ user.name }}
+          @if (selected) {
+            ✓
+          }
+        </ng-template>
+      </kt-select>
+    </kt-doc-example>
+  </kt-doc-section>
+
+  <kt-doc-section
+    title="Filtrage avancé"
+    subtitle="Filtre insensible aux accents, troncature des grandes listes et libellé très long."
+  >
+    <kt-doc-example label="Filtre insensible aux accents (Départements)">
+      <kt-select label="Département" [options]="departments" [filterable]="true" [(value)]="department" />
+    </kt-doc-example>
+
+    <kt-doc-example label="Grande liste tronquée (maxVisibleOptions = 10)">
+      <kt-select
+        label="Référence"
+        [options]="manyOptions"
+        [filterable]="true"
+        [maxVisibleOptions]="10"
+        [(value)]="manyValue"
+      />
+    </kt-doc-example>
+
+    <kt-doc-example label="Libellé très long (ellipsis + popup plafonné)">
+      <kt-select label="Libellé très long" [options]="longOptions" [(value)]="longValue" />
+    </kt-doc-example>
+  </kt-doc-section>
+
+  <kt-doc-section
+    title="Utilisation"
+    subtitle="Importer le composant, fournir [options] et lier la valeur à un signal."
+  >
+    <div class="page__codes">
+      <kt-doc-code language="ts" [code]="tsSnippet" />
+      <kt-doc-code language="html" [code]="htmlSnippet" />
+    </div>
+  </kt-doc-section>
+
+  <kt-doc-section
+    title="Propriétés"
+    subtitle="Inputs/outputs publics. Textes par défaut configurables via KT_SELECT_CONFIG. Inputs booléens : liaison de propriété (pas d'attribut nu)."
+  >
+    <kt-doc-props [rows]="props" />
+  </kt-doc-section>
+
+  <kt-doc-section
+    title="Tokens CSS"
+    subtitle="Contrat de personnalisation : surchargez ces variables sur :root ou un conteneur de spécificité ≥."
+  >
+    <kt-doc-tokens [groups]="tokens" />
+  </kt-doc-section>
+</article>

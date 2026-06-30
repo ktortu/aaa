@@ -1,0 +1,114 @@
+<article class="page">
+  <header class="page__head">
+    <p class="page__eyebrow">Transverse</p>
+    <h1 class="page__title">Apparence outline</h1>
+    <p class="page__lead">
+      Pour vous faciliter la vie si vous migrez depuis une interface Angular Material, tous les champs
+      (<code>kt-text-field</code>, <code>kt-select</code>, champs temporels...) supportent l'apparence
+      <code>outline</code>. C'est idéal pour faire une transition en douceur sans bousculer vos habitudes visuelles. Le
+      style par défaut reste <code>fill</code>, l'apparence <code>outline</code> est donc optionnelle.
+    </p>
+  </header>
+
+  <kt-doc-section title="Activation" subtitle="Par champ via [appearance], ou globalement via provideKtField.">
+    <kt-doc-example label="Bascule fill ↔ outline (appearance lié à un signal)" style="--example-align-items: center">
+      <kt-switch label="Apparence outline" [(value)]="outlineMode" style="width: 100%" />
+      <kt-text-field [appearance]="appr()" label="Nom complet" [(value)]="name" />
+      <kt-select [appearance]="appr()" label="Pays" [options]="countries" [value]="'France'" />
+    </kt-doc-example>
+
+    <div class="page__codes">
+      <kt-doc-code language="html" [code]="perFieldSnippet" />
+      <kt-doc-code language="ts" [code]="globalSnippet" />
+    </div>
+  </kt-doc-section>
+
+  <kt-doc-section
+    title="Label flottant — floatLabel"
+    subtitle="auto (défaut) : flotte au focus / quand rempli. always : toujours en haut, même vide — et le placeholder s'affiche alors."
+  >
+    <kt-doc-example label="Bascule auto ↔ always (placeholder visible en always)">
+      <kt-switch label="Label toujours flotté (always)" [(value)]="alwaysMode" style="width: 100%" />
+      <kt-text-field appearance="outline" [floatLabel]="floatMode()" label="E-mail" placeholder="vous@exemple.fr" />
+      <kt-select appearance="outline" [floatLabel]="floatMode()" label="Pays" [options]="countries" />
+    </kt-doc-example>
+
+    <kt-doc-code language="html" [code]="floatSnippet" />
+  </kt-doc-section>
+
+  <kt-doc-section title="Tous les champs" subtitle="Le même axe s'applique uniformément à chaque famille de champ.">
+    <kt-doc-example label="Outline — texte / nombre / zone de texte">
+      <kt-text-field appearance="outline" label="E-mail" type="email" [(value)]="empty" />
+      <kt-number-field appearance="outline" label="Quantité" [min]="0" [step]="1" />
+      <kt-text-area appearance="outline" label="Bio" [rows]="3" [(value)]="bio" />
+    </kt-doc-example>
+
+    <kt-doc-example label="Outline — date & select">
+      <kt-date-field appearance="outline" label="Date de naissance" />
+      <kt-select appearance="outline" label="Pays" [options]="countries" />
+      <kt-select appearance="outline" label="Pays (sélectionné)" [options]="countries" [value]="'Suisse'" />
+    </kt-doc-example>
+  </kt-doc-section>
+
+  <kt-doc-section title="États" subtitle="Le label flotte au focus, quand le champ est rempli, ou en erreur.">
+    <kt-doc-example label="Vide / rempli / erreur / désactivé">
+      <kt-text-field appearance="outline" label="Vide" />
+      <kt-text-field appearance="outline" label="Rempli" [(value)]="name" />
+      <kt-text-field
+        appearance="outline"
+        label="En erreur"
+        [value]="'x'"
+        [invalid]="true"
+        [touched]="true"
+        [errors]="demoErrors"
+      />
+      <kt-text-field appearance="outline" label="Désactivé" [value]="'Lecture'" [disabled]="true" />
+    </kt-doc-example>
+  </kt-doc-section>
+
+  <kt-doc-section title="Comment ça marche" subtitle="100 % CSS, sans JavaScript de positionnement — SSR-safe.">
+    <div class="outline-notes">
+      <p>Le label flotte (se loge dans la bordure) dès qu'une de ces conditions est vraie, en CSS pur :</p>
+      <ul>
+        <li><strong>Focus</strong> — <code>:focus-within</code> sur le champ.</li>
+        <li>
+          <strong>Input rempli</strong> — <code>:has(input:not(:placeholder-shown))</code>. En outline, les champs à
+          input posent une <em>sentinelle de placeholder</em> (une espace) pour rendre l'état « rempli » détectable même
+          sans placeholder visible.
+        </li>
+        <li>
+          <strong>Contrôle non-input rempli</strong> — le <code>kt-select</code> (dont le trigger est un
+          <code>&lt;button&gt;</code>) expose <code>data-filled</code> quand une option est sélectionnée ; son
+          placeholder propre est masqué en outline (le label tient lieu de placeholder).
+        </li>
+      </ul>
+      <p>
+        Les champs <strong>date/heure</strong> n'ont pas de placeholder CSS (ils affichent leur format natif) : leur
+        label reste donc <strong>toujours flotté</strong> — cohérent, un champ date n'a pas d'état « vide visuel ».
+        L'animation respecte <code>prefers-reduced-motion</code>, le rendu suit le sens <code>dir</code> (RTL) et le
+        contraste forcé (Windows High Contrast).
+      </p>
+      <p>
+        <strong>À noter</strong> : avec une <strong>icône/préfixe en tête</strong>, le label au repos (position «
+        placeholder ») se cale sur le bord du champ et peut chevaucher l'icône tant qu'il n'a pas flotté. Préférez alors
+        <code>floatLabel="always"</code> (label toujours en haut) ou une icône en suffixe.
+      </p>
+    </div>
+  </kt-doc-section>
+
+  <kt-doc-section title="Tokens CSS" subtitle="Deux tokens dédiés, en plus du socle --field-* réutilisé.">
+    <kt-doc-tokens [groups]="tokens" />
+    <kt-doc-code language="css" [code]="tokensSnippet" />
+  </kt-doc-section>
+
+  <kt-doc-section
+    title="Migration depuis Angular Material"
+    subtitle="Forme (appearance) et couleurs (thème) sont deux axes indépendants."
+  >
+    <kt-doc-code language="ts" [code]="migrationSnippet" />
+  </kt-doc-section>
+
+  <kt-doc-section title="Propriété — appearance" subtitle="Input commun à tous les champs.">
+    <kt-doc-props [rows]="props" />
+  </kt-doc-section>
+</article>

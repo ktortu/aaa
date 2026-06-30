@@ -1,0 +1,200 @@
+@layer kt-aaa.components {
+  /* Styles de la directive Card ([ktCard] + marqueurs structurels).
+   Global : enregistré comme button.css / dialog.css (la directive se pose sur n'importe quel
+   élément, hors de toute vue de composant). Tokens (--card-*) dans card-tokens.css (chargé avant).
+
+   La règle de base ne consomme que 3 variables résolues (--card-surface / --card-line /
+   --card-elevation) ; chaque bloc [data-variant] les pose — même technique que ktButton. */
+
+  [ktCard] {
+    /* Colonne flex : titre / média / contenu / actions s'empilent ; une carte « texte nu » sans
+     marqueur fonctionne aussi (chaque enfant devient un item). gap = rythme vertical. */
+    display: flex;
+    flex-direction: column;
+    gap: var(--card-gap, 0.75rem);
+    box-sizing: border-box;
+    /* Ancre le lien étiré ([ktCardLink]::after) et tout enfant positionné. */
+    position: relative;
+
+    padding: var(--card-padding, 1rem);
+    color: var(--card-fg);
+
+    /* Défauts résolus = elevated. Surchargés par les blocs [data-variant]. */
+    --card-surface: var(--card-bg);
+    --card-line: transparent;
+    --card-elevation: var(--card-shadow);
+
+    /* Voile d'état via pseudo-élément ::before pour préserver background-image. */
+    background-color: var(--card-surface);
+    background-image: var(--card-fill-image, none);
+
+    border: var(--card-border-width, 1px) solid var(--card-line);
+    border-radius: var(--card-radius, 8px);
+    box-shadow: var(--card-elevation);
+    backdrop-filter: var(--card-backdrop-filter, none);
+
+    /* Mouvement : bascules => inerte par défaut (cf. card-tokens.css). */
+    transition: var(--card-transition, none);
+    transform: var(--card-transform, none);
+  }
+
+  /* ============ VARIANTES (apparence) ============ */
+  [ktCard][data-variant='elevated'] {
+    --card-surface: var(--card-bg);
+    --card-line: transparent;
+    --card-elevation: var(--card-shadow);
+  }
+  [ktCard][data-variant='outlined'] {
+    --card-surface: var(--card-bg);
+    --card-line: var(--card-border-color);
+    --card-elevation: none;
+  }
+  [ktCard][data-variant='filled'] {
+    --card-surface: var(--card-filled-bg);
+    --card-line: transparent;
+    --card-elevation: none;
+  }
+
+  /* ============ MÉDIA PLEINE LARGEUR ([ktCardMedia]) ============
+   Full-bleed : on annule le padding de la carte. Quand un média est présent, la carte clippe au
+   rayon (`overflow: hidden`) pour arrondir les coins du média — uniquement dans ce cas, afin de
+   ne pas rogner inutilement ombres/contenus des cartes sans média. */
+  [ktCard]:has([ktCardMedia]) {
+    overflow: hidden;
+  }
+  [ktCardMedia] {
+    display: block;
+    margin: calc(-1 * var(--card-padding)) calc(-1 * var(--card-padding)) 0;
+    overflow: hidden;
+  }
+  /* Un média qui n'est pas le premier enfant (ex. après le contenu) ne déborde pas vers le haut. */
+  [ktCardMedia]:not(:first-child) {
+    margin-block-start: 0;
+  }
+  [ktCardMedia] :where(img, video, picture, svg, canvas) {
+    display: block;
+    inline-size: 100%;
+    block-size: auto;
+    object-fit: cover;
+  }
+
+  /* ============ EN-TÊTE ([ktCardHeader]) ============ */
+  [ktCardHeader] {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+  }
+  /* Le titre dans un header prend l'espace libre (repousse une éventuelle action à droite). */
+  [ktCardHeader] :where(h1, h2, h3, h4, h5, h6) {
+    flex: 1 1 auto;
+    min-inline-size: 0;
+    margin: 0;
+  }
+
+  /* ============ CONTENU ([ktCardContent]) ============ */
+  [ktCardContent] {
+    display: block;
+  }
+
+  /* ============ ACTIONS ([ktCardActions]) ============
+   Épinglées en pied : margin-block-start auto les pousse en bas quand la carte a une hauteur
+   imposée (grille de cartes à hauteur égale). */
+  [ktCardActions] {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.5rem;
+    margin-block-start: auto;
+  }
+
+  /* ============ INTERACTIF (affordance — PAS un rôle) ============ */
+  [ktCard][data-interactive] {
+    cursor: pointer;
+  }
+
+  /* Voile d'état indépendant via pseudo-élément pour préserver background-image */
+  [ktCard][data-interactive]::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    background-color: var(--card-overlay, transparent);
+    pointer-events: none;
+    transition: background-color var(--card-transition, 0.15s ease);
+    z-index: 0;
+  }
+
+  /* Voile + élévation au survol/maintien (hors disabled). */
+  [ktCard][data-interactive]:hover:not([data-disabled]) {
+    --card-overlay: color-mix(in oklab, var(--card-fg) calc(var(--card-state-hover-opacity, 0.04) * 100%), transparent);
+    box-shadow: var(--card-shadow-hover, var(--card-elevation));
+    transform: var(--card-transform-hover, var(--card-transform, none));
+  }
+  [ktCard][data-interactive]:active:not([data-disabled]) {
+    --card-overlay: color-mix(
+      in oklab,
+      var(--card-fg) calc(var(--card-state-pressed-opacity, 0.08) * 100%),
+      transparent
+    );
+  }
+
+  /* ============ LIEN ÉTIRÉ ([ktCardLink]) ============
+   Le pseudo-élément couvre toute la carte : la surface entière devient cliquable sans imbriquer
+   de contrôles. radius hérité pour une zone de clic épousant les coins. */
+  [ktCardLink]::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+  }
+  /* Le lien étiré ne porte pas son propre anneau : il est relayé sur la carte (cf. plus bas). */
+  [ktCardLink]:focus-visible {
+    outline: none;
+  }
+  /* Actions/contrôles SECONDAIRES : repassent au-dessus du lien étiré pour rester cliquables.
+   Scopé aux cartes qui ONT un lien étiré (`:has`) — une carte sans lien ne touche pas au
+   positionnement de ses enfants. :where(...) = spécificité nulle (surcharge sans lutte). */
+  [ktCard]:has([ktCardLink]) :where(a, button, input, select, textarea, label, [tabindex]):not([ktCardLink]) {
+    position: relative;
+    z-index: 1;
+  }
+
+  /* Anneau de focus relayé sur TOUTE la carte quand le lien primaire est focalisé au clavier
+   (cas [ktCardLink] descendant OU [ktCard] lui-même posé sur un <a>/<button>). */
+  [ktCard]:has([ktCardLink]:focus-visible),
+  [ktCard][ktCardLink]:focus-visible {
+    outline: var(--card-focus-ring-width, 2px) solid var(--card-focus-ring-color, #0842a0);
+    outline-offset: var(--card-focus-ring-offset, 2px);
+  }
+
+  /* ============ ÉTAT INERTE ([data-disabled]) ============ */
+  [ktCard][data-disabled] {
+    cursor: not-allowed;
+    /* Désature la surface entière (contenu arbitraire : opacity plutôt qu'un color-mix par token). */
+    opacity: 0.55;
+    box-shadow: none;
+    transform: none;
+  }
+  /* Neutralise le lien étiré d'une carte désactivée (le consommateur désactive aussi le contrôle). */
+  [ktCard][data-disabled] [ktCardLink]::after {
+    pointer-events: none;
+  }
+
+  /* ============ Mouvement réduit (WCAG 2.3.3) ============ */
+  @media (prefers-reduced-motion: reduce) {
+    [ktCard][data-interactive] {
+      transition: none;
+    }
+    [ktCard][data-interactive]:hover:not([data-disabled]) {
+      transform: none;
+    }
+  }
+
+  /* ============ Contraste élevé Windows / forced-colors ============ */
+  @media (forced-colors: active) {
+    [ktCard] {
+      /* L'ombre et le voile disparaissent : on garantit une frontière visible. */
+      border: 1px solid CanvasText;
+    }
+  }
+}

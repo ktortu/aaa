@@ -1,0 +1,92 @@
+@layer kt-aaa.components {
+  /* Pilule. Tokens centralisés dans forms/chips/tokens.css */
+  :host {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--chip-gap);
+    padding: var(--chip-padding-y) var(--chip-padding-x);
+    border-radius: var(--chip-radius);
+    background: var(--chip-bg);
+    border: 1px solid var(--chip-border);
+    box-shadow: var(--chip-shadow, none);
+    font-size: var(--chip-font-size);
+    color: var(--chip-color);
+  }
+
+  .kt-chip__label {
+    max-inline-size: 12rem;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  /* 24px visibles (WCAG 2.5.8 AA) ; cible réelle 44px via ::after transparent (AAA),
+   même technique que les boutons icon-only — le chip reste fin visuellement. */
+  .kt-chip__remove {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    inline-size: 24px;
+    block-size: 24px;
+    padding: 0;
+    border: 0;
+    border-radius: 50%;
+    background: transparent;
+    color: var(--chip-remove-color);
+    cursor: pointer;
+    font-size: 0.75rem;
+    /* Token de BASCULE (non déclaré => hover actuel). Contrat : forms/chips/tokens.css. */
+    transition: var(--chip-remove-transition, background-color 0.15s ease);
+  }
+
+  .kt-chip__remove::after {
+    content: '';
+    position: absolute;
+    inset: -10px;
+  }
+
+  .kt-chip__remove:hover {
+    background-color: var(--chip-remove-bg-hover);
+    color: var(--chip-remove-color-hover);
+  }
+
+  :host(:hover) {
+    box-shadow: var(--chip-shadow-hover, var(--chip-shadow, none));
+  }
+
+  .kt-chip__remove:focus-visible {
+    outline: 2px solid var(--chip-focus-ring);
+    outline-offset: 1px;
+  }
+
+  .kt-chip__remove:disabled {
+    cursor: not-allowed;
+    opacity: 0.5;
+  }
+
+  .kt-chip__close-icon {
+    font-family: 'Material Symbols Outlined';
+    font-feature-settings: 'liga';
+    font-size: 1rem;
+    line-height: 1;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* Tactile : à peine plus généreux (32px), la cible 44px vient du ::after invisible. */
+  @media (pointer: coarse) {
+    :host {
+      min-block-size: 32px;
+    }
+
+    .kt-chip__remove {
+      inline-size: 28px;
+      block-size: 28px;
+      font-size: 0.875rem;
+    }
+
+    .kt-chip__remove::after {
+      inset: -8px;
+    }
+  }
+}

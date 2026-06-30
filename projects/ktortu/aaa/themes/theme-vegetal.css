@@ -1,0 +1,78 @@
+/* Thème « Végétal » (light) — conçu pour une app agricole (gestion de plantations,
+   biosolutions) : utilisable en extérieur (light, contrastes solides en plein soleil),
+   palette naturelle — crème lin, vert feuille, terracotta (alerte organique, pas un rouge
+   d'erreur criard), brun écorce — formes organiques (champs 12px, boutons pilule « graine »),
+   ombres douces vert-de-gris. Uniquement des redéclarations de tokens. */
+[data-theme='vegetal'] {
+  /* ============ Socle ============ */
+  --kt-primary: #36743f; /* vert feuille — blanc 5.6:1, texte sur crème 5.1:1 */
+  --kt-danger: #b04a2e; /* terracotta — blanc 5.4:1 */
+  --kt-neutral: #6b5d4a; /* brun écorce — blanc 6.4:1 */
+  --kt-surface: #f5f3e8; /* crème lin */
+  --kt-on-surface: #2a3326; /* vert mousse très foncé, ~12:1 */
+  --kt-muted: #5b6a51; /* vert-de-gris, 5.2:1 */
+  --kt-outline: #7d8a69; /* tige sèche (3.2:1 non-texte) */
+  --kt-outline-strong: #5b6a51;
+  --kt-focus-ring-color: #36743f;
+  --kt-font: 'Quicksand', ui-rounded, 'Trebuchet MS', sans-serif; /* arrondie, organique */
+
+  /* Gouttière organique : thumb tige sèche (outline) sur une rainure crème un ton sous le lin. */
+  --kt-scrollbar-color: #7d8a69 #e7e3d2;
+
+  /* ============ Géométrie organique ============ */
+  --kt-control-radius: 12px; /* champs galets */
+  --btn-radius: 999px; /* boutons graine (pilule) + icon-only cercle */
+  --btn-corner-shape: squircle; /* superellipse : la pilule devient une « gousse » charnue */
+  --chip-radius: 14px 4px 14px 4px; /* chips en FEUILLE (haut-gauche/bas-droite ronds) */
+  --kt-sheet-radius: 20px;
+
+  /* ============ Champs ============ */
+  --field-bg: #fdfcf5; /* papier clair, en relief sur le lin */
+  /* Forme FEUILLE : radius par coin (haut-gauche/bas-droite ronds, les deux autres pincés).
+     Possible depuis toujours — les tokens radius acceptent 4 valeurs (audit lot 6). */
+  --field-radius: 16px 4px 16px 4px;
+  --field-shadow-focus: 0 2px 10px rgb(54 116 63 / 22%); /* halo de sève discret */
+  --field-transition: border-color 150ms ease, box-shadow 150ms ease; /* sève qui monte en douceur */
+  --field-caret-color: #36743f;
+  --kt-selection-bg: #36743f;
+  --kt-selection-fg: #ffffff;
+
+  /* ============ Boutons ============ */
+  --btn-tonal-weight: 18%; /* containers « jeune pousse » un peu présents */
+  --btn-on-primary-container: #1f4a28;
+  --btn-on-danger-container: #6e2a18;
+  --btn-on-neutral-container: #3a3328;
+  --btn-shadow: 0 1px 3px rgb(42 51 38 / 14%); /* légère assise, comme posé sur la terre */
+  --btn-shadow-hover: 0 4px 14px rgb(54 116 63 / 22%); /* halo de sève au survol */
+  --btn-transition: transform 150ms ease, box-shadow 150ms ease;
+  --btn-transform-hover: translateY(-2px) scale(1.01); /* la pousse lève ET gonfle */
+  --btn-transform-active: scale(0.98);
+
+  /* ============ Select / tooltip ============ */
+  --select-popup-bg: #fdfcf5;
+  --select-popup-shadow: 0 8px 24px rgb(42 51 38 / 18%);
+  --kt-sheet-scrim: rgb(42 51 38 / 40%);
+  --kt-sheet-shadow: 0 -8px 24px rgb(42 51 38 / 18%); /* assise douce vert-de-gris */
+  --tooltip-bg: #33402c; /* sous-bois */
+  --tooltip-fg: #eef2e4;
+
+  /* ============ Dialog (organique : feuille à l'échelle du dialog, ombre douce héritée) ============ */
+  --dialog-radius: 24px 6px 24px 6px;
+  --dialog-border-color: #cfd6bf;
+
+  /* ============ Card : FEUILLE organique (coins asymétriques, assise teintée sève, se déploie) ============ */
+  --card-radius: 20px 6px 20px 6px;
+  --card-bg: #fdfcf5;
+  --card-filled-bg: #eef0e2;
+  --card-shadow: 0 4px 16px rgb(54 116 63 / 14%), 0 1px 3px rgb(42 51 38 / 10%); /* assise + sève */
+  --card-shadow-hover: 0 10px 26px rgb(54 116 63 / 20%), 0 2px 6px rgb(42 51 38 / 12%);
+  --card-transition: transform 150ms ease, box-shadow 150ms ease;
+  --card-transform-hover: translateY(-2px) scale(1.01); /* la feuille se déploie */
+}
+
+/* Profondeur de feuille sur les boutons FILLED : voile SOMBRE subtil en bas-droite (assombrit
+   => contraste du label blanc préservé), empilé sous le voile d'état. Filled uniquement (sur
+   transparent il ferait une bavure). Disabled : la lib force background-image: none. */
+[data-theme='vegetal'] [ktButton][data-mode='filled'] {
+  --btn-fill-image: linear-gradient(155deg, transparent 50%, rgb(18 38 22 / 16%));
+}

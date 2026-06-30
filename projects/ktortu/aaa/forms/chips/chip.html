@@ -1,0 +1,13 @@
+<span class="kt-chip__label"><ng-content /></span>
+@if (removable()) {
+  <button
+    #removeBtn
+    type="button"
+    class="kt-chip__remove"
+    [disabled]="disabled()"
+    [attr.aria-label]="removeLabel()"
+    (click)="remove.emit()"
+  >
+    <span class="kt-chip__close-icon" aria-hidden="true">close</span>
+  </button>
+}

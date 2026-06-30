@@ -1,0 +1,14 @@
+@layer kt-aaa.tokens, kt-aaa.base, kt-aaa.components;
+
+/* Formulaires : styles de base partagés des champs, chips et switch (tokens + apparence).
+   Nécessite le socle (@ktortu/aaa/foundation.css).
+     @import '@ktortu/aaa/forms.css'; */
+@import '../forms/styles/tokens.css';
+@import '../forms/chips/tokens.css';
+@import '../forms/styles/field-box.css';
+@import '../forms/styles/field-pending.css';
+@import '../forms/switch/switch.css';
+@import '../forms/checkbox/checkbox.css';
+@import '../forms/checkbox/checkbox-group.css';
+@import '../forms/radio/radio.css';
+@import '../forms/radio/radio-group.css';

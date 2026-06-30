@@ -1,0 +1,69 @@
+<article class="page">
+  <header class="page__head">
+    <p class="page__eyebrow">Directive</p>
+    <h1 class="page__title">Tooltip</h1>
+    <p class="page__lead">
+      La directive <code>[ktTooltip]</code> pose une infobulle accessible sur n'importe quel élément survolable ou
+      focusable. Elle apparaît au survol <em>et</em> au focus, expose un <code>role="tooltip"</code> et câble
+      <code>aria-describedby</code> sur la cible uniquement lorsqu'elle est affichée. Elle se ferme par
+      <code>Échap</code> et reste « survolable » (WCAG 1.4.13) grâce au <code>hideDelay</code>. Le contenu est un texte
+      simple ou un <code>TemplateRef</code> non interactif.
+    </p>
+  </header>
+
+  <kt-doc-section title="Exemples" subtitle="Survolez ou tabulez sur un déclencheur pour révéler l'infobulle.">
+    <kt-doc-example label="Positions">
+      <button ktButton mode="tonal" ktTooltip="Infobulle au-dessus" tooltipPosition="top">Top</button>
+      <button ktButton mode="tonal" ktTooltip="Infobulle en dessous" tooltipPosition="bottom">Bottom</button>
+      <button ktButton mode="tonal" ktTooltip="Infobulle à gauche" tooltipPosition="left">Left</button>
+      <button ktButton mode="tonal" ktTooltip="Infobulle à droite" tooltipPosition="right">Right</button>
+    </kt-doc-example>
+
+    <kt-doc-example label="Contenu riche">
+      <button ktButton [ktTooltip]="rules">Règles du mot de passe</button>
+      <ng-template #rules>
+        <strong>Règles :</strong>
+        <ul>
+          <li>8 caractères minimum</li>
+          <li>Une majuscule</li>
+          <li>Un chiffre</li>
+        </ul>
+      </ng-template>
+    </kt-doc-example>
+
+    <kt-doc-example label="Délais">
+      <button ktButton mode="outlined" ktTooltip="Apparition immédiate" [showDelay]="0">Sans délai</button>
+      <button ktButton mode="outlined" ktTooltip="Apparition différée" [showDelay]="600">Délai long</button>
+    </kt-doc-example>
+
+    <kt-doc-example label="Désactivé">
+      <button ktButton mode="text" ktTooltip="Vous ne verrez pas ceci" [tooltipDisabled]="true">
+        Tooltip désactivé
+      </button>
+    </kt-doc-example>
+  </kt-doc-section>
+
+  <kt-doc-section
+    title="Utilisation"
+    subtitle="Importer la directive, puis l'appliquer sur un élément survolable/focusable."
+  >
+    <div class="page__codes">
+      <kt-doc-code language="ts" [code]="tsSnippet" />
+      <kt-doc-code language="html" [code]="htmlSnippet" />
+    </div>
+  </kt-doc-section>
+
+  <kt-doc-section
+    title="Propriétés"
+    subtitle="Inputs publics de la directive. Délais et position configurables globalement via KT_TOOLTIP_CONFIG."
+  >
+    <kt-doc-props [rows]="props" />
+  </kt-doc-section>
+
+  <kt-doc-section
+    title="Tokens CSS"
+    subtitle="Contrat de personnalisation : surchargez ces variables sur :root ou un conteneur de spécificité ≥."
+  >
+    <kt-doc-tokens [groups]="tokens" />
+  </kt-doc-section>
+</article>

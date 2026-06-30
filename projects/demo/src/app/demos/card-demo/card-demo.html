@@ -1,0 +1,118 @@
+<article class="page">
+  <header class="page__head">
+    <p class="page__eyebrow">Directives</p>
+    <h1 class="page__title">Card</h1>
+    <p class="page__lead">
+      <code>[ktCard]</code> est une <strong>surface</strong> de contenu : une directive posée sur l'élément
+      <em>sémantique</em> choisi par le consommateur (<code>&lt;article&gt;</code>, <code>&lt;section&gt;</code>,
+      <code>&lt;li&gt;</code>…) — la lib n'impose jamais de wrapper ni de rôle. Trois axes en <code>data-*</code> :
+      apparence (<code>variant</code>), affordance cliquable (<code>interactive</code>) et état inerte
+      (<code>disabled</code>). L'interaction passe par un <strong>lien étiré</strong> (<code>[ktCardLink]</code>) :
+      toute la surface devient cliquable sans imbriquer de contrôles (anti-pattern WCAG 4.1.2), le focus clavier est
+      relayé sur la carte, et une carte interactive sans cible déclenche un avertissement en dev.
+    </p>
+  </header>
+
+  <kt-doc-section
+    title="Exemples"
+    subtitle="Variantes d'apparence, anatomie des marqueurs, carte interactive et état inerte."
+  >
+    <kt-doc-example label="Variantes">
+      <div class="card-demo__grid">
+        <article ktCard variant="elevated">
+          <header ktCardHeader><h3>Elevated</h3></header>
+          <div ktCardContent>Surface posée sur une ombre. Variante par défaut.</div>
+        </article>
+        <article ktCard variant="outlined">
+          <header ktCardHeader><h3>Outlined</h3></header>
+          <div ktCardContent>Surface plate cernée d'une bordure.</div>
+        </article>
+        <article ktCard variant="filled">
+          <header ktCardHeader><h3>Filled</h3></header>
+          <div ktCardContent>Surface légèrement teintée, sans ombre ni bordure.</div>
+        </article>
+      </div>
+    </kt-doc-example>
+
+    <kt-doc-example label="Anatomie (média, en-tête, contenu, actions)">
+      <div class="card-demo__grid">
+        <article ktCard variant="outlined" class="card-demo__card">
+          <div ktCardMedia><div class="card-demo__media" aria-hidden="true"></div></div>
+          <header ktCardHeader><h3>Sortie en forêt</h3></header>
+          <div ktCardContent>
+            Un média full-bleed en tête, puis le titre, le corps et une barre d'actions épinglée en pied.
+          </div>
+          <footer ktCardActions>
+            <button ktButton mode="text">Partager</button>
+            <button ktButton mode="tonal">Voir</button>
+          </footer>
+        </article>
+      </div>
+    </kt-doc-example>
+
+    <kt-doc-example label="Interactive (lien étiré)">
+      <div class="card-demo__grid">
+        <article ktCard variant="elevated" interactive>
+          <div ktCardContent>
+            <h3 id="card-demo-t1">Carte cliquable</h3>
+            <p class="card-demo__muted">Survolez : voile + élévation. La surface entière mène au lien primaire.</p>
+            <a ktCardLink routerLink="/card" aria-labelledby="card-demo-t1">Ouvrir</a>
+          </div>
+        </article>
+        <article ktCard variant="outlined" interactive>
+          <div ktCardContent>
+            <h3 id="card-demo-t2">Action secondaire au-dessus</h3>
+            <p class="card-demo__muted">Le bouton repasse devant le lien étiré et reste cliquable.</p>
+            <a ktCardLink routerLink="/card" aria-labelledby="card-demo-t2">Détail</a>
+          </div>
+          <footer ktCardActions>
+            <button ktButton mode="text">Ignorer</button>
+          </footer>
+        </article>
+      </div>
+    </kt-doc-example>
+
+    <kt-doc-example label="État inerte (disabled)">
+      <div class="card-demo__grid">
+        <article ktCard variant="elevated" interactive [disabled]="true">
+          <div ktCardContent>
+            <h3 id="card-demo-t3">Carte désactivée</h3>
+            <p class="card-demo__muted">Surface désaturée ; le lien sort de la tabulation et passe aria-disabled.</p>
+            <a ktCardLink routerLink="/card" aria-labelledby="card-demo-t3">Indisponible</a>
+          </div>
+        </article>
+      </div>
+    </kt-doc-example>
+  </kt-doc-section>
+
+  <kt-doc-section
+    title="Utilisation"
+    subtitle="Importer la famille via KtCardImports, puis composer la carte avec les marqueurs."
+  >
+    <div class="page__codes">
+      <kt-doc-code language="ts" [code]="tsSnippet" />
+      <kt-doc-code language="html" [code]="htmlSnippet" />
+    </div>
+  </kt-doc-section>
+
+  <kt-doc-section
+    title="Propriétés"
+    subtitle="Inputs publics de la directive [ktCard]. Le défaut de variant est configurable via KT_CARD_CONFIG."
+  >
+    <kt-doc-props [rows]="props" />
+  </kt-doc-section>
+
+  <kt-doc-section
+    title="Directives structurelles"
+    subtitle="Marqueurs de mise en forme (sans logique sauf [ktCardLink]). Importables en bloc via KtCardImports."
+  >
+    <kt-doc-props [rows]="directiveProps" />
+  </kt-doc-section>
+
+  <kt-doc-section
+    title="Tokens CSS"
+    subtitle="Contrat de personnalisation : surchargez ces variables sur :root ou un conteneur de spécificité ≥."
+  >
+    <kt-doc-tokens [groups]="tokens" />
+  </kt-doc-section>
+</article>

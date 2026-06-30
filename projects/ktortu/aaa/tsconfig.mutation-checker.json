@@ -1,0 +1,8 @@
+/* tsconfig dédié au typescript-checker de Stryker (mutation testing).
+   Il doit inclure DIRECTEMENT les sources mutées (sinon « no watcher is registered for it »),
+   tout en héritant des `paths` @ktortu/aaa du tsconfig racine (via tsconfig.spec.json). */
+{
+  "extends": "./tsconfig.spec.json",
+  "include": ["**/*.ts"],
+  "exclude": ["**/*.spec.ts", "test-setup.ts"]
+}

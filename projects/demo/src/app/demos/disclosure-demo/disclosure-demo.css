@@ -1,0 +1,50 @@
+:host {
+  display: block;
+}
+
+.disclosure-demo__callout {
+  margin-block-start: 1.25rem;
+  padding: 1rem 1.25rem;
+  border-inline-start: 3px solid var(--kt-primary, #0842a0);
+  border-radius: 8px;
+  background: var(--kt-surface-variant, color-mix(in oklab, var(--kt-on-surface, #1f1f1f) 5%, var(--kt-surface, #fff)));
+}
+
+.disclosure-demo__callout-title {
+  margin: 0.5rem 0 0.25rem;
+  font-weight: 600;
+}
+
+.disclosure-demo__callout-title:first-child {
+  margin-block-start: 0;
+}
+
+.disclosure-demo__callout ul {
+  margin: 0;
+  padding-inline-start: 1.25rem;
+}
+
+.disclosure-demo__block {
+  inline-size: 100%;
+  max-inline-size: 32rem;
+  border-radius: 8px;
+  background: var(--kt-surface, #fff);
+}
+
+.disclosure-demo__body {
+  margin: 0.75rem 0 0;
+  color: var(--kt-on-surface, #1f1f1f);
+}
+
+.disclosure-demo__options {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  margin-block-start: 0.75rem;
+}
+
+.disclosure-demo__muted {
+  margin-block-start: 0.5rem;
+  color: color-mix(in oklab, var(--kt-on-surface, #1f1f1f) 70%, transparent);
+  font-size: 0.9rem;
+}

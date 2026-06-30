@@ -1,0 +1,98 @@
+<article class="page">
+  <header class="page__head">
+    <p class="page__eyebrow">Directives</p>
+    <h1 class="page__title">Disclosure</h1>
+    <p class="page__lead">
+      <code>[ktDisclosure]</code> replie/déplie un <strong>bloc d'interface</strong> (volet d'options, module de
+      dashboard, section d'une fiche produit). Trois marqueurs : l'hôte qui porte l'état, un déclencheur sur un
+      <strong>vrai <code>&lt;button&gt;</code></strong> (<code>[ktDisclosureToggle]</code>) et le panneau
+      (<code>[ktDisclosureContent]</code>) animé en <code>grid 0fr ↔ 1fr</code> et passé <code>inert</code> à la
+      fermeture. L'état est exposé (<code>exportAs</code>) pour piloter le libellé côté template.
+    </p>
+
+    <aside class="disclosure-demo__callout" role="note">
+      <p class="disclosure-demo__callout-title">Utiliser <code>ktDisclosure</code> quand…</p>
+      <ul>
+        <li>vous masquez un <strong>bloc d'UI</strong> (options, filtres, module), souvent interactif&nbsp;;</li>
+        <li>vous voulez une animation soignée, un déclencheur librement placé et un état lié à l'app.</li>
+      </ul>
+      <p class="disclosure-demo__callout-title">Préférer <code>&lt;details&gt;</code> natif quand…</p>
+      <ul>
+        <li>
+          c'est une <strong>section de contenu</strong> de page (façon Wikipédia, FAQ longue)&nbsp;: sémantique native,
+          recherche dans la page (Ctrl+F), SEO, zéro JS.
+        </li>
+      </ul>
+    </aside>
+  </header>
+
+  <kt-doc-section title="Exemples" subtitle="Libellé piloté, chevron par défaut, contenu interactif, état contrôlé.">
+    <kt-doc-example label="Libellé « Voir plus / Voir moins » + chevron">
+      <div ktDisclosure #d1="ktDisclosure" class="disclosure-demo__block">
+        <button ktButton mode="text" ktDisclosureToggle>
+          {{ d1.expanded() ? 'Voir moins' : 'Voir plus' }}
+        </button>
+        <kt-disclosure-content>
+          <p class="disclosure-demo__body">
+            Le déclencheur est un <code>ktButton</code> ordinaire&nbsp;; son libellé suit <code>d1.expanded()</code>. Le
+            chevron est affiché par défaut (input <code>chevron</code> de <code>[ktDisclosureToggle]</code>).
+          </p>
+        </kt-disclosure-content>
+      </div>
+    </kt-doc-example>
+
+    <kt-doc-example label="Volet d'options contrôlé (contenu interactif → inert quand fermé)">
+      <div ktDisclosure [(expanded)]="showOptions" class="disclosure-demo__block">
+        <button ktButton mode="tonal" ktDisclosureToggle>Options avancées</button>
+        <kt-disclosure-content>
+          <div class="disclosure-demo__options">
+            <label><input type="checkbox" /> Activer les notifications</label>
+            <label><input type="checkbox" /> Mode hors-ligne</label>
+            <button type="button">Un bouton dans le panneau</button>
+          </div>
+        </kt-disclosure-content>
+      </div>
+      <p class="disclosure-demo__muted">
+        Fermé, le panneau est <code>inert</code>&nbsp;: les cases et le lien sortent de la tabulation (pas de focus dans
+        l'invisible).
+      </p>
+    </kt-doc-example>
+
+    <kt-doc-example label='Sans chevron ([chevron]="false")'>
+      <div ktDisclosure #d3="ktDisclosure" class="disclosure-demo__block">
+        <button ktButton mode="outlined" ktDisclosureToggle [chevron]="false">
+          {{ d3.expanded() ? 'Replier le détail' : 'Afficher le détail' }}
+        </button>
+        <kt-disclosure-content>
+          <p class="disclosure-demo__body">Le contenu peut contenir plusieurs blocs.</p>
+          <p class="disclosure-demo__body">L'animation porte sur la hauteur auto réelle, sans magic number.</p>
+        </kt-disclosure-content>
+      </div>
+    </kt-doc-example>
+  </kt-doc-section>
+
+  <kt-doc-section title="Utilisation" subtitle="Importer la famille via KtDisclosureImports, puis composer.">
+    <div class="page__codes">
+      <kt-doc-code language="ts" [code]="tsSnippet" />
+      <kt-doc-code language="html" [code]="htmlSnippet" />
+    </div>
+  </kt-doc-section>
+
+  <kt-doc-section title="API" subtitle="État et méthodes de [ktDisclosure]. Aucun token de config DI.">
+    <kt-doc-props [rows]="props" />
+  </kt-doc-section>
+
+  <kt-doc-section
+    title="Marqueurs"
+    subtitle="Les 3 directives de la famille. Importables en bloc via KtDisclosureImports."
+  >
+    <kt-doc-props [rows]="directiveProps" />
+  </kt-doc-section>
+
+  <kt-doc-section
+    title="Tokens CSS"
+    subtitle="Contrat de personnalisation : surchargez ces variables sur :root ou un conteneur de spécificité ≥."
+  >
+    <kt-doc-tokens [groups]="tokens" />
+  </kt-doc-section>
+</article>

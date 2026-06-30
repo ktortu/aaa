@@ -1,0 +1,216 @@
+@layer kt-aaa.components {
+  :host {
+    display: block;
+  }
+
+  .kt-checkbox-field {
+    display: flex;
+    flex-direction: column;
+    gap: var(--field-gap, 0.375rem);
+  }
+
+  /* Surface cliquable (label) : remplit tout le host, cible tactile confortable (AAA 2.5.5) sur
+   toute la rangée. Rembourrage par token (`--checkbox-padding`) pour bâtir une carte/option
+   cliquable sans franchir l'encapsulation ; rayon hérité du host. */
+  .kt-checkbox {
+    display: flex;
+    align-items: center;
+    gap: var(--field-control-gap, 0.5rem);
+    inline-size: 100%;
+    box-sizing: border-box;
+    min-block-size: var(--checkbox-target-size, 44px);
+    padding: var(--checkbox-padding, 0);
+    border-radius: inherit;
+    cursor: pointer;
+    user-select: none;
+  }
+
+  /* La case elle-même : input natif redessiné. Taille pilotée par UN token via `font-size`
+   (la box et la coche s'expriment en `em`, donc tout suit `--checkbox-size`). */
+  .kt-checkbox__input {
+    appearance: none;
+    -webkit-appearance: none;
+    margin: 0;
+    flex: none;
+    box-sizing: border-box;
+    display: grid;
+    place-content: center;
+    font-size: var(--checkbox-size, 1.25rem);
+    inline-size: 1em;
+    block-size: 1em;
+    border: var(--checkbox-border-width, 2px) solid
+      var(--checkbox-border-color, var(--field-border-color, var(--kt-outline, #c4c7c5)));
+    border-radius: var(--checkbox-radius, 0.25rem);
+    background-color: var(--checkbox-bg, var(--field-bg, var(--kt-surface, #ffffff)));
+    cursor: pointer;
+    /* Élévation/glow de repos : retombe sur le token de thème des champs (--field-shadow) pour que
+     la case « rayonne » comme les champs sous un thème (aurora, cyberpunk…). `none` par défaut. */
+    box-shadow: var(--checkbox-shadow, var(--field-shadow, none));
+    /* Token de BASCULE (cf. --switch-transition) : transitionne aussi box-shadow pour animer le glow. */
+    transition: var(
+      --checkbox-transition,
+      background-color 0.15s cubic-bezier(0.4, 0, 0.2, 1),
+      border-color 0.15s cubic-bezier(0.4, 0, 0.2, 1),
+      box-shadow 0.2s ease
+    );
+  }
+
+  /* La coche : pseudo-élément masqué par clip-path, mis à l'échelle 0 → 1.
+   `box-shadow: inset` remplit la forme de la couleur de coche (technique cross-browser fiable). */
+  .kt-checkbox__input::before {
+    content: '';
+    inline-size: 0.65em;
+    block-size: 0.65em;
+    transform: scale(0);
+    transform-origin: center;
+    box-shadow: inset 1em 1em var(--checkbox-mark-color, #ffffff);
+    clip-path: polygon(14% 44%, 0 65%, 50% 100%, 100% 16%, 80% 0%, 43% 62%);
+    /* Décochage : repli doux vers scale(0). */
+    transition: var(--checkbox-mark-transition, transform 0.12s ease-in);
+  }
+
+  /* Cochage : « pop » avec rebond via @keyframes — fiable car déclenché à l'ENTRÉE dans l'état
+   `:checked` (une transition, elle, exige un diff de valeur entre deux recalculs, que la
+   ré-écriture de `checked` par Angular écrase → elle ne démarrait pas). */
+  .kt-checkbox__input:checked::before,
+  .kt-checkbox__input:indeterminate::before {
+    transform: scale(1);
+    animation: var(--checkbox-mark-animation, kt-checkbox-pop 0.22s cubic-bezier(0.34, 1.56, 0.64, 1));
+  }
+
+  /* État indéterminé : une barre horizontale au lieu de la coche. */
+  .kt-checkbox__input:indeterminate::before {
+    clip-path: inset(42% 12%);
+  }
+
+  @keyframes kt-checkbox-pop {
+    from {
+      transform: scale(0);
+    }
+  }
+
+  /* États COCHÉ / INDÉTERMINÉ : remplissage plein + HALO coloré dérivé du primaire du thème
+   (« glow » visible dans tous les thèmes ; apparaît en fondu via la transition box-shadow).
+   Surchargeable/désactivable par thème via --checkbox-shadow-checked. */
+  .kt-checkbox__input:checked,
+  .kt-checkbox__input:indeterminate {
+    background-color: var(--checkbox-bg-checked, var(--kt-primary, #0842a0));
+    border-color: var(--checkbox-border-color-checked, var(--checkbox-bg-checked, var(--kt-primary, #0842a0)));
+    box-shadow: var(
+      --checkbox-shadow-checked,
+      0 0 8px color-mix(in srgb, var(--checkbox-bg-checked, var(--kt-primary, #0842a0)) 50%, transparent)
+    );
+  }
+
+  /* HOVER : bordure + glow de survol du thème (--field-shadow-hover). */
+  .kt-checkbox__input:hover:not(:disabled) {
+    border-color: var(
+      --checkbox-border-color-hover,
+      var(--field-border-color-hover, var(--kt-outline-strong, #5f6368))
+    );
+    box-shadow: var(
+      --checkbox-shadow-hover,
+      var(--field-shadow-hover, var(--checkbox-shadow, var(--field-shadow, none)))
+    );
+  }
+
+  .kt-checkbox__input:checked:hover:not(:disabled),
+  .kt-checkbox__input:indeterminate:hover:not(:disabled) {
+    background-color: var(--checkbox-bg-checked-hover, color-mix(in srgb, var(--kt-primary, #0842a0) 90%, black));
+    border-color: var(--checkbox-bg-checked-hover, color-mix(in srgb, var(--kt-primary, #0842a0) 90%, black));
+  }
+
+  /* FOCUS : anneau via `outline` (comme les champs → pas de conflit avec le glow box-shadow), +
+   glow de focus du thème (--field-shadow-focus). L'outline reste visible quel que soit le survol. */
+  .kt-checkbox__input:focus-visible {
+    outline: var(--kt-focus-ring-width, 2px) solid var(--kt-focus-ring-color, #0842a0);
+    outline-offset: var(--checkbox-focus-ring-offset, 2px);
+    box-shadow: var(--checkbox-shadow-focus, var(--field-shadow-focus, var(--field-shadow, none)));
+  }
+
+  /* DÉSACTIVÉ */
+  .kt-checkbox__input:disabled {
+    cursor: not-allowed;
+    opacity: 0.5;
+  }
+
+  .kt-checkbox-field--disabled .kt-checkbox {
+    cursor: not-allowed;
+  }
+
+  /* INVALIDE */
+  .kt-checkbox-field--invalid .kt-checkbox__input:not(:checked):not(:indeterminate) {
+    border-color: var(--field-error-color, var(--kt-danger, #8c1d18));
+  }
+
+  /* Libellé */
+  .kt-checkbox__label {
+    font-size: var(--field-label-font-size, 0.875rem);
+    font-weight: var(--field-label-weight, 500);
+    color: var(--field-label-color, inherit);
+  }
+
+  .kt-checkbox-field--disabled .kt-checkbox__label {
+    color: var(--field-hint-color, #5f6368);
+    opacity: 0.6;
+  }
+
+  .kt-checkbox__required {
+    margin-inline-start: 0.125rem;
+    color: var(--field-required-color, var(--kt-danger, #8c1d18));
+  }
+
+  /* Hint & erreur */
+  .kt-checkbox-hint {
+    margin: 0;
+    font-size: var(--field-hint-font-size, 0.8125rem);
+    color: var(--field-hint-color, #474747);
+  }
+
+  .kt-checkbox-error {
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    font-size: var(--field-hint-font-size, 0.8125rem);
+    color: var(--field-error-color, #8c1d18);
+  }
+
+  .kt-checkbox-error-message {
+    animation: var(--field-error-animation, none);
+  }
+
+  /* Mode contraste élevé (Windows) : `appearance:none` casse le rendu système → on le restaure
+   avec les couleurs système (obligatoire RGAA dès qu'on redessine un contrôle natif). */
+  @media (forced-colors: active) {
+    .kt-checkbox__input {
+      border-color: CanvasText;
+      background-color: Canvas;
+    }
+    .kt-checkbox__input:checked,
+    .kt-checkbox__input:indeterminate {
+      background-color: Highlight;
+      border-color: Highlight;
+    }
+    .kt-checkbox__input::before {
+      box-shadow: inset 1em 1em HighlightText;
+    }
+    .kt-checkbox__input:disabled {
+      border-color: GrayText;
+    }
+    .kt-checkbox__input:focus-visible {
+      outline: 2px solid CanvasText;
+      outline-offset: 2px;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .kt-checkbox__input,
+    .kt-checkbox__input::before {
+      transition: none;
+      animation: none;
+    }
+    .kt-checkbox-error-message {
+      animation: none;
+    }
+  }
+}

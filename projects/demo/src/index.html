@@ -1,0 +1,33 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>Demo</title>
+    <base href="/" />
+    <!-- interactive-widget=resizes-content : sur Chrome/Android, le clavier virtuel redimensionne
+       le viewport de layout → une bottom-sheet `position: fixed; bottom: 0` se pose AU-DESSUS du
+       clavier au lieu de passer dessous (cf. select filtrable mobile). -->
+    <meta name="viewport" content="width=device-width, initial-scale=1, interactive-widget=resizes-content" />
+    <link rel="icon" type="image/x-icon" href="favicon.ico" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" />
+    <!-- Police d'icône à ligatures alternative (démo : swap via --kt-icon-font sur l'input `icon`). -->
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded" />
+    <!-- Polices emblématiques des thèmes de démo (--kt-font) : Roboto (Material/You), IBM Plex
+       Sans (Carbon), Quicksand (Végétal), JetBrains Mono (Catppuccin), Inter (Aurora),
+       Oxanium (Cyberpunk), Architects Daughter (Architecte). Les autres thèmes : stacks
+       système (authentique). -->
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Architects+Daughter&family=IBM+Plex+Sans:wght@400;600&family=Inter:wght@400;600&family=JetBrains+Mono:wght@400;600&family=Oxanium:wght@400;600&family=Quicksand:wght@400;600&family=Roboto:wght@400;500;700&display=swap"
+    />
+    <!-- Font Awesome 6 (free) : preuve que la lib n'impose pas Material Symbols. L'input `icon`
+       rend une ligature Material, mais le contenu projeté (boutons) et les prefix/suffix des
+       champs (TemplateRef) acceptent n'importe quel jeu d'icônes. -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.5.2/css/all.min.css" />
+  </head>
+  <body>
+    <kt-root></kt-root>
+  </body>
+</html>

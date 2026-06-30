@@ -1,0 +1,6 @@
+@layer kt-aaa.tokens, kt-aaa.base, kt-aaa.components;
+
+/* Bouton (ktButton) : tokens + apparence. Nécessite le socle (@ktortu/aaa/foundation.css).
+     @import '@ktortu/aaa/button.css'; */
+@import '../button/button-tokens.css';
+@import '../button/button.css';

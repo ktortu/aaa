@@ -1,0 +1,45 @@
+/* Thème « Microsoft Fluent 2 » (light) — uniquement des redéclarations de tokens.
+   Signature Fluent : Segoe UI, radius 4px, gris doux, bleu brand #0f6cbd, élévations subtiles. */
+[data-theme='fluent'] {
+  /* ============ Socle ============ */
+  --kt-primary: #0f6cbd; /* brand-80 — blanc 5.4:1 */
+  --kt-danger: #c50f1f; /* status-danger — blanc 6.1:1 */
+  --kt-neutral: #424242;
+  --kt-surface: #fafafa; /* neutral-background-2 */
+  --kt-on-surface: #242424;
+  --kt-muted: #616161; /* neutral-foreground-3 */
+  --kt-outline: #d1d1d1; /* neutral-stroke-1 */
+  --kt-outline-strong: #757575;
+  --kt-font: 'Segoe UI Variable', 'Segoe UI', system-ui, sans-serif;
+
+  /* ============ Géométrie ============ */
+  --kt-control-radius: 4px; /* border-radius-medium */
+  --btn-radius: 4px;
+  --chip-radius: 4px;
+
+  /* ============ Champs ============ */
+  --field-bg: #ffffff;
+
+  /* ============ Boutons : élévation subtile Fluent ============ */
+  --btn-shadow: 0 1px 2px rgb(0 0 0 / 10%);
+  --btn-font-weight: 600; /* les boutons Fluent sont en semibold (rétrofit lot 6) */
+  --btn-on-primary-container: #0c4f87;
+  --btn-on-danger-container: #7a0c14;
+  --btn-on-neutral-container: #1f1f1f;
+
+  /* ============ Select / tooltip ============ */
+  --select-popup-shadow: 0 8px 16px rgb(0 0 0 / 14%); /* shadow-16 */
+  --tooltip-bg: #242424;
+  --tooltip-fg: #ffffff;
+
+  /* ============ Dialog (Fluent 2 : rayon 8, élévation 16 héritée) ============ */
+  --dialog-radius: 8px;
+  --dialog-border-width: 0;
+
+  /* ============ Card (Fluent 2 : rayon 8, élévation 4 → 8 au survol) ============ */
+  --card-radius: 8px;
+  --card-filled-bg: #f5f5f5; /* neutral-background-3 */
+  --card-shadow: 0 1px 2px rgb(0 0 0 / 12%), 0 0 2px rgb(0 0 0 / 8%); /* shadow-4 */
+  --card-shadow-hover: 0 4px 8px rgb(0 0 0 / 14%), 0 0 2px rgb(0 0 0 / 10%); /* shadow-8 */
+  --card-transition: box-shadow 150ms ease;
+}

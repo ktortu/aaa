@@ -1,0 +1,19 @@
+{
+  "$schema": "./node_modules/@stryker-mutator/core/schema/stryker-schema.json",
+  "_comment": "Pilote mutation testing — module snackbar uniquement. Command-runner = chaîne Angular réelle (zéro divergence avec le gate test:ci), au prix de la vitesse (suite scopée rejouée par mutant). HORS CI tant que le rapport n'est pas validé.",
+  "packageManager": "npm",
+  "testRunner": "command",
+  "commandRunner": {
+    "command": "npm run test:mutation"
+  },
+  "mutate": ["projects/ktortu/aaa/snackbar/**/*.ts", "!projects/ktortu/aaa/snackbar/**/*.spec.ts"],
+  "disableTypeChecks": "projects/ktortu/aaa/snackbar/**/*.ts",
+  "reporters": ["html", "clear-text", "progress", "json"],
+  "concurrency": 4,
+  "timeoutMS": 60000,
+  "thresholds": {
+    "high": 90,
+    "low": 85,
+    "break": 85
+  }
+}

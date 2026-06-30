@@ -1,0 +1,175 @@
+@layer kt-aaa.components {
+  /* Styles de la snackbar (conteneur monté dans un overlay CDK).
+     Global : l'élément est ajouté hors de toute vue (overlay top-layer).
+     Tokens (--snackbar-*) définis dans snackbar-tokens.css (chargé avant ce fichier).
+
+     Requiert côté hôte : '@angular/cdk/overlay-prebuilt.css' (positionnement de l'overlay) ET
+     '@angular/cdk/a11y-prebuilt.css' (masque l'élément du LiveAnnouncer qui porte l'annonce). */
+
+  /* Le pane d'overlay ne capte pas les clics hors de la snackbar (feedback NON bloquant). */
+  .kt-snackbar-pane {
+    pointer-events: none;
+    max-inline-size: 100vw;
+  }
+
+  .kt-snackbar {
+    pointer-events: auto; /* la snackbar elle-même reste survolable / cliquable */
+    display: flex;
+    align-items: center;
+    gap: var(--snackbar-gap);
+    box-sizing: border-box;
+
+    margin: var(--snackbar-offset);
+    inline-size: max-content;
+    max-inline-size: min(var(--snackbar-max-inline-size), 100vw - 2 * var(--snackbar-offset));
+
+    padding-block: var(--snackbar-padding-block);
+    padding-inline: var(--snackbar-padding-inline);
+
+    border-radius: var(--snackbar-radius);
+    background: var(--snackbar-bg);
+    color: var(--snackbar-fg);
+    box-shadow: var(--snackbar-shadow);
+
+    font-size: var(--snackbar-font);
+    line-height: 1.4;
+  }
+
+  /* Marge de sécurité mobile (encoches / barres système) selon le bord d'ancrage. */
+  .kt-snackbar-pane--bottom .kt-snackbar {
+    margin-block-end: var(--snackbar-offset-bottom);
+  }
+  .kt-snackbar-pane--top .kt-snackbar {
+    margin-block-start: var(--snackbar-offset-top);
+  }
+
+  .kt-snackbar__message {
+    flex: 1 1 auto;
+    min-inline-size: 0; /* autorise le retour à la ligne d'un message long */
+  }
+
+  /* ============ ICÔNE DE VARIANTE (décorative, aria-hidden) ============ */
+  /* Couleur = accent de la variante ; glyphe = ligature de la police d'icônes (comme [ktButton]).
+     Si la police d'icônes est absente, la ligature dégrade en texte (même comportement que le bouton). */
+  .kt-snackbar__icon {
+    flex: none;
+    display: inline-grid;
+    place-items: center;
+    color: var(--snackbar-accent, currentColor);
+  }
+  .kt-snackbar__icon::before {
+    content: var(--snackbar-glyph, '');
+    font-family: var(--kt-icon-font, 'Material Symbols Outlined');
+    font-weight: var(--kt-icon-font-weight, normal);
+    font-style: normal;
+    font-size: var(--snackbar-icon-size, 1.25rem);
+    line-height: 1;
+    font-feature-settings: 'liga';
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* Mapping variante → accent + glyphe (un thème surcharge accent/glyphe, ou bg/fg pour recolorer). */
+  .kt-snackbar[data-variant='info'] {
+    --snackbar-accent: var(--snackbar-accent-info);
+    --snackbar-glyph: var(--snackbar-glyph-info);
+  }
+  .kt-snackbar[data-variant='success'] {
+    --snackbar-accent: var(--snackbar-accent-success);
+    --snackbar-glyph: var(--snackbar-glyph-success);
+  }
+  .kt-snackbar[data-variant='warning'] {
+    --snackbar-accent: var(--snackbar-accent-warning);
+    --snackbar-glyph: var(--snackbar-glyph-warning);
+  }
+  .kt-snackbar[data-variant='error'] {
+    --snackbar-accent: var(--snackbar-accent-error);
+    --snackbar-glyph: var(--snackbar-glyph-error);
+  }
+
+  /* ============ BOUTON DE FERMETURE ============ */
+  /* Cible 44px, croix dessinée en CSS (zéro dépendance à une police d'icônes). */
+  .kt-snackbar__close {
+    position: relative;
+    flex: none;
+    inline-size: var(--snackbar-close-size);
+    block-size: var(--snackbar-close-size);
+    /* compense optiquement le padding inline du conteneur, sans réduire la cible de 44px */
+    margin-inline-end: calc(-0.5 * var(--snackbar-padding-inline));
+
+    display: inline-grid;
+    place-items: center;
+    padding: 0;
+    border: 0;
+    border-radius: 50%;
+    background: transparent;
+    color: inherit;
+    cursor: pointer;
+  }
+
+  .kt-snackbar__close::before,
+  .kt-snackbar__close::after {
+    content: '';
+    position: absolute;
+    inline-size: var(--snackbar-close-icon-size);
+    block-size: 2px;
+    border-radius: 2px;
+    background: currentColor;
+    translate: 0 0;
+  }
+  .kt-snackbar__close::before {
+    rotate: 45deg;
+  }
+  .kt-snackbar__close::after {
+    rotate: -45deg;
+  }
+
+  .kt-snackbar__close:hover {
+    background: color-mix(in srgb, currentColor 14%, transparent);
+  }
+  .kt-snackbar__close:focus-visible {
+    outline: var(--kt-focus-ring-width, 2px) solid currentColor;
+    outline-offset: 2px;
+  }
+
+  /* ============ ANIMATION D'ENTRÉE / SORTIE ============ */
+  /* Entrée par keyframe (glissement depuis le bord), sortie par transition (classe --leaving).
+     Toutes deux sont activées UNIQUEMENT hors prefers-reduced-motion → en reduced-motion la durée
+     de transition est nulle, donc playExit() démonte instantanément (WCAG 2.3.3). */
+  @media (prefers-reduced-motion: no-preference) {
+    .kt-snackbar {
+      transition:
+        opacity var(--snackbar-anim-duration) ease,
+        translate var(--snackbar-anim-duration) ease;
+    }
+    .kt-snackbar-pane--bottom .kt-snackbar {
+      animation: kt-snackbar-in-bottom var(--snackbar-anim-duration) ease-out;
+    }
+    .kt-snackbar-pane--top .kt-snackbar {
+      animation: kt-snackbar-in-top var(--snackbar-anim-duration) ease-out;
+    }
+
+    /* Sortie : on fond + on glisse vers le bord d'ancrage. */
+    .kt-snackbar--leaving {
+      opacity: 0;
+    }
+    .kt-snackbar-pane--bottom .kt-snackbar--leaving {
+      translate: 0 100%;
+    }
+    .kt-snackbar-pane--top .kt-snackbar--leaving {
+      translate: 0 -100%;
+    }
+  }
+
+  @keyframes kt-snackbar-in-bottom {
+    from {
+      opacity: 0;
+      translate: 0 100%;
+    }
+  }
+  @keyframes kt-snackbar-in-top {
+    from {
+      opacity: 0;
+      translate: 0 -100%;
+    }
+  }
+}

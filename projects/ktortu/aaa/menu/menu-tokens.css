@@ -1,0 +1,58 @@
+/* Design tokens du menu (directives ktMenu / ktMenuItem) — contrat public de theming.
+
+   Même architecture que --card-* / --field-* / --dialog-* : tout DÉRIVE du socle --kt-*.
+   Surcharger un --kt-* (ex. --kt-surface) rebrande le menu avec le reste de la lib ; surcharger
+   un --kt-menu-* (ici ou sur un conteneur de spécificité ≥) ne touche que le menu. Conséquence
+   recherchée : le menu est correct sur les 14 thèmes SANS une seule ligne dédiée par thème (comme
+   la scrollbar et la bottom-sheet), un thème ne pose un --kt-menu-* que pour une signature.
+
+   Chargé APRÈS foundation.css (qui pose les --kt-*). */
+@layer kt-aaa.tokens {
+  :root {
+    /* ============ Surface ============ */
+    --kt-menu-bg: var(--kt-surface, #ffffff);
+    --kt-menu-fg: var(--kt-on-surface, #1f1f1f);
+    --kt-menu-border-color: var(--kt-outline, #c4c7c5);
+    --kt-menu-border-width: 1px;
+    --kt-menu-radius: var(--kt-control-radius, 8px);
+    --kt-menu-shadow: 0 4px 12px rgb(0 0 0 / 12%);
+    --kt-menu-padding: 0.25rem;
+    --kt-menu-min-width: 12rem;
+
+    /* Décalage du dropdown sous le trigger. */
+    --kt-menu-offset: 0.25rem;
+    /* Écart visuel entre un menu et son sous-menu (comblé par un pont de survol invisible : le gap
+     reste élégant SANS fermer le sous-menu quand le pointeur le traverse en diagonale). */
+    --kt-menu-submenu-gap: 0.375rem;
+    /* Plan d'empilement : au-dessus du contenu de page (le menu est position:fixed, hors flux). */
+    --kt-menu-z: 1000;
+
+    /* ============ Items ============ */
+    --kt-menu-item-min-height: 44px; /* cible tactile AAA (WCAG 2.5.5), y compris desktop */
+    --kt-menu-item-padding: 0.5rem 0.75rem;
+    --kt-menu-item-gap: 0.625rem;
+    --kt-menu-item-radius: calc(var(--kt-menu-radius, 8px) - var(--kt-menu-padding, 0.25rem));
+
+    /* Survol / item actif (focus roving) : voile dérivé, suit chaque thème. */
+    --kt-menu-item-hover-bg: color-mix(in srgb, currentColor 8%, transparent);
+    /* Item coché (checkbox/radio) : teinte primaire discrète. */
+    --kt-menu-item-checked-color: var(--kt-primary, #0842a0);
+    /* Item destructeur (opt-in via [data-tone="danger"]). */
+    --kt-menu-item-danger-color: var(--kt-danger, #8c1d18);
+
+    /* ============ Anneau de focus ============ */
+    --kt-menu-focus-ring-color: var(--kt-focus-ring-color, #0842a0);
+    --kt-menu-focus-ring-width: var(--kt-focus-ring-width, 2px);
+
+    /* ============ Séparateur ============ */
+    --kt-menu-separator-color: var(--kt-outline, #c4c7c5);
+
+    /* ============ Bascules NON déclarées exprès (défauts entre parenthèses) ============
+     Même principe que --btn-* / --card-* : non définies => effet neutre ; un thème (ou un
+     conteneur) les pose pour activer l'effet, sans qu'aucun menu n'ait à les redéclarer.
+       --kt-menu-enter-animation (none)            : animation d'entrée du dropdown (transform/opacity
+                                                     uniquement — le menu est ancré, ne pas animer la position).
+       --kt-menu-backdrop-filter (none)            : flou de la surface (thèmes verre).
+       --kt-menu-item-transition (none)            : transition du voile de survol. */
+  }
+}

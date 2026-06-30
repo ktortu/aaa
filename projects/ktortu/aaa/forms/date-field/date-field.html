@@ -1,0 +1,78 @@
+<kt-field
+  [label]="label()"
+  [hint]="hint()"
+  [helpText]="helpText()"
+  [helpLabel]="helpLabel()"
+  [customDescribedBy]="customDescribedBy()"
+  [errors]="displayErrors()"
+  [invalid]="showInvalid()"
+  [required]="required()"
+  [fieldId]="id()"
+  [appearance]="appearance()"
+  [floatLabel]="floatLabel()"
+  (helpClick)="helpClick.emit($event)"
+>
+  <ng-content select="[ktFieldHelp]" />
+  <div
+    class="kt-field-box"
+    [attr.data-invalid]="showInvalid() ? '' : null"
+    [attr.data-disabled]="disabled() ? '' : null"
+    [attr.data-pending]="pending() ? '' : null"
+  >
+    @if (icon(); as icon) {
+      <span class="kt-field-box__icon" aria-hidden="true">{{ icon }}</span>
+    }
+
+    @if (prefix(); as prefix) {
+      <span class="kt-field-box__affix">
+        @if (asTemplate(prefix); as tpl) {
+          <ng-container [ngTemplateOutlet]="tpl" />
+        } @else {
+          {{ asText(prefix) }}
+        }
+      </span>
+    }
+
+    <input
+      #input
+      ktFieldControl
+      class="kt-field-box__input"
+      type="date"
+      [disabled]="disabled()"
+      [readOnly]="readonly()"
+      [attr.aria-busy]="pending() ? 'true' : null"
+      [attr.name]="name() || null"
+      [attr.placeholder]="placeholder()"
+      [attr.min]="serializedMin()"
+      [attr.max]="serializedMax()"
+      [attr.list]="hasSuggestions() ? datalistId : null"
+      (input)="onInput($event)"
+      (keydown)="onKeyDown($event)"
+      (blur)="touched.set(true)"
+    />
+
+    @if (hasSuggestions()) {
+      <datalist [id]="datalistId">
+        @for (option of datalistOptions(); track $index) {
+          <option [value]="option.value" [attr.label]="option.label"></option>
+        }
+      </datalist>
+    }
+
+    @if (showClear()) {
+      <button type="button" class="kt-field-box__clear" [attr.aria-label]="clearLabel()" (click)="clear()">
+        <span class="kt-field-box__icon" aria-hidden="true">close</span>
+      </button>
+    }
+
+    @if (suffix(); as suffix) {
+      <span class="kt-field-box__affix">
+        @if (asTemplate(suffix); as tpl) {
+          <ng-container [ngTemplateOutlet]="tpl" />
+        } @else {
+          {{ asText(suffix) }}
+        }
+      </span>
+    }
+  </div>
+</kt-field>

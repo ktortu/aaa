@@ -1,0 +1,468 @@
+@layer kt-aaa.components {
+  /* Panneau de sélection PARTAGÉ entre kt-select et kt-multi-select (référencé par les deux
+   composants via styleUrl(s) → compilé/scopé par composant, PAS global — contrairement à
+   field-box.css, pas d'entrée angular.json ni de redémarrage du dev server).
+   Styles SCOPÉS : le popup rend in-place dans la vue (DeferredContent), donc l'encapsulation
+   s'applique même en top-layer. UN SEUL Popover, deux régimes via @media : desktop = dropdown
+   ancré (CSS Anchor Positioning) ; téléphone tactile = bottom-sheet.
+   Tokens --select-* dérivés du socle --kt-* / --field-*.
+   Tokens de BASCULE mouvement (NON déclarés exprès, cf. button-tokens.css) :
+    --select-arrow-transition (défaut : transform 120ms ease — rotation du chevron),
+    --select-popup-enter-animation (défaut : none — entrée du dropdown desktop ; keyframes de
+    thème limitées à transform/opacity/filter, le popup est ancré : ne pas animer la position),
+    --kt-sheet-anim-duration (défaut : 120ms — glissement + scrim de la bottom-sheet mobile).
+   Les règles spécifiques au multi (chips, clear, actions, checkbox) vivent dans multi-select.css. */
+  :host {
+    display: block;
+  }
+
+  .kt-select {
+    position: relative;
+  }
+
+  /* Le trigger réutilise .kt-field-box (boîte de champ partagée) pour l'aspect/min-height/focus. */
+  .kt-select__trigger {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--field-control-gap, 0.5rem);
+    inline-size: 100%;
+    cursor: pointer;
+    text-align: start;
+    font: inherit;
+    color: var(--field-color, inherit);
+  }
+
+  .kt-select__trigger:disabled {
+    cursor: not-allowed;
+    background: var(--field-disabled-bg, #f1f3f4);
+    color: color-mix(in srgb, currentColor 50%, transparent);
+  }
+
+  .kt-select__value {
+    flex: 1;
+    min-inline-size: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .kt-select__placeholder {
+    color: var(--field-hint-color, #5f6368);
+  }
+
+  /* Chevron via ligature Material Symbols (même mécanisme que Button / field-box). */
+  .kt-select__arrow {
+    flex: none;
+    font-family: 'Material Symbols Outlined';
+    font-size: 1.25em;
+    line-height: 1;
+    font-feature-settings: 'liga';
+    color: var(--field-icon-color, #5f6368);
+    transition: var(--select-arrow-transition, transform 120ms ease);
+    -webkit-font-smoothing: antialiased;
+  }
+
+  .kt-select--open .kt-select__arrow {
+    transform: rotate(180deg);
+  }
+
+  /* Conteneur popover (div). Affiché en top-layer via le Popover API.
+   border-box pour aligner la largeur sur le trigger. */
+  .kt-select__popup {
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    margin: 0;
+    padding: 0;
+    border-width: var(--select-popup-border-width, var(--field-border-width, 1px));
+    border-style: var(--field-border-style, solid);
+    border-color: var(--field-border-color, #c4c7c5);
+    border-radius: var(--field-radius, 8px);
+    background: var(--select-popup-bg, var(--kt-surface, #fff));
+    color: var(--field-color, inherit);
+    box-shadow: var(--select-popup-shadow, 0 4px 12px rgb(0 0 0 / 12%));
+    /* Translucidité (verre) : bascule => aucun effet par défaut (cf. theme-liquid-glass). */
+    backdrop-filter: var(--select-popup-backdrop-filter, none);
+    max-block-size: var(--select-popup-max-height, 16rem);
+    overflow: hidden; /* la liste interne scrolle */
+  }
+
+  .kt-select__sheet-card {
+    display: contents;
+  }
+
+  /* Notre `display: flex` écrase la règle UA `[popover]:not(:popover-open) { display: none }` :
+   sans ceci, le popup fermé par hidePopover() reste affiché (et tabbable) jusqu'à la
+   destruction différée de son contenu — le Tab de fermeture retomberait dedans. */
+  .kt-select__popup:not(:popover-open) {
+    display: none !important;
+  }
+
+  /* Entrée du dropdown desktop : token de BASCULE (non déclaré => aucune animation). Une animation
+   sur :popover-open rejoue à chaque ouverture, sans @starting-style ni conflit avec la règle
+   display:none ci-dessus — la fermeture reste volontairement instantanée. */
+  .kt-select__popup:popover-open {
+    animation: var(--select-popup-enter-animation, none);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .kt-select__popup:popover-open {
+      animation: none;
+    }
+  }
+
+  /* Liste scrollable (élément ngListbox). */
+  .kt-select__listbox {
+    flex: 1 1 auto;
+    min-block-size: 0;
+    margin: 0;
+    padding: 0.25rem;
+    list-style: none;
+    overflow-y: auto;
+  }
+
+  /* ===== Mode filtrable : panneau (widget combobox) = champ de recherche + liste ===== */
+  /* Le panneau reprend la colonne flex du popup pour que la liste interne reste seule à scroller. */
+  .kt-select__panel {
+    display: flex;
+    flex-direction: column;
+    flex: 1 1 auto;
+    min-block-size: 0;
+  }
+
+  .kt-select__filter {
+    flex: none;
+    padding: 0.5rem;
+    border-block-end: 1px solid var(--field-border-color, #c4c7c5);
+  }
+
+  .kt-select__filter-input {
+    box-sizing: border-box;
+    inline-size: 100%;
+    min-block-size: var(--field-min-height, 44px); /* cible tactile AAA 44px sur tous les écrans */
+    padding: 0.375rem 0.625rem;
+    border: var(--field-border-width, 1px) var(--field-border-style, solid) var(--field-border-color, #c4c7c5);
+    border-radius: calc(var(--field-radius, 8px) * 0.75);
+    background: var(--select-popup-bg, var(--kt-surface, #fff));
+    color: var(--field-color, inherit);
+    font: inherit;
+    /* Neutralise l'aspect natif de type=search (coins en pilule sur Safari) ; le rôle implicite
+     `searchbox` et la touche Entrée « rechercher » du clavier mobile sont conservés. */
+    appearance: none;
+  }
+
+  .kt-select__filter-input::placeholder {
+    color: var(--field-hint-color, #5f6368);
+  }
+
+  .kt-select__filter-input:focus-visible {
+    outline: 2px solid var(--field-border-color-focus, #0b57d0);
+    outline-offset: -1px;
+  }
+
+  /* Bouton d'effacement (×) de type=search sur WebKit/Blink — mini « clearable » gratuit, utile sur
+   mobile. Redessiné en mask pour suivre la couleur d'icône du thème (le × natif est sombre, donc
+   invisible sur les thèmes foncés). N'apparaît que lorsque le champ contient du texte. */
+  .kt-select__filter-input::-webkit-search-cancel-button {
+    appearance: none;
+    inline-size: 1rem;
+    block-size: 1rem;
+    margin-inline-start: 0.375rem;
+    cursor: pointer;
+    background-color: var(--field-icon-color, #5f6368);
+    mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z'/%3E%3C/svg%3E")
+      center / contain no-repeat;
+  }
+
+  /* Texte réservé aux lecteurs d'écran (live region du nombre de résultats). */
+  .kt-select__sr-only {
+    position: absolute;
+    /* Ancrée au coin : sinon ce 1px `absolute` retombe sur sa position statique et, dans un
+       conteneur scrollable, étire le document → barre de défilement fantôme. */
+    inset-block-start: 0;
+    inset-inline-start: 0;
+    inline-size: 1px;
+    block-size: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+    border: 0;
+  }
+
+  /* ===== DESKTOP : dropdown ancré via CSS Anchor Positioning ===== */
+  @supports (anchor-name: --x) {
+    .kt-select__popup {
+      position: fixed;
+      inset: auto;
+      top: anchor(bottom);
+      left: anchor(left);
+      margin-block-start: 0.25rem;
+      min-inline-size: anchor-size(width);
+      width: max-content;
+      max-inline-size: min(90vw, 28rem);
+      position-try-fallbacks:
+        flip-block,
+        flip-inline,
+        flip-block flip-inline;
+    }
+  }
+
+  /* Repli si l'anchor positioning n'est pas supporté (ex. iOS < 26) : bottom-sheet plein largeur,
+   bien plus sûr qu'un popover mal positionné en 0,0. */
+  @supports not (anchor-name: --x) {
+    .kt-select__popup {
+      position: fixed;
+      inset: auto 0 0 0;
+      inline-size: 100%;
+      max-inline-size: 100%;
+      border-radius: var(--kt-sheet-radius, 16px) var(--kt-sheet-radius, 16px) 0 0;
+    }
+  }
+
+  /* ===== ÉCRAN COMPACT : bottom-sheet (même Popover, restylé) =====
+   Pilotée par la CLASSE `kt-select__popup--sheet` posée en JS par le composant (signal
+   `KtViewport.isCompact()`) — et NON par un `@media` : le seuil est configurable par appli
+   (`provideKtBreakpoints`), source unique JS qui pilote aussi ce style. */
+  .kt-select__popup--sheet {
+    position: fixed !important;
+    inset: 0 !important;
+    inline-size: 100% !important;
+    max-inline-size: 100% !important;
+    min-inline-size: 0 !important;
+    width: 100% !important;
+    height: 100% !important;
+    max-block-size: none !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    border: none !important;
+    background: transparent !important;
+    box-shadow: none !important;
+    border-radius: 0 !important;
+    overflow: visible !important;
+    display: flex;
+    flex-direction: column !important;
+    justify-content: flex-end !important;
+  }
+
+  .kt-select__popup--sheet .kt-select__sheet-card {
+    position: relative;
+    z-index: 2;
+    display: flex;
+    flex-direction: column;
+    background: var(--select-popup-bg, var(--kt-surface, #fff));
+    border-radius: var(--kt-sheet-radius, 16px) var(--kt-sheet-radius, 16px) 0 0;
+    box-shadow: var(--kt-sheet-shadow, 0 -4px 16px rgb(0 0 0 / 12%));
+    max-block-size: var(--kt-sheet-max-block-size, 85svh);
+    width: 100%;
+    overflow: hidden;
+    /* Position de repos. L'entrée (glissement du bas) est jouée par la keyframe PARTAGÉE kt-sheet-in
+     sur :popover-open (cf. plus bas), comme le mode `sheet` du Dialog. La transition translate ne
+     sert qu'au snap-back du drag-to-dismiss. */
+    translate: 0 0;
+    transition: translate var(--kt-sheet-anim-duration, 120ms) ease;
+  }
+
+  /* Sheet FILTRABLE : hauteur STABLE (et non « au contenu plafonné »). Sans ça, filtrer raccourcit
+   la liste → la sheet ancrée en bas rétrécit → son haut (champ de recherche) descend derrière le
+   clavier virtuel. Avec une hauteur fixe, la liste rétrécit À L'INTÉRIEUR, le champ ne bouge plus. */
+  .kt-select__popup--sheet .kt-select__sheet-card:has(.kt-select__filter) {
+    block-size: var(--kt-sheet-max-block-size, 85svh);
+    max-block-size: var(--kt-sheet-max-block-size, 85svh);
+  }
+
+  .kt-select__popup--sheet:popover-open .kt-select__sheet-card {
+    translate: 0 0;
+    /* Entrée : glissement du bas (keyframe PARTAGÉE kt-sheet-in). */
+    animation: var(--select-sheet-enter-animation, kt-sheet-in var(--kt-sheet-anim-duration, 120ms) ease);
+  }
+
+  /* Pendant le drag : la feuille suit le doigt (translate posé en inline), sans transition. */
+  .kt-select__popup--sheet .kt-select__sheet-card.kt-select__popup--dragging {
+    transition: none;
+  }
+
+  /* Pendant la fermeture déclenchée par JS */
+  .kt-select__popup--sheet.kt-select__popup--closing .kt-select__sheet-card,
+  .kt-select__popup--sheet:popover-open.kt-select__popup--closing .kt-select__sheet-card {
+    translate: 0 100%;
+    transition: translate var(--kt-sheet-exit-duration, 90ms) cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  /* Masquer le backdrop popover natif car pointer-events: none y est forcé par le navigateur */
+  ::ng-deep .kt-select__popup--sheet::backdrop {
+    display: none !important;
+  }
+
+  /* Scrim : assombrit le fond + bloque clics arrière-plan (pointer-events: auto) + fondu. */
+  .kt-select__sheet-scrim {
+    display: none;
+  }
+
+  .kt-select__popup--sheet .kt-select__sheet-scrim {
+    display: block;
+    position: fixed;
+    inset: 0;
+    z-index: 1;
+    background: var(--kt-sheet-scrim, rgb(0 0 0 / 40%));
+    opacity: 0;
+    pointer-events: auto;
+    transition:
+      opacity var(--kt-sheet-anim-duration, 120ms) ease,
+      overlay var(--kt-sheet-anim-duration, 120ms) allow-discrete,
+      display var(--kt-sheet-anim-duration, 120ms) allow-discrete;
+  }
+
+  .kt-select__popup--sheet:popover-open .kt-select__sheet-scrim {
+    opacity: 1;
+  }
+
+  @starting-style {
+    .kt-select__popup--sheet:popover-open .kt-select__sheet-scrim {
+      opacity: 0;
+    }
+  }
+
+  .kt-select__popup--sheet.kt-select__popup--closing .kt-select__sheet-scrim,
+  .kt-select__popup--sheet:popover-open.kt-select__popup--closing .kt-select__sheet-scrim {
+    opacity: 0;
+    transition: opacity var(--kt-sheet-exit-duration, 90ms) ease;
+  }
+
+  /* Cibles tactiles ≥44px (Apple 44pt / WCAG 2.5.5). */
+  .kt-select__popup--sheet .kt-select__option {
+    --select-option-min-height: 44px;
+    padding-block: 0.625rem;
+  }
+
+  /* ≥16px : empêche le zoom automatique d'iOS au focus du champ de filtre. */
+  .kt-select__popup--sheet .kt-select__filter-input {
+    font-size: 1rem;
+    min-block-size: 44px;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .kt-select__popup--sheet .kt-select__sheet-card,
+    .kt-select__popup--sheet .kt-select__sheet-scrim {
+      transition: none;
+      translate: 0 0;
+    }
+  }
+
+  /* Poignée de drag (téléphone) : barre centrée, zone de préhension confortable. `touch-action: none`
+   pour que le geste de glissement ne déclenche pas le scroll de la page. aria-hidden (décoratif). */
+  .kt-select__sheet-grab {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex: none;
+    block-size: 44px; /* Cible tactile minimale WCAG 2.5.5 AAA (44px) */
+    cursor: grab;
+    touch-action: none;
+  }
+
+  .kt-select__sheet-grab:active {
+    cursor: grabbing;
+  }
+
+  .kt-select__sheet-grab::before {
+    content: '';
+    inline-size: 2.25rem;
+    block-size: 0.25rem;
+    border-radius: 999px;
+    /* Token PARTAGÉ avec le Dialog (= var(--kt-outline) par défaut, identique à --field-border-color). */
+    background: var(--kt-sheet-grab-color, var(--kt-outline, #c4c7c5));
+  }
+
+  /* En-tête de la bottom-sheet (titre + bouton Fermer), rendu seulement sur téléphone. */
+  .kt-select__sheet-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.5rem;
+    flex: none;
+    padding-block: 0.5rem;
+    padding-inline: 1rem 0.5rem;
+    border-block-end: 1px solid var(--field-border-color, #c4c7c5);
+  }
+
+  .kt-select__sheet-title {
+    font-weight: 600;
+  }
+
+  .kt-select__sheet-close {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex: none;
+    inline-size: 44px;
+    block-size: 44px;
+    padding: 0;
+    border: 0;
+    border-radius: 50%;
+    background: transparent;
+    color: var(--field-icon-color, #5f6368);
+    cursor: pointer;
+  }
+
+  .kt-select__sheet-close:focus-visible {
+    outline: 2px solid var(--field-border-color-focus, #0b57d0);
+    outline-offset: 2px;
+  }
+
+  .kt-select__sheet-close-icon {
+    font-family: 'Material Symbols Outlined';
+    font-feature-settings: 'liga';
+    font-size: 1.5rem;
+    line-height: 1;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* ===== Options ===== */
+  .kt-select__option {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    box-sizing: border-box;
+    min-block-size: var(
+      --select-option-min-height,
+      44px
+    ); /* cible tactile AAA 44px par défaut (y compris sur desktop) */
+    padding: 0.5rem 0.625rem;
+    border-radius: 6px;
+    cursor: pointer;
+  }
+
+  .kt-select__option[aria-selected='true'] {
+    background: var(--select-option-selected-bg, color-mix(in srgb, var(--kt-primary, #0b57d0) 14%, transparent));
+    color: var(--select-option-selected-color, inherit); /* utile si le bg sélectionné est plein */
+    font-weight: var(--select-option-selected-weight, 600);
+  }
+
+  .kt-select__option--active:not([aria-disabled='true']),
+  .kt-select__option:hover:not([aria-disabled='true']) {
+    background: var(--select-option-hover-bg, color-mix(in srgb, currentColor 8%, transparent));
+  }
+
+  .kt-select__option[aria-disabled='true'] {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+
+  .kt-select__empty {
+    padding: 0.5rem 0.625rem;
+    color: var(--field-hint-color, #5f6368);
+  }
+
+  .kt-select__truncated-info {
+    box-sizing: border-box;
+    padding: 0.5rem 0.625rem;
+    font-size: 0.875rem;
+    font-style: italic;
+    color: var(--field-hint-color, #5f6368);
+    border-block-start: 1px solid var(--field-border-color, #c4c7c5);
+    pointer-events: none;
+  }
+}

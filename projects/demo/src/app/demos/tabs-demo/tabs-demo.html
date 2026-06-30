@@ -1,0 +1,266 @@
+<article class="page">
+  <header class="page__head">
+    <p class="page__eyebrow">Angular ARIA</p>
+    <h1 class="page__title">Tabs <span class="page__title-sub">(Angular ARIA)</span></h1>
+    <p class="page__lead">
+      Les onglets sont <strong>headless</strong> : le comportement (clavier, sélection, rôles ARIA) vient des directives
+      <code>@angular/aria/tabs</code> (<code>ngTabs</code>, <code>ngTabList</code>, <code>ngTab</code>,
+      <code>ngTabPanel</code>), le style de <code>&#64;import '@ktortu/aaa/tabs.css'</code>. En cas de débordement, la
+      lib remplace la scrollbar par une <strong>pagination à chevrons</strong> (style Material) : composant clé-en-main
+      <code>&lt;kt-tab-scroller&gt;</code> ou directive headless <code>ktTabScroller</code> (signaux
+      <code>canScrollStart/End</code> + <code>scrollByPage()</code>), le tout en respectant
+      <code>prefers-reduced-motion</code>. Sélection pilotée par <strong>signal</strong> via
+      <code>[(selectedTab)]</code>, contenu <strong>chargé paresseusement</strong> via <code>ngTabContent</code>.
+    </p>
+  </header>
+
+  <kt-doc-section
+    title="Exemples"
+    subtitle="Base + lazy, pagination par chevrons (horizontal & vertical), onglet désactivé, et commutation des modes ARIA."
+  >
+    <!-- 1. Base + chargement paresseux. Premier ngTabList de la page (cf. E2E). -->
+    <kt-doc-example label="Base — contenu chargé paresseusement">
+      <div ngTabs class="demo-tabs">
+        <ul ngTabList [(selectedTab)]="basicTab">
+          <li ngTab value="overview">Aperçu</li>
+          <li ngTab value="specs">Spécifications</li>
+          <li ngTab value="reviews">Avis</li>
+        </ul>
+
+        <div ngTabPanel value="overview">
+          <ng-template ngTabContent>
+            <p>Vue d'ensemble du produit. Ce panneau est rendu dès l'affichage initial.</p>
+          </ng-template>
+        </div>
+        <div ngTabPanel value="specs">
+          <ng-template ngTabContent>
+            <p>Contenu chargé paresseusement : ce bloc n'est instancié qu'au premier affichage de l'onglet.</p>
+          </ng-template>
+        </div>
+        <div ngTabPanel value="reviews">
+          <ng-template ngTabContent>
+            <p>Les avis, eux aussi chargés à la demande.</p>
+          </ng-template>
+        </div>
+      </div>
+    </kt-doc-example>
+
+    <!-- 2. Débordement horizontal — couche CLÉ-EN-MAIN : chevrons de pagination automatiques. -->
+    <kt-doc-example label="Débordement — pagination par chevrons (clé-en-main)">
+      <div class="demo-overflow">
+        <div ngTabs class="demo-tabs">
+          <kt-tab-scroller>
+            <ul ngTabList ktTabScroller [(selectedTab)]="overflowTab">
+              @for (t of overflowTabs; track t) {
+                <li ngTab [value]="t">Module {{ $index + 1 }}</li>
+              }
+            </ul>
+          </kt-tab-scroller>
+          @for (t of overflowTabs; track t) {
+            <div ngTabPanel [value]="t">
+              <ng-template ngTabContent>Contenu du module {{ $index + 1 }}.</ng-template>
+            </div>
+          }
+        </div>
+      </div>
+    </kt-doc-example>
+
+    <!-- 2 bis. Débordement horizontal — couche HEADLESS : ici on exploite les signaux pour une
+         affordance que le composant clé-en-main ne permet pas : des boutons ronds FLOTTANTS,
+         posés en absolu sur les bords, RENDUS CONDITIONNELLEMENT (ils apparaissent / disparaissent
+         au lieu d'être désactivés), avec un compteur de position dérivé de la sélection. -->
+    <kt-doc-example label="Débordement — headless (overlay flottant, boutons conditionnels)">
+      <div class="demo-overflow">
+        <div ngTabs class="demo-tabs">
+          <div class="demo-edge">
+            <ul ngTabList ktTabScroller #sc="ktTabScroller" [(selectedTab)]="headlessTab">
+              @for (t of overflowTabs; track t) {
+                <li ngTab [value]="t">Module {{ $index + 1 }}</li>
+              }
+            </ul>
+
+            <!-- Capuchons de bord : un fond dégradé estompe les onglets derrière le bouton. Ils
+                 n'existent dans le DOM que s'il reste à scroller de ce côté (rendu conditionnel). -->
+            @if (sc.canScrollStart()) {
+              <div class="demo-edge__cap demo-edge__cap--start">
+                <button
+                  class="demo-edge__btn"
+                  ktButton
+                  iconOnly
+                  icon="chevron_left"
+                  ariaLabel="Onglets précédents"
+                  (click)="sc.scrollByPage('start')"
+                ></button>
+              </div>
+            }
+            @if (sc.canScrollEnd()) {
+              <div class="demo-edge__cap demo-edge__cap--end">
+                <button
+                  class="demo-edge__btn"
+                  ktButton
+                  iconOnly
+                  icon="chevron_right"
+                  ariaLabel="Onglets suivants"
+                  (click)="sc.scrollByPage('end')"
+                ></button>
+              </div>
+            }
+          </div>
+
+          <!-- Indicateur de position « n / total », dérivé de la sélection (état piloté par signaux). -->
+          <p class="demo-edge__counter" aria-live="polite">
+            Onglet {{ headlessIndex() + 1 }} / {{ overflowTabs.length }}
+          </p>
+
+          @for (t of overflowTabs; track t) {
+            <div ngTabPanel [value]="t">
+              <ng-template ngTabContent>Contenu du module {{ $index + 1 }}.</ng-template>
+            </div>
+          }
+        </div>
+      </div>
+    </kt-doc-example>
+
+    <!-- 3. Orientation verticale + débordement vertical (chevrons haut/bas). -->
+    <kt-doc-example label="Orientation verticale — pagination">
+      <div class="demo-vertical">
+        <div ngTabs class="demo-tabs">
+          <kt-tab-scroller>
+            <ul
+              ngTabList
+              ktTabScroller
+              orientation="vertical"
+              class="demo-vertical__list"
+              [(selectedTab)]="verticalTab"
+            >
+              @for (t of verticalTabs; track t) {
+                <li ngTab [value]="t">Section {{ $index + 1 }}</li>
+              }
+            </ul>
+          </kt-tab-scroller>
+          @for (t of verticalTabs; track t) {
+            <div ngTabPanel [value]="t">
+              <ng-template ngTabContent>Contenu de la section {{ $index + 1 }}.</ng-template>
+            </div>
+          }
+        </div>
+      </div>
+    </kt-doc-example>
+
+    <!-- 4. Onglet désactivé (vitrine du token --tab-text-disabled). -->
+    <kt-doc-example label="Onglet désactivé">
+      <div ngTabs class="demo-tabs">
+        <ul ngTabList [(selectedTab)]="disabledTab">
+          <li ngTab value="a">Actif</li>
+          <li ngTab value="b" [disabled]="true">Indisponible</li>
+          <li ngTab value="c">Disponible</li>
+        </ul>
+        <div ngTabPanel value="a"><ng-template ngTabContent>Onglet actif et sélectionnable.</ng-template></div>
+        <div ngTabPanel value="b"><ng-template ngTabContent>Cet onglet est désactivé.</ng-template></div>
+        <div ngTabPanel value="c"><ng-template ngTabContent>Un autre onglet disponible.</ng-template></div>
+      </div>
+    </kt-doc-example>
+
+    <!-- 5. Knobs ARIA commutés par signal + légende clavier. -->
+    <kt-doc-example label="selectionMode & focusMode (commutés par signal)">
+      <div class="demo-knobs">
+        <div class="demo-knobs__controls">
+          <button
+            ktButton
+            mode="tonal"
+            type="button"
+            (click)="toggleSelectionMode()"
+            [attr.aria-pressed]="selectionMode() === 'explicit'"
+          >
+            Sélection explicite
+          </button>
+          <button
+            ktButton
+            mode="tonal"
+            type="button"
+            (click)="toggleFocusMode()"
+            [attr.aria-pressed]="focusMode() === 'activedescendant'"
+          >
+            Focus activedescendant
+          </button>
+        </div>
+
+        <p class="demo-knobs__state">
+          <code>selectionMode = {{ selectionMode() }}</code> · <code>focusMode = {{ focusMode() }}</code>
+        </p>
+
+        <div ngTabs class="demo-tabs">
+          <ul ngTabList [selectionMode]="selectionMode()" [focusMode]="focusMode()" [(selectedTab)]="knobsTab">
+            <li ngTab value="one">Premier</li>
+            <li ngTab value="two">Deuxième</li>
+            <li ngTab value="three">Troisième</li>
+          </ul>
+          <div ngTabPanel value="one">
+            <ng-template ngTabContent>En mode <code>follow</code>, la flèche sélectionne directement.</ng-template>
+          </div>
+          <div ngTabPanel value="two">
+            <ng-template ngTabContent
+              >En mode <code>explicit</code>, la flèche déplace le focus ; Espace/Entrée sélectionne.</ng-template
+            >
+          </div>
+          <div ngTabPanel value="three">
+            <ng-template ngTabContent
+              >Le mode <code>activedescendant</code> garde le focus DOM sur la liste.</ng-template
+            >
+          </div>
+        </div>
+
+        <dl class="demo-keys">
+          <div>
+            <dt>← / →</dt>
+            <dd>Onglet précédent / suivant (horizontal)</dd>
+          </div>
+          <div>
+            <dt>↑ / ↓</dt>
+            <dd>Onglet précédent / suivant (vertical)</dd>
+          </div>
+          <div>
+            <dt>Début / Fin</dt>
+            <dd>Premier / dernier onglet</dd>
+          </div>
+          <div>
+            <dt>Espace / Entrée</dt>
+            <dd>Sélectionne l'onglet focalisé (mode <code>explicit</code>)</dd>
+          </div>
+        </dl>
+      </div>
+    </kt-doc-example>
+  </kt-doc-section>
+
+  <kt-doc-section
+    title="Utilisation"
+    subtitle="Importer les directives d'Angular ARIA + le style de la lib, et poser ktTabScroller en opt-in."
+  >
+    <div class="page__codes">
+      <kt-doc-code language="ts" [code]="tsSnippet" />
+      <kt-doc-code language="html" [code]="htmlSnippet" />
+    </div>
+  </kt-doc-section>
+
+  <kt-doc-section
+    title="Propriétés — ngTabList"
+    subtitle="Inputs de la liste d'onglets (axe, modes de sélection/focus, sélection two-way)."
+  >
+    <kt-doc-props [rows]="tablistProps" />
+  </kt-doc-section>
+
+  <kt-doc-section
+    title="Propriétés — ngTab / ngTabPanel"
+    subtitle="Onglet, panneau, contenu lazy et directive d'appoint ktTabScroller."
+  >
+    <kt-doc-props [rows]="tabProps" />
+    <kt-doc-props [rows]="panelProps" />
+  </kt-doc-section>
+
+  <kt-doc-section
+    title="Tokens CSS"
+    subtitle="Contrat de personnalisation : surchargez ces variables sur :root ou un conteneur de spécificité ≥."
+  >
+    <kt-doc-tokens [groups]="tokens" />
+  </kt-doc-section>
+</article>

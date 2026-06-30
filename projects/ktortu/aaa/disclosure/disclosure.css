@@ -1,0 +1,84 @@
+@layer kt-aaa.components {
+  /* Styles de la famille Disclosure ([ktDisclosure] + [ktDisclosureToggle] + kt-disclosure-content).
+   Global : enregistré comme card.css / button.css (les directives se posent sur des éléments
+   arbitraires, hors de toute vue de composant). Tokens (--disclosure-*) dans disclosure-tokens.css.
+
+   Animation = grid-template-rows 0fr ↔ 1fr : anime la hauteur AUTO réelle, sans magic number ni
+   mesure JS (cf. ADR-0004). Le panneau passe `inert` quand il est fermé (géré côté composant).
+   NB perf : animer grid-template-rows est layout-bound (reflow du sous-arbre par frame, non
+   composité). OK pour un geste ponctuel ; éviter sur des panneaux très lourds en contexte mobile. */
+
+  /* ============ PANNEAU (kt-disclosure-content) ============ */
+  kt-disclosure-content {
+    display: grid;
+    /* Replié par défaut : la rangée fait 0fr (clippée par le wrapper interne). */
+    grid-template-rows: 0fr;
+  }
+  kt-disclosure-content[data-expanded='true'] {
+    grid-template-rows: 1fr;
+  }
+
+  /* Wrapper interne fourni par le template : c'est lui qui clippe le contenu. `min-block-size: 0`
+   est indispensable pour qu'une rangée de grille 0fr puisse réellement se réduire sous la taille
+   min-content du contenu. Mettez vos paddings ICI (sur le contenu projeté), pas en marge directe
+   du panneau, pour éviter une fuite de marge pendant l'animation. */
+  .kt-disclosure-content__inner {
+    overflow: hidden;
+    min-block-size: 0;
+  }
+
+  /* ============ DÉCLENCHEUR ([ktDisclosureToggle]) ============
+   Le bouton appartient au consommateur (peut être un ktButton). On reste discret (curseur). Le
+   focus visible est assuré par le bouton lui-même (UA ou ktButton). On garantit en revanche la
+   cible tactile AAA (WCAG 2.5.5) même sur un <button> nu — surchargeable par token ; un ktButton
+   dépasse déjà ce minimum. L'inline-size reste piloté par le contenu (un bouton icône-seule doit
+   fournir sa largeur ET un nom accessible). */
+  [ktDisclosureToggle] {
+    cursor: pointer;
+    min-block-size: var(--disclosure-toggle-min-size, 44px);
+  }
+
+  /* ============ CHEVRON (input `chevron` de [ktDisclosureToggle], affiché par défaut) ============ */
+  [ktDisclosureToggle].kt-disclosure-toggle--chevron {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--disclosure-chevron-gap, 0.5rem);
+  }
+  /* Icône chevron MASQUÉE, centrée dans son carré : reste optiquement centrée en replié comme en
+   déplié (simple rotation 180°, centre inchangé). Un carré bordé tourné de 45°/225° décalerait le
+   tracé verticalement entre les deux états. Teintée via currentColor. Décoratif : le pseudo-élément
+   est hors de l'arbre d'accessibilité (l'état réel est porté par aria-expanded). */
+  [ktDisclosureToggle].kt-disclosure-toggle--chevron::after {
+    content: '';
+    inline-size: var(--disclosure-chevron-size, 1em);
+    block-size: var(--disclosure-chevron-size, 1em);
+    background-color: currentColor;
+    -webkit-mask: center / contain no-repeat
+      url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
+    mask: center / contain no-repeat
+      url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
+  }
+  [ktDisclosureToggle][aria-expanded='true'].kt-disclosure-toggle--chevron::after {
+    /* Pointe vers le haut une fois déplié (rotation 180°, centre inchangé). */
+    rotate: 180deg;
+  }
+
+  /* ============ Mouvement réduit (WCAG 2.3.3) ============ */
+  @media (prefers-reduced-motion: no-preference) {
+    kt-disclosure-content {
+      transition: grid-template-rows var(--disclosure-anim-duration, 0.2s) ease;
+    }
+    [ktDisclosureToggle].kt-disclosure-toggle--chevron::after {
+      transition: rotate var(--disclosure-anim-duration, 0.2s) ease;
+    }
+  }
+
+  /* ============ Contraste élevé Windows / forced-colors ============
+   Un élément masqué teinté via background-color peut s'effacer en forced-colors : on force une
+   couleur système pour que le chevron (seul indice visuel d'état avec aria-expanded) reste visible. */
+  @media (forced-colors: active) {
+    [ktDisclosureToggle].kt-disclosure-toggle--chevron::after {
+      background-color: CanvasText;
+    }
+  }
+}

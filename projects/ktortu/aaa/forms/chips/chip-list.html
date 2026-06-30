@@ -1,0 +1,41 @@
+@if (items().length > 0) {
+  <div class="kt-chip-list">
+    <div class="kt-chip-list__items" role="list" [attr.aria-label]="resolvedListLabel()">
+      @for (item of visibleItems(); track keyOf(item); let i = $index) {
+        @if (effectiveTemplate(); as tpl) {
+          <div role="listitem" class="kt-chip-list__item">
+            <ng-container
+              [ngTemplateOutlet]="tpl"
+              [ngTemplateOutletContext]="{ $implicit: item, remove: removeCallback(item, i) }"
+            />
+          </div>
+        } @else {
+          <kt-chip
+            role="listitem"
+            [removable]="showRemove()"
+            [disabled]="disabled()"
+            [removeLabel]="removeLabelFor(item)"
+            (remove)="removeAt(item, i)"
+            >{{ labelOf(item) }}</kt-chip
+          >
+        }
+      }
+    </div>
+    <!-- Le bouton de repli/dépli n'est PAS un chip : hors du role="list" pour ne pas être
+         annoncé comme un item de la liste (reste dans la même rangée flex). -->
+    @if (overflow()) {
+      <button
+        type="button"
+        class="kt-chip-list__more"
+        [attr.aria-expanded]="expanded()"
+        [style.view-transition-name]="transitioning() ? moreBtnTransitionName : null"
+        [style.view-transition-class]="'chip-transition'"
+        (click)="toggleExpanded()"
+      >
+        {{ expanded() ? resolvedLessLabel() : resolvedMoreLabel()(hiddenCount()) }}
+      </button>
+    }
+  </div>
+}
+<!-- Annonce des retraits : TOUJOURS rendue (hors du @if, sinon elle disparaît avec le dernier chip). -->
+<div class="kt-chip-list__status" role="status" aria-live="polite">{{ status() }}</div>

@@ -1,0 +1,6 @@
+@layer kt-aaa.tokens, kt-aaa.base, kt-aaa.components;
+
+/* Menu (couche de thème kt sur @angular/aria/menu) : tokens + apparence. Nécessite le socle.
+     @import '@ktortu/aaa/menu.css'; */
+@import '../menu/menu-tokens.css';
+@import '../menu/menu.css';

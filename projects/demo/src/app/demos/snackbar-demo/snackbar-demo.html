@@ -1,0 +1,91 @@
+<article class="page">
+  <header class="page__head">
+    <p class="page__eyebrow">Service &amp; API</p>
+    <h1 class="page__title">Snackbar</h1>
+    <p class="page__lead">
+      Feedback <strong>non bloquant</strong> qui confirme une action ou signale un événement transitoire sans
+      interrompre la tâche. Ouverte par le service <code>KtSnackbar.open(message, options?)</code>, montée dans
+      l’overlay CDK et annoncée via le <code>LiveAnnouncer</code> — <strong>un seul canal d’annonce</strong> (le panneau
+      n’est pas une live region), ce qui évite la double-annonce et l’écrasement de politesse. Accessibilité : le
+      <strong>focus n’est jamais déplacé</strong> (RGAA « message de statut » / WCAG 4.1.3), disparition automatique
+      <strong>en pause au survol et au focus</strong> (WCAG 1.4.13 / 2.2.1) ou persistante en
+      <code>timing: 'manual'</code> (AAA 2.2.3), bouton de fermeture cible 44px, <strong>Échap</strong> pour fermer,
+      respect de <code>prefers-reduced-motion</code>. <strong>File FIFO</strong> : une seule snackbar visible, les
+      suivantes patientent (file bornée à 3, messages identiques fusionnés). La snackbar ne porte
+      <strong>pas d’action interactive</strong> (un bouton dans une live region n’est pas atteignable) : pour un undo ou
+      une information critique à acquitter, préférez le <a routerLink="/dialog">dialog</a>.
+    </p>
+  </header>
+
+  <kt-doc-section
+    title="Variantes"
+    subtitle="Apparence seule (couleur d'accent + icône de forme distincte), pilotée par data-variant et les tokens CSS. Découplée de la politesse."
+  >
+    <kt-doc-example label="neutral · info · success · warning · error">
+      <button ktButton mode="tonal" (click)="openVariant('neutral')">Neutral</button>
+      <button ktButton mode="tonal" (click)="openVariant('info')">Info</button>
+      <button ktButton mode="tonal" (click)="openVariant('success')">Success</button>
+      <button ktButton mode="tonal" (click)="openVariant('warning')">Warning</button>
+      <button ktButton mode="tonal" (click)="openVariant('error')">Error</button>
+    </kt-doc-example>
+  </kt-doc-section>
+
+  <kt-doc-section
+    title="Régimes & placement"
+    subtitle="La durée par défaut s'adapte au temps de lecture (4–10 s) — gardez le message court. Survolez (ou tabulez dans) une snackbar « auto » : sa minuterie se met en pause. Échap ferme la snackbar affichée."
+  >
+    <kt-doc-example label="Durée, position, persistance">
+      <button ktButton (click)="openVariant('neutral')">Message simple (auto)</button>
+      <button ktButton mode="tonal" (click)="openShort()">Durée courte (2 s)</button>
+      <button ktButton mode="tonal" (click)="openTop()">Position haute</button>
+      <button ktButton color="neutral" (click)="openManual()">Persistant (timing: 'manual')</button>
+      <button ktButton mode="outlined" (click)="openNonClosable()">Sans bouton de fermeture</button>
+    </kt-doc-example>
+  </kt-doc-section>
+
+  <kt-doc-section
+    title="File (FIFO) & fusion"
+    subtitle="Une seule visible à la fois ; les suivantes patientent (max 3). Les messages identiques sont fusionnés."
+  >
+    <kt-doc-example label="Empilement & fermeture programmée">
+      <button ktButton mode="tonal" (click)="flood()">Empiler 4 messages (FIFO, max 3)</button>
+      <button ktButton mode="tonal" (click)="coalesce()">Ouvrir 3× le même (fusion)</button>
+      <button ktButton mode="text" (click)="dismissCurrent()">Fermer la dernière (ref.dismiss())</button>
+      @if (lastReason(); as reason) {
+        <p class="page__result">
+          Dernière raison de fermeture : <code>{{ reason }}</code>
+        </p>
+      }
+    </kt-doc-example>
+  </kt-doc-section>
+
+  <kt-doc-section
+    title="Utilisation"
+    subtitle="Injecter KtSnackbar et appeler open(). Résolution en cascade : option d'open ?? KT_SNACKBAR_CONFIG ?? défaut."
+  >
+    <kt-doc-code language="ts" [code]="tsSnippet" />
+    <p class="page__note">
+      Prérequis côté hôte : importer <code>&#64;angular/cdk/overlay-prebuilt.css</code> (overlay) et
+      <code>&#64;angular/cdk/a11y-prebuilt.css</code> (masque l’élément du LiveAnnouncer), en plus de
+      <code>&#64;ktortu/aaa/snackbar.css</code>.
+    </p>
+  </kt-doc-section>
+
+  <kt-doc-section title="API TypeScript" subtitle="Service, référence et providers de configuration.">
+    <kt-doc-props [rows]="apiProps" />
+  </kt-doc-section>
+
+  <kt-doc-section
+    title="Options & configuration"
+    subtitle="Champs de KtSnackbarConfig : surchargeables par appel d'open(), par KT_SNACKBAR_CONFIG, ou globalement via provideKtSnackbar."
+  >
+    <kt-doc-props [rows]="configProps" />
+  </kt-doc-section>
+
+  <kt-doc-section
+    title="Tokens CSS"
+    subtitle="Contrat de personnalisation : surchargez ces variables sur :root (la snackbar est rendue dans l'overlay CDK, hors de toute vue)."
+  >
+    <kt-doc-tokens [groups]="tokens" />
+  </kt-doc-section>
+</article>

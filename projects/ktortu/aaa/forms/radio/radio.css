@@ -1,0 +1,165 @@
+@layer kt-aaa.components {
+  :host {
+    display: block;
+  }
+
+  /* Surface cliquable : remplit tout le host (toute la « carte » est cliquable) avec une cible
+   tactile confortable (AAA 2.5.5). Le rembourrage est piloté par token (`--radio-padding`) pour
+   qu'un consommateur bâtisse une carte sélectionnable sans franchir l'encapsulation ; le rayon
+   est hérité du host pour que survol/sélection épousent les coins arrondis du consommateur. */
+  .kt-radio {
+    display: flex;
+    align-items: center;
+    gap: var(--field-control-gap, 0.5rem);
+    inline-size: 100%;
+    box-sizing: border-box;
+    min-block-size: var(--radio-target-size, 44px);
+    padding: var(--radio-padding, 0);
+    border-radius: inherit;
+    cursor: pointer;
+    user-select: none;
+  }
+
+  /* Le bouton radio : input natif redessiné, taille pilotée par UN token via `font-size`. */
+  .kt-radio__input {
+    appearance: none;
+    -webkit-appearance: none;
+    margin: 0;
+    flex: none;
+    box-sizing: border-box;
+    display: grid;
+    place-content: center;
+    font-size: var(--radio-size, 1.25rem);
+    inline-size: 1em;
+    block-size: 1em;
+    border: var(--radio-border-width, 2px) solid
+      var(--radio-border-color, var(--field-border-color, var(--kt-outline, #c4c7c5)));
+    border-radius: 50%;
+    background-color: var(--radio-bg, var(--field-bg, var(--kt-surface, #ffffff)));
+    cursor: pointer;
+    /* Élévation/glow de repos : retombe sur le token de thème des champs (--field-shadow). */
+    box-shadow: var(--radio-shadow, var(--field-shadow, none));
+    transition: var(
+      --radio-transition,
+      background-color 0.15s cubic-bezier(0.4, 0, 0.2, 1),
+      border-color 0.15s cubic-bezier(0.4, 0, 0.2, 1),
+      box-shadow 0.2s ease
+    );
+  }
+
+  /* Le point central : pseudo-élément mis à l'échelle 0 → 1. */
+  .kt-radio__input::before {
+    content: '';
+    inline-size: 0.5em;
+    block-size: 0.5em;
+    border-radius: 50%;
+    transform: scale(0);
+    transform-origin: center;
+    box-shadow: inset 1em 1em var(--radio-dot-color, #ffffff);
+    /* Désélection : repli doux vers scale(0). */
+    transition: var(--radio-dot-transition, transform 0.12s ease-in);
+  }
+
+  /* Sélection : « pop » avec rebond via @keyframes — fiable car déclenché à l'ENTRÉE dans l'état
+   `:checked` (cf. checkbox : une transition ne démarrait pas dans le flux Angular). */
+  .kt-radio__input:checked::before {
+    transform: scale(1);
+    animation: var(--radio-dot-animation, kt-radio-pop 0.22s cubic-bezier(0.34, 1.56, 0.64, 1));
+  }
+
+  @keyframes kt-radio-pop {
+    from {
+      transform: scale(0);
+    }
+  }
+
+  /* Sélectionné : remplissage plein + HALO coloré dérivé du primaire du thème (glow visible,
+   en fondu via la transition). Surchargeable/désactivable par --radio-shadow-checked. */
+  .kt-radio__input:checked {
+    background-color: var(--radio-bg-checked, var(--kt-primary, #0842a0));
+    border-color: var(--radio-border-color-checked, var(--radio-bg-checked, var(--kt-primary, #0842a0)));
+    box-shadow: var(
+      --radio-shadow-checked,
+      0 0 8px color-mix(in srgb, var(--radio-bg-checked, var(--kt-primary, #0842a0)) 50%, transparent)
+    );
+  }
+
+  /* HOVER : bordure + glow de survol du thème (--field-shadow-hover). */
+  .kt-radio__input:hover:not(:disabled) {
+    border-color: var(--radio-border-color-hover, var(--field-border-color-hover, var(--kt-outline-strong, #5f6368)));
+    box-shadow: var(--radio-shadow-hover, var(--field-shadow-hover, var(--radio-shadow, var(--field-shadow, none))));
+  }
+
+  .kt-radio__input:checked:hover:not(:disabled) {
+    background-color: var(--radio-bg-checked-hover, color-mix(in srgb, var(--kt-primary, #0842a0) 90%, black));
+    border-color: var(--radio-bg-checked-hover, color-mix(in srgb, var(--kt-primary, #0842a0) 90%, black));
+  }
+
+  /* FOCUS : anneau via `outline` (comme les champs → pas de conflit avec le glow box-shadow), +
+   glow de focus du thème (--field-shadow-focus). L'outline reste visible quel que soit le survol. */
+  .kt-radio__input:focus-visible {
+    outline: var(--kt-focus-ring-width, 2px) solid var(--kt-focus-ring-color, #0842a0);
+    outline-offset: var(--radio-focus-ring-offset, 2px);
+    box-shadow: var(--radio-shadow-focus, var(--field-shadow-focus, var(--field-shadow, none)));
+  }
+
+  /* DÉSACTIVÉ */
+  .kt-radio__input:disabled {
+    cursor: not-allowed;
+    opacity: 0.5;
+  }
+
+  .kt-radio:has(.kt-radio__input:disabled) {
+    cursor: not-allowed;
+  }
+
+  /* Libellé */
+  .kt-radio__label {
+    font-size: var(--field-label-font-size, 0.875rem);
+    font-weight: var(--field-label-weight, 500);
+    color: var(--field-label-color, inherit);
+  }
+
+  .kt-radio:has(.kt-radio__input:disabled) .kt-radio__label {
+    color: var(--field-hint-color, #5f6368);
+    opacity: 0.6;
+  }
+
+  /* Hint par option */
+  .kt-radio__hint {
+    margin: 0;
+    margin-inline-start: calc(var(--radio-size, 1.25rem) + var(--field-control-gap, 0.5rem));
+    font-size: var(--field-hint-font-size, 0.8125rem);
+    color: var(--field-hint-color, #474747);
+  }
+
+  /* Mode contraste élevé : restaure le rendu système après `appearance:none`. */
+  @media (forced-colors: active) {
+    .kt-radio__input {
+      border-color: CanvasText;
+      background-color: Canvas;
+    }
+    .kt-radio__input:checked {
+      border-color: Highlight;
+      background-color: Canvas;
+    }
+    .kt-radio__input::before {
+      box-shadow: inset 1em 1em Highlight;
+    }
+    .kt-radio__input:disabled {
+      border-color: GrayText;
+    }
+    .kt-radio__input:focus-visible {
+      outline: 2px solid CanvasText;
+      outline-offset: 2px;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .kt-radio__input,
+    .kt-radio__input::before {
+      transition: none;
+      animation: none;
+    }
+  }
+}

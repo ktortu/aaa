@@ -1,0 +1,20 @@
+{
+  "$schema": "./node_modules/@stryker-mutator/core/schema/stryker-schema.json",
+  "_comment": "Pipe temporalDate (formatage Temporal localisé). typescript-checker écarte les non-compilables ; hors CI, à la demande via npm run mutation:temporal.",
+  "packageManager": "npm",
+  "testRunner": "command",
+  "commandRunner": {
+    "command": "npm run test:mutation:temporal"
+  },
+  "mutate": ["projects/ktortu/aaa/forms/temporal/temporal-date.pipe.ts"],
+  "checkers": ["typescript"],
+  "tsconfigFile": "projects/ktortu/aaa/tsconfig.mutation-checker.json",
+  "reporters": ["html", "clear-text", "progress", "json"],
+  "concurrency": 4,
+  "timeoutMS": 60000,
+  "thresholds": {
+    "high": 90,
+    "low": 80,
+    "break": 80
+  }
+}

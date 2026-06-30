@@ -1,0 +1,211 @@
+/* Thème « Cyberpunk » (dark, néon ANIMÉ) — vitrine ANIMATION + LASER du système de tokens.
+   Fusionne les deux bancs d'essai retirés (2026-06) :
+   - moteur d'animation par @property typés (ex-Motion) : --cyber-angle/-breathe/-laser animés
+     sur :root, consommés dans les ombres via cos()/sin() => la lumière ORBITE + balayage LASER ;
+   - fills en dégradé duotone + glows néon au niveau élément (ex-Synthwave).
+   TOUT le mouvement est derrière prefers-reduced-motion (repli néon STATIQUE — aucune régression
+   a11y, le glow orbital se fige à l'angle 0). Cyan électrique, magenta, quasi-noir bleuté, Oxanium.
+
+   Les @property sont permis car ce sont des tokens PRIVÉS du thème — jamais sur les tokens
+   publics de la lib (ça casserait leur surcharge par redéclaration). */
+
+@property --cyber-angle {
+  syntax: '<angle>';
+  inherits: true;
+  initial-value: 0deg;
+}
+@property --cyber-breathe {
+  syntax: '<length>';
+  inherits: true;
+  initial-value: 0px;
+}
+@property --cyber-laser {
+  syntax: '<length>';
+  inherits: true;
+  initial-value: -400px;
+}
+
+@keyframes cyber-orbit {
+  to {
+    --cyber-angle: 360deg;
+  }
+}
+@keyframes cyber-breathe {
+  to {
+    --cyber-breathe: 7px;
+  }
+}
+@keyframes cyber-laser {
+  to {
+    --cyber-laser: 2600px;
+  }
+}
+
+[data-theme='cyberpunk'] {
+  color-scheme: dark;
+
+  /* ============ Socle (cyan/magenta sur quasi-noir) ============ */
+  --kt-surface: #0b0f1a;
+  --kt-on-surface: #e6f6ff; /* ~15:1 */
+  --kt-muted: #94b2c8; /* ~7:1 */
+  --kt-outline: #2f5a73; /* 3:1 non-texte */
+  --kt-outline-strong: #5fb6da;
+  --kt-primary: #28d6ef; /* cyan, texte ~10:1 */
+  --kt-danger: #ff3d8b; /* magenta, texte ~6:1 */
+  --kt-neutral: #2b3950;
+  --kt-focus-ring-color: #28d6ef;
+  --kt-font: 'Oxanium', system-ui, sans-serif;
+
+  /* Gouttière néon cyan sur la nuit. */
+  --kt-scrollbar-color: #28d6ef #10182a;
+
+  /* Feuille / popup : anneau cyan + ombre profonde. */
+  --kt-sheet-shadow: 0 0 0 1px rgb(40 214 239 / 25%), 0 -8px 32px rgb(0 0 0 / 65%);
+  --kt-sheet-scrim: rgb(4 8 18 / 70%);
+
+  /* Caret + sélection. */
+  --field-caret-color: #28d6ef;
+  --kt-selection-bg: #28d6ef;
+  --kt-selection-fg: #04141a;
+
+  /* ============ Géométrie HUD : coins chanfreinés ============ */
+  --kt-control-radius: 4px;
+  --btn-radius: 6px;
+  --btn-corner-shape: bevel; /* coins coupés façon interface SF */
+  --kt-sheet-radius: 8px;
+  --chip-radius: 4px;
+
+  /* ============ Champs : lavis sombre + halo bicolore qui ORBITE au focus ============ */
+  --field-bg: #10182a;
+  --field-focus-ring: color-mix(in srgb, #28d6ef 60%, transparent);
+  --field-transition: border-color 200ms ease;
+  --field-shadow-hover: 0 0 calc(7px + var(--cyber-breathe)) rgb(40 214 239 / 30%);
+  --field-shadow-focus:
+    calc(cos(var(--cyber-angle)) * 10px) calc(sin(var(--cyber-angle)) * 10px) 16px -4px rgb(40 214 239 / 70%),
+    calc(cos(var(--cyber-angle)) * -10px) calc(sin(var(--cyber-angle)) * -10px) 16px -4px rgb(255 61 139 / 55%),
+    0 0 calc(8px + var(--cyber-breathe)) rgb(40 214 239 / 30%);
+
+  /* ============ Boutons : inversions dark + pulsation au clic ============ */
+  --btn-on-primary: #04141a; /* sur cyan, AAA */
+  --btn-on-danger: #2a0312; /* sur magenta */
+  --btn-on-neutral: #ffffff;
+  --btn-on-primary-container: #b6f4ff;
+  --btn-on-neutral-container: #d4e2ee;
+  --btn-on-danger-container: #ffd0e2;
+  --btn-fg-weight: 100%;
+  --btn-neutral-fg: #a9c4da;
+  --btn-tonal-weight: 24%;
+  --btn-font-weight: 600;
+  --btn-letter-spacing: 0.03em;
+  --btn-transition: transform 140ms ease;
+  --btn-transform-active: scale(0.95);
+
+  /* ============ Chips ============ */
+  --chip-bg: color-mix(in srgb, #28d6ef 14%, transparent);
+  --chip-border: color-mix(in srgb, #28d6ef 30%, transparent);
+  --chip-shadow-hover: 0 0 14px rgb(40 214 239 / 45%);
+
+  /* ============ Select / tooltip ============ */
+  --select-popup-bg: #10182a;
+  --select-popup-shadow: 0 0 0 1px rgb(40 214 239 / 25%), 0 12px 40px rgb(0 0 0 / 65%);
+  --tooltip-bg: #10182a;
+  --tooltip-fg: #e6f6ff;
+
+  /* ============ Dialog : panneau HUD ============ */
+  --dialog-bg: #10182a;
+  --dialog-border-color: rgb(40 214 239 / 35%);
+  --dialog-radius: 8px;
+  --dialog-anim-from-transform: scale(0.96);
+
+  /* ============ Card : panneau néon, ombre qui orbite (+ laser en bord haut, cf. ::before) ============ */
+  --card-bg: #10182a;
+  --card-filled-bg: #16203a;
+  --card-radius: 6px;
+  --card-shadow:
+    calc(cos(var(--cyber-angle)) * 8px) calc(sin(var(--cyber-angle)) * 8px) 22px -8px rgb(40 214 239 / 40%),
+    0 8px 32px rgb(0 0 0 / 60%);
+  --card-shadow-hover:
+    calc(cos(var(--cyber-angle)) * 12px) calc(sin(var(--cyber-angle)) * 12px) 26px -6px rgb(40 214 239 / 60%),
+    0 10px 36px rgb(0 0 0 / 65%);
+  --card-transition: box-shadow 160ms ease;
+
+  /* ============ Tabs : base pour le laser ============ */
+  --tab-indicator-width: 0;
+  --tab-list-border-color: transparent;
+  --tab-bg: transparent;
+  --tab-bg-hover: rgb(16 24 42 / 60%);
+  --tab-bg-active: #10182a;
+  --tab-radius: 6px 6px 0 0;
+  --tab-border: none;
+  --tab-margin: 0 4px 0 0;
+}
+
+/* Fills DUOTONE cyan→magenta (ex-Synthwave) : niveau élément pour substituer var(--btn-fill) ;
+   le voile d'état s'empile par-dessus. Glow ORBITAL (ex-Motion). Disabled : la lib force none. */
+[data-theme='cyberpunk'] [ktButton][data-mode='filled'] {
+  --btn-fill-image: linear-gradient(135deg, transparent 30%, rgb(255 61 139 / 55%));
+  --btn-shadow:
+    calc(cos(var(--cyber-angle)) * 8px) calc(sin(var(--cyber-angle)) * 8px) 14px -4px
+      color-mix(in srgb, var(--btn-fill) 85%, transparent),
+    calc(cos(var(--cyber-angle)) * -8px) calc(sin(var(--cyber-angle)) * -8px) 14px -4px rgb(255 61 139 / 55%);
+  --btn-shadow-hover:
+    calc(cos(var(--cyber-angle)) * 12px) calc(sin(var(--cyber-angle)) * 12px) 18px -2px
+      color-mix(in srgb, var(--btn-fill) 95%, transparent),
+    0 0 calc(12px + var(--cyber-breathe) * 2) color-mix(in srgb, var(--btn-fill) 50%, transparent);
+}
+[data-theme='cyberpunk'] [ktButton]:is([data-mode='tonal'], [data-mode='outlined'], [data-mode='text']) {
+  --btn-shadow-hover: 0 0 14px color-mix(in srgb, var(--btn-fg) 60%, transparent);
+  --btn-shadow-focus: 0 0 16px color-mix(in srgb, var(--btn-fg) 75%, transparent);
+}
+
+/* LASER en bord HAUT des cartes : ligne néon qui balaie (signature « partout »). Le pseudo
+   est libre (le lien étiré utilise ::after du lien, pas de la carte). z-index au-dessus du média. */
+[data-theme='cyberpunk'] [ktCard] {
+  isolation: isolate;
+}
+[data-theme='cyberpunk'] [ktCard]::before {
+  content: '';
+  position: absolute;
+  inset-block-start: 0;
+  inset-inline: 0;
+  block-size: 2px;
+  background: linear-gradient(
+    90deg,
+    transparent calc(var(--cyber-laser) - 220px),
+    #0ff calc(var(--cyber-laser) - 40px),
+    var(--kt-primary) var(--cyber-laser),
+    transparent calc(var(--cyber-laser) + 180px)
+  );
+  z-index: 2;
+  pointer-events: none;
+}
+
+/* LASER de la liste d'onglets (repris de Motion). */
+[data-theme='cyberpunk'] [ngTabList] {
+  position: relative;
+}
+[data-theme='cyberpunk'] [ngTabList]::after {
+  content: '';
+  position: absolute;
+  inset-inline: 0;
+  inset-block-end: 0;
+  block-size: 1px;
+  background: linear-gradient(
+    90deg,
+    var(--kt-outline) calc(var(--cyber-laser) - 150px),
+    #0ff var(--cyber-laser),
+    var(--kt-primary) calc(var(--cyber-laser) + 20px),
+    var(--kt-outline) calc(var(--cyber-laser) + 150px)
+  );
+}
+
+/* MOTEUR d'animation — UNIQUEMENT hors prefers-reduced-motion. Sinon : --cyber-angle reste 0
+   => glow figé (cos0=1,sin0=0), --cyber-laser hors-champ => lignes laser invisibles. Néon statique. */
+@media (prefers-reduced-motion: no-preference) {
+  [data-theme='cyberpunk'] {
+    animation:
+      cyber-orbit 4s linear infinite,
+      cyber-breathe 5s ease-in-out infinite alternate,
+      cyber-laser 3.2s linear infinite;
+  }
+}

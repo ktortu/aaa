@@ -1,0 +1,46 @@
+/* Thème « Bootstrap 5 » (light) — uniquement des redéclarations de tokens.
+   Signature Bootstrap : stack système, radius .375rem (6px), focus ring translucide large.
+   AA-corrigé : les officiels #0d6efd (~4.4:1) et #dc3545 (~4.3:1) échouent de peu sur blanc
+   → on prend leurs variantes hover (#0b5ed7, #bb2d3b), quasi indiscernables et AA. */
+[data-theme='bootstrap'] {
+  /* ============ Socle ============ */
+  --kt-primary: #0b5ed7; /* btn-primary hover — blanc 5.8:1 */
+  --kt-danger: #bb2d3b; /* btn-danger hover — blanc 5.9:1 */
+  --kt-neutral: #6c757d; /* secondary — blanc 4.7:1 */
+  --kt-surface: #ffffff;
+  --kt-on-surface: #212529; /* body-color */
+  --kt-muted: #6c757d; /* secondary-color */
+  --kt-outline: #ced4da; /* border des inputs (authentique, < 3:1 — fidélité > 1.4.11 ici) */
+  --kt-outline-strong: #adb5bd;
+  --kt-font: system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+
+  /* ============ Géométrie ============ */
+  --kt-control-radius: 6px; /* .375rem */
+  --btn-radius: 6px;
+
+  /* ============ Champs : le fameux ring translucide large de Bootstrap ============ */
+  --field-focus-ring-width: 4px; /* .25rem */
+  --field-focus-ring: rgb(13 110 253 / 25%);
+  /* LA transition des .form-control Bootstrap (rétrofit lot 3). */
+  --field-transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+
+  /* ============ Boutons ============ */
+  --btn-on-primary-container: #052c65; /* ≈ text-emphasis sur -subtle */
+  --btn-on-danger-container: #58151c;
+  --btn-on-neutral-container: #212529;
+
+  /* ============ Tooltip ============ */
+  --tooltip-bg: #212529;
+  --tooltip-fg: #ffffff;
+
+  /* ============ Dialog (Bootstrap 5 : rayon .5rem, ombre modale) ============ */
+  --dialog-radius: 0.5rem;
+  --dialog-border-color: rgb(0 0 0 / 17.5%);
+  --dialog-shadow: 0 0.5rem 1rem rgb(0 0 0 / 15%);
+
+  /* ============ Card (Bootstrap : rayon .5rem, bord + ombre-sm) ============ */
+  --card-radius: 0.5rem;
+  --card-border-color: rgb(0 0 0 / 17.5%);
+  --card-filled-bg: #f8f9fa; /* bg-body-tertiary */
+  --card-shadow: 0 0.125rem 0.25rem rgb(0 0 0 / 7.5%); /* shadow-sm */
+}

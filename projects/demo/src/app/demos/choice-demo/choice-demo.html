@@ -1,0 +1,137 @@
+<article class="page">
+  <header class="page__head">
+    <p class="page__eyebrow">Composants</p>
+    <h1 class="page__title">Checkbox / Radio / Switch</h1>
+    <p class="page__lead">
+      Trois contrôles de choix accessibles : <code>&lt;kt-switch&gt;</code> (interrupteur <code>role="switch"</code>,
+      valeur <code>boolean</code>), <code>&lt;kt-checkbox&gt;</code> (case bâtie sur un
+      <code>&lt;input type="checkbox"&gt;</code> natif, état <code>indeterminate</code>) et
+      <code>&lt;kt-radio&gt;</code> (au sein d'un <code>&lt;kt-radio-group&gt;</code>,
+      <code>&lt;input type="radio"&gt;</code> natifs partageant le <code>name</code> → clavier roving + flèches
+      gratuits). Intégrés aux Signal Forms via <code>FormValueControl</code>. Accessibilité : libellé associé, légende
+      de groupe (<code>role="group"</code>/<code>"radiogroup"</code>, <code>aria-labelledby</code>),
+      <code>aria-required</code>/<code>aria-invalid</code>, région live pour l'erreur, cibles tactiles 44px (AAA) et
+      support du mode contraste élevé.
+    </p>
+  </header>
+
+  <kt-doc-section title="Exemples" subtitle="Interrupteur, case (autonome & groupe), radio (groupe), états et tailles.">
+    <kt-doc-example label="Interrupteur (kt-switch)">
+      <kt-switch label="Notifications par e-mail" [(value)]="notifications" />
+      <kt-switch label="Mode sombre" />
+      <kt-switch label="Avec aide" hint="Reçoit un e-mail à chaque connexion." />
+    </kt-doc-example>
+
+    <kt-doc-example label="États (interrupteur)">
+      <kt-switch label="Activé" [value]="true" />
+      <kt-switch label="Désactivé" disabled />
+      <kt-switch label="Désactivé activé" [value]="true" disabled />
+      <kt-switch label="Requis" required />
+      <kt-switch label="Invalide" [invalid]="true" [touched]="true" [errors]="demoErrors" />
+    </kt-doc-example>
+
+    <kt-doc-example label="Case à cocher (kt-checkbox)">
+      <kt-checkbox label="Accepter les conditions" [(value)]="accepted" />
+      <kt-checkbox label="Pré-cochée" [value]="true" />
+      <kt-checkbox label="Indéterminée" indeterminate />
+    </kt-doc-example>
+
+    <kt-doc-example label="États (case)">
+      <kt-checkbox label="Désactivée" disabled />
+      <kt-checkbox label="Désactivée cochée" [value]="true" disabled />
+      <kt-checkbox label="Requise" required />
+      <kt-checkbox label="Invalide" [invalid]="true" [touched]="true" [errors]="demoErrors" />
+    </kt-doc-example>
+
+    <kt-doc-example label="Groupe de cases (valeur tableau)">
+      <kt-checkbox-group label="Centres d'intérêt" [(value)]="interests" hint="Plusieurs choix possibles.">
+        <kt-checkbox [optionValue]="'sport'" label="Sport" />
+        <kt-checkbox [optionValue]="'musique'" label="Musique" />
+        <kt-checkbox [optionValue]="'cinema'" label="Cinéma" />
+      </kt-checkbox-group>
+    </kt-doc-example>
+
+    <kt-doc-example label="Groupe radio & option désactivée">
+      <kt-radio-group label="Taille" [(value)]="size" hint="Un seul choix possible">
+        <div style="display: flex; gap: 1rem">
+          <kt-radio [optionValue]="'s'" label="S" />
+          <kt-radio [optionValue]="'m'" label="M" />
+          <kt-radio [optionValue]="'l'" label="L" disabled />
+        </div>
+      </kt-radio-group>
+    </kt-doc-example>
+
+    <kt-doc-example label="États (groupe radio)">
+      <kt-radio-group label="Requis" required style="width: 100%">
+        <div style="display: flex; gap: 1rem">
+          <kt-radio [optionValue]="'oui'" label="Oui" />
+          <kt-radio [optionValue]="'non'" label="Non" />
+        </div>
+      </kt-radio-group>
+      <kt-radio-group label="Invalide" [invalid]="true" style="width: 100%" [touched]="true" [errors]="demoErrors">
+        <div style="display: flex; gap: 1rem">
+          <kt-radio [optionValue]="'oui'" label="Oui" />
+          <kt-radio [optionValue]="'non'" label="Non" />
+        </div>
+      </kt-radio-group>
+      <kt-radio-group label="Désactivé" disabled [value]="'oui'" style="width: 100%">
+        <div style="display: flex; gap: 1rem">
+          <kt-radio [optionValue]="'oui'" label="Oui" />
+          <kt-radio [optionValue]="'non'" label="Non" />
+        </div>
+      </kt-radio-group>
+    </kt-doc-example>
+
+    <kt-doc-example label="Tailles (tokens CSS)">
+      <div class="size-row">
+        <kt-checkbox label="Case 1.6rem" [value]="true" style="--checkbox-size: 1.6rem" />
+        <kt-switch
+          label="Interrupteur large"
+          [value]="true"
+          style="--switch-width: 3.5rem; --switch-height: 2rem; --switch-thumb-size: 1.5rem"
+        />
+      </div>
+    </kt-doc-example>
+  </kt-doc-section>
+
+  <kt-doc-section title="Utilisation" subtitle="Importer les composants, puis les lier à des signaux.">
+    <div class="page__codes">
+      <kt-doc-code language="ts" [code]="tsSnippet" />
+      <kt-doc-code language="html" [code]="htmlSnippet" />
+    </div>
+  </kt-doc-section>
+
+  <kt-doc-section
+    title="Propriétés communes"
+    subtitle="Partagées par kt-switch, kt-checkbox, kt-checkbox-group et kt-radio-group. Défauts via KT_FIELD_CONFIG."
+  >
+    <kt-doc-props [rows]="commonProps" />
+  </kt-doc-section>
+
+  <kt-doc-section title="kt-switch" subtitle="Interrupteur à bascule (slide-toggle).">
+    <kt-doc-props [rows]="switchProps" />
+  </kt-doc-section>
+
+  <kt-doc-section title="kt-checkbox" subtitle="Case à cocher autonome ou enfant d'un groupe.">
+    <kt-doc-props [rows]="checkboxProps" />
+  </kt-doc-section>
+
+  <kt-doc-section title="kt-checkbox-group" subtitle="Orchestrateur à valeur tableau.">
+    <kt-doc-props [rows]="checkboxGroupProps" />
+  </kt-doc-section>
+
+  <kt-doc-section title="kt-radio" subtitle="Option individuelle, enfant déclaratif du groupe radio.">
+    <kt-doc-props [rows]="radioProps" />
+  </kt-doc-section>
+
+  <kt-doc-section title="kt-radio-group" subtitle="Orchestrateur à valeur unique (génère le name partagé).">
+    <kt-doc-props [rows]="radioGroupProps" />
+  </kt-doc-section>
+
+  <kt-doc-section
+    title="Tokens CSS"
+    subtitle="Contrat de personnalisation : surchargez ces variables sur :root ou un conteneur de spécificité ≥."
+  >
+    <kt-doc-tokens [groups]="tokens" />
+  </kt-doc-section>
+</article>

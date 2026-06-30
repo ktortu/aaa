@@ -1,0 +1,7 @@
+@layer kt-aaa.tokens, kt-aaa.base, kt-aaa.components;
+
+/* Socle de design @ktortu/aaa — tokens `--kt-*` dont DÉRIVENT tous les composants.
+   REQUIS, à importer EN PREMIER, avant tout CSS de composant :
+     @import '@ktortu/aaa/foundation.css';
+   Surcharger un seul `--kt-*` (ex. --kt-primary) rebrande toute la lib. */
+@import '../cdk/styles/foundation.css';

@@ -1,0 +1,46 @@
+@layer kt-aaa.components {
+  /* Spinner « validation asynchrone en cours » par défaut.
+
+     100 % CSS (pseudo-élément, aucun markup) et piloté par l'attribut `[data-pending]` posé par les
+     contrôles quand leur input `pending` est vrai (l'accessibilité passe par `aria-busy`, indépendant).
+
+     Entièrement surchargeable / suppressible côté consommateur :
+       - retailler/recolorer via les tokens `--field-spinner-*` ;
+       - supprimer :  kt-text-field .kt-field-box[data-pending]::after { content: none; }
+       - remplacer par sa propre affordance (le hook `[data-pending]` reste disponible). */
+  @keyframes kt-field-spin {
+    to {
+      transform: rotate(1turn);
+    }
+  }
+
+  .kt-field-box[data-pending]::after,
+  .kt-switch-field[data-pending] .kt-switch-row::after,
+  .kt-checkbox-field[data-pending] .kt-checkbox::after,
+  .kt-radio-group-field[data-pending] .kt-radio-group__legend::after,
+  .kt-checkbox-group-field[data-pending] .kt-checkbox-group__legend::after {
+    content: '';
+    display: inline-block;
+    flex: none;
+    vertical-align: middle;
+    inline-size: var(--field-spinner-size, 1em);
+    block-size: var(--field-spinner-size, 1em);
+    margin-inline-start: var(--field-spinner-gap, 0.5rem);
+    border: var(--field-spinner-width, 2px) solid var(--field-spinner-track, currentColor);
+    border-top-color: var(--field-spinner-color, var(--field-border-color-focus, #1a73e8));
+    border-radius: 50%;
+    opacity: var(--field-spinner-opacity, 0.7);
+    animation: kt-field-spin var(--field-spinner-duration, 0.7s) linear infinite;
+  }
+
+  /* Respect de prefers-reduced-motion : on fige la rotation (le cercle reste visible comme indicateur). */
+  @media (prefers-reduced-motion: reduce) {
+    .kt-field-box[data-pending]::after,
+    .kt-switch-field[data-pending] .kt-switch-row::after,
+    .kt-checkbox-field[data-pending] .kt-checkbox::after,
+    .kt-radio-group-field[data-pending] .kt-radio-group__legend::after,
+    .kt-checkbox-group-field[data-pending] .kt-checkbox-group__legend::after {
+      animation: none;
+    }
+  }
+}

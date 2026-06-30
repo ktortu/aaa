@@ -1,0 +1,58 @@
+:host {
+  display: block;
+}
+
+.page {
+  max-width: 64rem;
+}
+
+.page__head {
+  padding: 1rem 0 1.5rem;
+  border-bottom: 1px solid var(--kt-outline);
+}
+
+.page__eyebrow {
+  margin: 0 0 0.6rem;
+  font:
+    600 0.8125rem/1 ui-monospace,
+    monospace;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--kt-primary);
+}
+
+.page__title {
+  margin: 0;
+  font-size: clamp(1.75rem, 4vw, 2.25rem);
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  color: var(--kt-on-surface);
+}
+
+.page__lead {
+  margin: 0.85rem 0 0;
+  max-width: 64ch;
+  font-size: 1.0625rem;
+  line-height: 1.6;
+  color: var(--kt-muted);
+}
+
+.page__lead code {
+  font-family: ui-monospace, monospace;
+  font-size: 0.9375em;
+  color: var(--kt-on-surface);
+}
+
+.page__codes {
+  display: grid;
+  /* minmax(0, 1fr) : empêche la piste de s'élargir à la largeur min-content du code. */
+  grid-template-columns: minmax(0, 1fr);
+  gap: 1rem;
+}
+
+/* États : deux listes empilées avec un libellé visuel implicite. */
+.chips-states {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}

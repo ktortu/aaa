@@ -1,0 +1,152 @@
+/* Design tokens du bouton (directive ktButton) — contrat public de theming.
+
+   PRINCIPE : ne saisir que les 3 fills de base (--btn-primary / --btn-neutral / --btn-danger).
+   Tout le reste — containers tonals, fg outlined/text, états — en DÉRIVE automatiquement
+   via color-mix(). Chaque valeur dérivée reste surchargeable : il suffit de REDÉCLARER son
+   token (sur :root plus bas, ou sur un conteneur de spécificité ≥). C'est la cascade qui
+   tranche, pas un fallback var() — donc pas de token « -override » à part.
+
+   3 paliers :
+     1. Bases saisies (4 tokens).
+     2. Rôles : labels statiques (garantie AA, voir plus bas) + container/fg dérivés.
+     3. Réglages globaux : leviers de dérivation, state-layer, focus, géométrie.
+
+   NB : ne PAS enregistrer ces tokens en @property avec initial-value (ça neutraliserait la
+   surcharge par redéclaration). */
+@layer kt-aaa.tokens {
+  :root {
+    /* ============ PALIER 1 — BASES (dérivées du socle --kt-*) ============ */
+    /* Saisir les couleurs au niveau du socle (src/app/styles/foundation.css) rebrande
+     champs ET boutons d'un coup ; surcharger ici reste possible pour le bouton seul. */
+    --btn-primary: var(--kt-primary);
+    --btn-neutral: var(--kt-neutral);
+    --btn-danger: var(--kt-danger);
+
+    /* Surface de référence : base des fills tonals + désaturation disabled.
+     Re-pointer --kt-surface suffit pour un futur dark mode. */
+    --btn-surface: var(--kt-surface, #ffffff);
+
+    /* ============ PALIER 2 — RÔLES ============ */
+
+    /* Labels = STATIQUES et vérifiés AA : c'est la garantie axe, appliquée dans TOUS les
+     navigateurs. (contrast-color() est proposé en bonus opt-in tout en bas — il ne garantit
+     pas le 4.5:1 sur les tons moyens.) Pour une marque custom, redéclarer ces on-* aussi. */
+    --btn-on-primary: #ffffff; /* sur fill rempli (~6.4:1) */
+    --btn-on-neutral: #ffffff; /* ~13:1 */
+    --btn-on-danger: #ffffff; /* ~6.5:1 */
+    --btn-on-primary-container: #0842a0; /* sur fill tonal (~7:1) */
+    --btn-on-neutral-container: #1b1c1d; /* ~15:1 */
+    --btn-on-danger-container: #8c1d18; /* ~7:1 (le "piège" tonal+danger) */
+
+    /* Fills tonals = DÉRIVÉS : base mélangée vers la surface (auto-désature → reste pâle,
+     pas de clipping de gamut). Poids réglable via --btn-tonal-weight. */
+    --btn-primary-container: color-mix(in oklab, var(--btn-primary) var(--btn-tonal-weight, 16%), var(--btn-surface));
+    --btn-neutral-container: color-mix(in oklab, var(--btn-neutral) var(--btn-tonal-weight, 16%), var(--btn-surface));
+    --btn-danger-container: color-mix(in oklab, var(--btn-danger) var(--btn-tonal-weight, 16%), var(--btn-surface));
+
+    /* fg outlined/text = DÉRIVÉ : base légèrement assombrie (garde la teinte de marque, gagne
+     de la marge de contraste sur la page). Poids réglable via --btn-fg-weight. */
+    --btn-primary-fg: color-mix(in oklab, var(--btn-primary) var(--btn-fg-weight, 90%), black);
+    --btn-neutral-fg: color-mix(in oklab, var(--btn-neutral) var(--btn-fg-weight, 90%), black);
+    --btn-danger-fg: color-mix(in oklab, var(--btn-danger) var(--btn-fg-weight, 90%), black);
+
+    /* ============ PALIER 3 — RÉGLAGES GLOBAUX ============ */
+
+    /* Leviers de dérivation */
+    --btn-tonal-weight: 16%; /* poids de la base dans le fill tonal (plus haut = plus saturé) */
+    --btn-fg-weight: 90%; /* poids de la base dans le fg (plus bas = plus sombre) */
+
+    /* Icône : padding RÉDUIT côté icône (asymétrie leading/trailing, règle M3 « −8dp côté icône »)
+     et taille d'icône absolue par taille. */
+    --btn-icon-pad-x-sm: 6px;
+    --btn-icon-pad-x-md: 10px;
+    --btn-icon-pad-x-lg: 12px;
+    --btn-icon-size-sm: 18px;
+    --btn-icon-size-md: 20px;
+    --btn-icon-size-lg: 22px;
+
+    /* Forme : token de BASCULE --btn-radius (NON déclaré ici exprès).
+     Non défini => chaque taille garde son radius (--btn-radius-sm/md/lg).
+     Défini (ex. `--btn-radius: 999px` sur :root ou un conteneur) => pilule sur tous les boutons
+     ET cercle sur les icon-only (carrés). Les champs (--field-radius) ne sont pas affectés. */
+
+    /* Ombres par état : tokens de BASCULE (NON déclarés ici exprès, même principe que --btn-radius).
+     Non définis => box-shadow: none. Un thème déclare --btn-shadow (repos), --btn-shadow-hover,
+     --btn-shadow-focus pour un glow/elevation (hover/focus retombent sur --btn-shadow si absents) ;
+     disabled force toujours `none`. Pour référencer --btn-fill/--btn-fg (couleur du mode résolu),
+     les déclarer sur un sélecteur d'ÉLÉMENT bouton, jamais sur :root (substitution var() au
+     point de déclaration). */
+
+    /* Bordure : --btn-border-width et --btn-border-style, tokens de BASCULE (NON déclarés)
+     => 1px solid. La bordure étant réservée sur tous les modes, l'épaissir ne provoque aucun
+     reflow entre modes. Longhands côté consommation : width/style acceptent 1 à 4 valeurs
+     (par côté, ex. `solid dashed` = haut/bas pleins + côtés tirets) ; --btn-border (couleur)
+     doit rester UNE couleur (elle passe dans un color-mix au disabled). */
+
+    /* Mouvement : tokens de BASCULE (NON déclarés ici exprès) => bouton inerte par défaut.
+     --btn-transition (ex. `transform 160ms ease`), --btn-transform (repos),
+     --btn-transform-hover / --btn-transform-active (retombent sur --btn-transform si absents) ;
+     disabled force `transform: none`. Ne PAS mettre box-shadow dans --btn-transition si un thème
+     anime déjà l'ombre en continu (la transition lutterait contre l'animation). */
+
+    /* Autres BASCULES non déclarées (défauts entre parenthèses) :
+     - Fill en image : --btn-fill-image (none) — dégradé/motif empilé SOUS le voile d'état ;
+       disabled force background-image: none. Pour dériver du mode résolu (var(--btn-fill)),
+       le poser sur un sélecteur d'ÉLÉMENT (substitution au point de déclaration).
+     - Focus ring : --btn-focus-ring-style (solid).
+     - Typo d'emphase : --btn-text-transform (none), --btn-letter-spacing (normal),
+       --btn-font-weight (inherit). */
+
+    /* State layer (voile d'état, opacités Material 3) */
+    --btn-state-hover-opacity: 0.08;
+    --btn-state-focus-opacity: 0.12;
+    --btn-state-pressed-opacity: 0.16;
+
+    /* Anneau de focus (opaque, distinct du voile) — couleur/épaisseur depuis le socle ;
+     offset propre au bouton (2px) vs field (1px). */
+    --btn-focus-ring-width: var(--kt-focus-ring-width);
+    --btn-focus-ring-offset: 2px;
+    --btn-focus-ring-color: var(
+      --kt-focus-ring-color
+    ); /* opaque + offset => contraste calculable, indépendant du mode */
+
+    /* Géométrie (par taille). md dérive du socle (= field) ; sm/lg propres au bouton. */
+    --btn-radius-sm: 6px;
+    --btn-radius-md: var(--kt-control-radius);
+    --btn-radius-lg: 10px;
+
+    --btn-height-sm: 32px; /* >= 24px (cible AA) via padding ; voir min-width sm */
+    --btn-height-md: var(--kt-control-height); /* taille confort (touch / AAA), alignée field */
+    --btn-height-lg: 52px;
+
+    --btn-pad-x-sm: 0.625rem;
+    --btn-pad-x-md: 1rem;
+    --btn-pad-x-lg: 1.25rem;
+
+    --btn-font-sm: 0.875rem;
+    --btn-font-md: var(--kt-control-font);
+    --btn-font-lg: 1.0625rem;
+
+    --btn-gap: 0.5rem;
+    --btn-corner-shape: round;
+  }
+
+  /* ============ BONUS (opt-in) — labels auto-contrastés pour palette 100% custom ============
+   Décommentez pour laisser le navigateur choisir noir/blanc sur les on-* quand vous changez
+   les bases sans redéfinir les labels. ATTENTION : contrast-color() ne garantit PAS le 4.5:1
+   sur les tons moyens — revalidez axe. Désactivé par défaut car il remplacerait les labels de
+   marque (ex. #0842a0) par du noir pur. Sans support navigateur (~26%), le @supports ne
+   s'active pas et les on-* statiques ci-dessus restent appliqués (aucune régression). */
+  /*
+@supports (color: contrast-color(red)) {
+  :root {
+    --btn-on-primary: contrast-color(var(--btn-primary));
+    --btn-on-neutral: contrast-color(var(--btn-neutral));
+    --btn-on-danger: contrast-color(var(--btn-danger));
+    --btn-on-primary-container: contrast-color(var(--btn-primary-container));
+    --btn-on-neutral-container: contrast-color(var(--btn-neutral-container));
+    --btn-on-danger-container: contrast-color(var(--btn-danger-container));
+  }
+}
+*/
+}

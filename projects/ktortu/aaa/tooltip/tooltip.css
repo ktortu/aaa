@@ -1,0 +1,129 @@
+@layer kt-aaa.components {
+  /* Styles de la directive Tooltip ([ktTooltip]) — Popover API + CSS Anchor Positioning.
+   Global obligatoire : l'élément tooltip est ajouté au <body> (top-layer), hors de toute vue. */
+
+  .kt-tooltip {
+    /* Même architecture que le reste de la lib : tokens --tooltip-* dérivés du socle --kt-*
+     (fallbacks en dur si le socle n'est pas chargé). Surcharger un --kt-* rethématise donc
+     le tooltip en même temps que les champs, boutons et dialog. */
+    --tooltip-bg: var(--kt-surface, #ffffff);
+    --tooltip-fg: var(--kt-on-surface, #1f1f1f);
+    --tooltip-border-color: var(--kt-outline, #c4c7c5);
+    --tooltip-radius: 6px;
+    --tooltip-pad-block: 0.4rem;
+    --tooltip-pad-inline: 0.6rem;
+    --tooltip-gap: 0.5rem; /* distance trigger ↔ tooltip */
+    --tooltip-max-width: 18rem;
+
+    margin: 0;
+    width: max-content;
+    max-width: var(--tooltip-max-width);
+    padding: var(--tooltip-pad-block) var(--tooltip-pad-inline);
+    border: 1px solid var(--tooltip-border-color);
+    border-radius: var(--tooltip-radius);
+    background: var(--tooltip-bg);
+    color: var(--tooltip-fg);
+    font-size: 0.85rem;
+    line-height: 1.35;
+    white-space: pre-line; /* Interprète les \n et les sauts de ligne dans les chaînes de texte */
+    box-shadow: 0 4px 12px color-mix(in srgb, #000 25%, transparent);
+    pointer-events: auto; /* requis pour le « hoverable » (WCAG 1.4.13) */
+    user-select: text; /* Autorise la sélection et la traduction du texte du tooltip. */
+    cursor: default;
+  }
+
+  /* Placement piloté par l'attribut data-position posé par la directive. */
+  .kt-tooltip[data-position='top'] {
+    position-area: top;
+    justify-self: anchor-center;
+    margin-bottom: var(--tooltip-gap);
+    position-try-fallbacks: --flip-bottom;
+  }
+  .kt-tooltip[data-position='bottom'] {
+    position-area: bottom;
+    justify-self: anchor-center;
+    margin-top: var(--tooltip-gap);
+    position-try-fallbacks: --flip-top;
+  }
+  .kt-tooltip[data-position='left'] {
+    position-area: left;
+    align-self: anchor-center;
+    margin-right: var(--tooltip-gap);
+    position-try-fallbacks: --flip-right;
+  }
+  .kt-tooltip[data-position='right'] {
+    position-area: right;
+    align-self: anchor-center;
+    margin-left: var(--tooltip-gap);
+    position-try-fallbacks: --flip-left;
+  }
+
+  /* Retournement automatique près des bords du viewport. */
+  @position-try --flip-bottom {
+    position-area: bottom;
+    margin: var(--tooltip-gap) 0 0 0;
+  }
+  @position-try --flip-top {
+    position-area: top;
+    margin: 0 0 var(--tooltip-gap) 0;
+  }
+  @position-try --flip-right {
+    position-area: right;
+    margin: 0 0 0 var(--tooltip-gap);
+  }
+  @position-try --flip-left {
+    position-area: left;
+    margin: 0 var(--tooltip-gap) 0 0;
+  }
+
+  /* Contenu riche non-interactif (listes de champs manquants, règles de mot de passe…). */
+  .kt-tooltip :is(ul, ol) {
+    margin: 0.25rem 0 0;
+    padding-left: 1.1rem;
+  }
+  .kt-tooltip li {
+    margin: 0.1rem 0;
+  }
+  .kt-tooltip p {
+    margin: 0.25rem 0 0;
+  }
+  .kt-tooltip strong {
+    display: block;
+  }
+
+  /* Transition en top-layer : display/overlay sont discrets → allow-discrete + @starting-style.
+   --tooltip-anim-duration : token de BASCULE (non déclaré => 120ms). Durée seule — le shorthand
+   reste en dur (les parts overlay/display allow-discrete sont structurelles). */
+  .kt-tooltip {
+    opacity: 0;
+    scale: 0.96;
+    transition:
+      opacity var(--tooltip-anim-duration, 120ms) ease,
+      scale var(--tooltip-anim-duration, 120ms) ease,
+      overlay var(--tooltip-anim-duration, 120ms) allow-discrete,
+      display var(--tooltip-anim-duration, 120ms) allow-discrete;
+  }
+  .kt-tooltip:popover-open {
+    opacity: 1;
+    scale: 1;
+  }
+  @starting-style {
+    .kt-tooltip:popover-open {
+      opacity: 0;
+      scale: 0.96;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .kt-tooltip {
+      transition: none;
+      scale: 1;
+    }
+    @starting-style {
+      .kt-tooltip:popover-open {
+        opacity: 1;
+        scale: 1;
+      }
+    }
+  }
+}

@@ -1,0 +1,79 @@
+:host {
+  display: block;
+}
+
+.page {
+  max-width: 64rem;
+}
+
+.page__head {
+  padding: 1rem 0 1.5rem;
+  border-bottom: 1px solid var(--kt-outline);
+}
+
+.page__eyebrow {
+  margin: 0 0 0.6rem;
+  font:
+    600 0.8125rem/1 ui-monospace,
+    monospace;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--kt-primary);
+}
+
+.page__title {
+  margin: 0;
+  font-size: clamp(1.75rem, 4vw, 2.25rem);
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  color: var(--kt-on-surface);
+}
+
+.page__lead {
+  margin: 0.85rem 0 0;
+  max-width: 64ch;
+  font-size: 1.0625rem;
+  line-height: 1.6;
+  color: var(--kt-muted);
+}
+
+.page__lead code {
+  font-family: ui-monospace, monospace;
+  font-size: 0.9375em;
+  color: var(--kt-on-surface);
+}
+
+.page__codes {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 1rem;
+}
+
+/* Bloc explicatif « Comment ça marche ». */
+.outline-notes {
+  max-width: 70ch;
+  font-size: 1rem;
+  line-height: 1.65;
+  color: var(--kt-on-surface);
+}
+
+.outline-notes p {
+  margin: 0 0 0.75rem;
+}
+
+.outline-notes ul {
+  margin: 0 0 0.75rem;
+  padding-inline-start: 1.25rem;
+}
+
+.outline-notes li {
+  margin: 0.35rem 0;
+}
+
+.outline-notes code {
+  font-family: ui-monospace, monospace;
+  font-size: 0.9em;
+  padding: 0.05em 0.3em;
+  border-radius: 4px;
+  background: color-mix(in oklab, var(--kt-on-surface) 8%, transparent);
+}

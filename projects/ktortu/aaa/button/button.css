@@ -1,0 +1,319 @@
+@layer kt-aaa.components {
+  /* Styles de la directive Button (button[ktButton], a[ktButton]).
+   Global : enregistré dans angular.json > styles, applicable partout où la directive est posée.
+   Tokens (--btn-*) définis dans button-tokens.css (chargé avant ce fichier).
+
+   Deux axes orthogonaux :
+   - mode  (apparence)  : data-mode = filled | tonal | outlined | text
+   - color (intention)  : data-color = primary | neutral | danger
+   La règle de base ne consomme que 4 variables résolues (--btn-fill / --btn-fg /
+   --btn-border / --btn-state-layer) ; chaque bloc [data-mode][data-color] les pose. */
+
+  [ktButton] {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--btn-gap, 0.5rem);
+    box-sizing: border-box;
+
+    min-height: var(--btn-height-md, 44px);
+    padding-block: 0;
+    /* Variables résolues par taille (padding label / padding côté icône / taille d'icône). */
+    --btn-pad-x: var(--btn-pad-x-md, 1rem);
+    --btn-icon-pad-x: var(--btn-icon-pad-x-md, 10px);
+    --btn-icon-size: var(--btn-icon-size-md, 20px);
+    padding-inline: var(--btn-pad-x);
+    font-size: var(--btn-font-md, 1rem);
+
+    /* Bordure réservée (outlined ne reflow pas) ; largeur surchargeable par token (uniforme sur
+     tous les modes => pas de reflow entre modes non plus). Longhands : width et style acceptent
+     1 à 4 valeurs (par côté) ; --btn-border reste UNE couleur (color-mix au disabled). */
+    border-width: var(--btn-border-width, 1px);
+    border-style: var(--btn-border-style, solid);
+    border-color: var(--btn-border, transparent);
+    /* --btn-radius non défini => radius par taille ; le définir (ex. 999px) => pilule / cercle. */
+    border-radius: var(--btn-radius, var(--btn-radius-md, 8px));
+    corner-shape: var(--btn-corner-shape, round);
+    text-decoration: none; /* reset du lien quand la directive est sur un <a> */
+    cursor: pointer;
+
+    /* Défauts résolus = filled + primary. Surchargés par les blocs [data-mode][data-color]. */
+    --btn-fill: var(--btn-primary);
+    --btn-fg: var(--btn-on-primary);
+    --btn-border: transparent;
+    --btn-state-layer: var(--btn-on-primary);
+
+    /* State layer SANS pseudo-élément : un aplat (--btn-overlay) empilé par-dessus le fill.
+     ::before (icône) et ::after (spinner) sont déjà pris ; on passe donc par background-image.
+     --btn-fill-image (bascule, défaut none) : fill en dégradé/motif, empilé SOUS le voile
+     d'état pour que hover/focus/pressed restent visibles par-dessus. */
+    background-color: var(--btn-fill);
+    background-image:
+      linear-gradient(var(--btn-overlay, transparent), var(--btn-overlay, transparent)), var(--btn-fill-image, none);
+    color: var(--btn-fg);
+
+    /* Typo d'emphase : bascules => neutres par défaut (boutons UPPERCASE façon Material 2,
+     tracking éditorial…). */
+    text-transform: var(--btn-text-transform, none);
+    letter-spacing: var(--btn-letter-spacing, normal);
+    font-weight: var(--btn-font-weight, inherit);
+
+    /* Ombres par état : tokens de bascule NON déclarés à :root (cf. button-tokens.css)
+     => `none` par défaut. Un thème peut les poser sur l'élément pour référencer --btn-fill/--btn-fg
+     (substitution var() au point de déclaration : impossible depuis :root). */
+    box-shadow: var(--btn-shadow, none);
+
+    /* Translucidité (verre) : bascule => aucun effet par défaut (invisible derrière un fill
+     opaque ; agit avec un fill semi-transparent, cf. theme-liquid-glass). */
+    backdrop-filter: var(--btn-backdrop-filter, none);
+
+    /* Mouvement : mêmes tokens de bascule (cf. button-tokens.css) => inertes par défaut. */
+    transition: var(--btn-transition, none);
+    transform: var(--btn-transform, none);
+  }
+
+  /* ============ TAILLES ============ */
+  [ktButton][data-size='sm'] {
+    position: relative; /* requis pour le positionnement de ::after */
+    min-height: var(--btn-height-sm, 32px);
+    min-width: var(--btn-height-sm, 32px); /* garde une cible >= 24px même pour un label court */
+    --btn-pad-x: var(--btn-pad-x-sm, 0.625rem);
+    --btn-icon-pad-x: var(--btn-icon-pad-x-sm, 6px);
+    --btn-icon-size: var(--btn-icon-size-sm, 18px);
+    font-size: var(--btn-font-sm, 0.875rem);
+    border-radius: var(--btn-radius, var(--btn-radius-sm, 6px));
+  }
+
+  [ktButton][data-size='lg'] {
+    min-height: var(--btn-height-lg, 52px);
+    --btn-pad-x: var(--btn-pad-x-lg, 1.25rem);
+    --btn-icon-pad-x: var(--btn-icon-pad-x-lg, 12px);
+    --btn-icon-size: var(--btn-icon-size-lg, 22px);
+    font-size: var(--btn-font-lg, 1.0625rem);
+    border-radius: var(--btn-radius, var(--btn-radius-lg, 10px));
+  }
+
+  /* ============ PLEINE LARGEUR ============ */
+  [ktButton][data-full-width] {
+    width: 100%;
+  }
+
+  /* ============ RÉSOLUTION mode × couleur (4 × 3) ============ */
+
+  /* --- FILLED : fill plein, label on-color --- */
+  [ktButton][data-mode='filled'][data-color='primary'] {
+    --btn-fill: var(--btn-primary);
+    --btn-fg: var(--btn-on-primary);
+    --btn-border: transparent;
+    --btn-state-layer: var(--btn-on-primary);
+  }
+  [ktButton][data-mode='filled'][data-color='neutral'] {
+    --btn-fill: var(--btn-neutral);
+    --btn-fg: var(--btn-on-neutral);
+    --btn-border: transparent;
+    --btn-state-layer: var(--btn-on-neutral);
+  }
+  [ktButton][data-mode='filled'][data-color='danger'] {
+    --btn-fill: var(--btn-danger);
+    --btn-fg: var(--btn-on-danger);
+    --btn-border: transparent;
+    --btn-state-layer: var(--btn-on-danger);
+  }
+
+  /* --- TONAL : fill container (faible chroma), label on-container --- */
+  [ktButton][data-mode='tonal'][data-color='primary'] {
+    --btn-fill: var(--btn-primary-container);
+    --btn-fg: var(--btn-on-primary-container);
+    --btn-border: transparent;
+    --btn-state-layer: var(--btn-on-primary-container);
+  }
+  [ktButton][data-mode='tonal'][data-color='neutral'] {
+    --btn-fill: var(--btn-neutral-container);
+    --btn-fg: var(--btn-on-neutral-container);
+    --btn-border: transparent;
+    --btn-state-layer: var(--btn-on-neutral-container);
+  }
+  [ktButton][data-mode='tonal'][data-color='danger'] {
+    --btn-fill: var(--btn-danger-container);
+    --btn-fg: var(--btn-on-danger-container);
+    --btn-border: transparent;
+    --btn-state-layer: var(--btn-on-danger-container);
+  }
+
+  /* --- OUTLINED : fill transparent, label + bordure colorés (fg) --- */
+  [ktButton][data-mode='outlined'][data-color='primary'] {
+    --btn-fill: transparent;
+    --btn-fg: var(--btn-primary-fg);
+    --btn-border: var(--btn-primary-fg);
+    --btn-state-layer: var(--btn-primary-fg);
+  }
+  [ktButton][data-mode='outlined'][data-color='neutral'] {
+    --btn-fill: transparent;
+    --btn-fg: var(--btn-neutral-fg);
+    --btn-border: var(--btn-neutral-fg);
+    --btn-state-layer: var(--btn-neutral-fg);
+  }
+  [ktButton][data-mode='outlined'][data-color='danger'] {
+    --btn-fill: transparent;
+    --btn-fg: var(--btn-danger-fg);
+    --btn-border: var(--btn-danger-fg);
+    --btn-state-layer: var(--btn-danger-fg);
+  }
+
+  /* --- TEXT : fill + bordure transparents, label coloré (fg) --- */
+  [ktButton][data-mode='text'][data-color='primary'] {
+    --btn-fill: transparent;
+    --btn-fg: var(--btn-primary-fg);
+    --btn-border: transparent;
+    --btn-state-layer: var(--btn-primary-fg);
+  }
+  [ktButton][data-mode='text'][data-color='neutral'] {
+    --btn-fill: transparent;
+    --btn-fg: var(--btn-neutral-fg);
+    --btn-border: transparent;
+    --btn-state-layer: var(--btn-neutral-fg);
+  }
+  [ktButton][data-mode='text'][data-color='danger'] {
+    --btn-fill: transparent;
+    --btn-fg: var(--btn-danger-fg);
+    --btn-border: transparent;
+    --btn-state-layer: var(--btn-danger-fg);
+  }
+
+  /* ============ ICÔNE (pur CSS via une ligature de police d'icône) ============ */
+  /* Police configurable : --btn-icon-font (par bouton) > --kt-icon-font (global) > Material Symbols.
+   Permet d'utiliser une AUTRE police d'icônes à ligatures sans changer l'API `icon`. Pour un set
+   NON-ligature (ex. Font Awesome), projeter le markup de l'icône dans le bouton. */
+  [ktButton][data-icon]::before {
+    content: attr(data-icon);
+    font-family: var(--btn-icon-font, var(--kt-icon-font, 'Material Symbols Outlined'));
+    font-weight: var(--btn-icon-font-weight, var(--kt-icon-font-weight, normal));
+    font-style: normal;
+    font-size: var(--btn-icon-size, 20px); /* px par taille */
+    line-height: 1;
+    font-feature-settings: 'liga';
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* Icône à droite : le pseudo ::before est un flex item, on le déplace via order */
+  [ktButton][data-icon-position='end']::before {
+    order: 1;
+  }
+
+  /* Asymétrie : on resserre le padding DU CÔTÉ de l'icône (silhouette recentrée optiquement).
+   Le longhand bat le shorthand padding-inline ; var(--btn-icon-pad-x) s'adapte à la taille.
+   :not([data-icon-only]) protège le mode icône seule (padding symétrique). */
+  [ktButton][data-icon][data-icon-position='start']:not([data-icon-only]) {
+    padding-inline-start: var(--btn-icon-pad-x);
+  }
+  [ktButton][data-icon][data-icon-position='end']:not([data-icon-only]) {
+    padding-inline-end: var(--btn-icon-pad-x);
+  }
+
+  /* ============ ICON-ONLY (carré = hauteur, icône centrée ; forme suit --btn-radius) ============ */
+  [ktButton][data-icon-only] {
+    --btn-pad-x: 0;
+    gap: 0;
+    inline-size: var(--btn-height-md, 44px);
+    min-inline-size: var(--btn-height-md, 44px);
+    position: relative;
+  }
+  [ktButton][data-size='sm'][data-icon-only] {
+    inline-size: var(--btn-height-sm, 32px);
+    min-inline-size: var(--btn-height-sm, 32px);
+  }
+  [ktButton][data-size='lg'][data-icon-only] {
+    inline-size: var(--btn-height-lg, 52px);
+    min-inline-size: var(--btn-height-lg, 52px);
+  }
+
+  /* sm boutons : zone de clic étendue à au moins 44x44px (AAA 2.5.5) via ::after transparent.
+   Hors loading uniquement : le spinner occupe déjà ::after (états mutuellement exclusifs). */
+  [ktButton][data-size='sm']:not(.loading)::after {
+    content: '';
+    position: absolute;
+    inset: -6px;
+  }
+
+  /* ============ ÉTATS (voile teinté avec la couleur de contenu --btn-state-layer) ============ */
+  [ktButton]:hover:not(:disabled):not([aria-disabled='true']) {
+    --btn-overlay: color-mix(
+      in srgb,
+      var(--btn-state-layer) calc(var(--btn-state-hover-opacity, 0.08) * 100%),
+      transparent
+    );
+    box-shadow: var(--btn-shadow-hover, var(--btn-shadow, none));
+    transform: var(--btn-transform-hover, var(--btn-transform, none));
+  }
+
+  [ktButton]:focus-visible:not(:disabled):not([aria-disabled='true']) {
+    --btn-overlay: color-mix(
+      in srgb,
+      var(--btn-state-layer) calc(var(--btn-state-focus-opacity, 0.12) * 100%),
+      transparent
+    );
+    box-shadow: var(--btn-shadow-focus, var(--btn-shadow, none));
+  }
+
+  /* pressed après hover/focus dans la cascade => l'emporte au clic maintenu */
+  [ktButton]:active:not(:disabled):not([aria-disabled='true']) {
+    --btn-overlay: color-mix(
+      in srgb,
+      var(--btn-state-layer) calc(var(--btn-state-pressed-opacity, 0.16) * 100%),
+      transparent
+    );
+    transform: var(--btn-transform-active, var(--btn-transform, none));
+  }
+
+  /* Anneau de focus : outline séparé du voile, posé sur le fond de page via l'offset.
+   Reste visible aussi sur un <a>/bouton en aria-disabled (toujours focusable). */
+  [ktButton]:focus-visible {
+    outline: var(--btn-focus-ring-width, 2px) var(--btn-focus-ring-style, solid) var(--btn-focus-ring-color, #0b57d0);
+    outline-offset: var(--btn-focus-ring-offset, 2px);
+  }
+
+  /* ============ ÉTAT INERTE (disabled natif ou aria-disabled) ============ */
+  /* Après les états => l'emporte sur hover/active. */
+  [ktButton]:disabled,
+  [ktButton][aria-disabled='true'] {
+    --btn-overlay: transparent;
+    cursor: not-allowed;
+    color: color-mix(in srgb, var(--btn-fg) 40%, transparent);
+    background-color: color-mix(in srgb, var(--btn-fill) 40%, var(--btn-surface, #ffffff));
+    border-color: color-mix(in srgb, var(--btn-border) 40%, transparent);
+    box-shadow: none; /* un bouton inerte ne « rayonne » pas, quel que soit le thème */
+    transform: none; /* ni ne bouge */
+    background-image: none; /* ni ne garde son dégradé (--btn-fill-image) */
+  }
+
+  /* ============ LOADING ============ */
+  [ktButton].loading {
+    position: relative;
+    color: transparent !important;
+
+    &::before {
+      opacity: 0;
+    }
+
+    /* Spinner centré en currentColor (suit le label, inversé en dark mode) */
+    &::after {
+      content: '';
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: 1em;
+      height: 1em;
+      translate: -50% -50%;
+      border: 2px solid var(--btn-fg);
+      border-right-color: transparent;
+      border-radius: 50%;
+      animation: button-spinner 0.6s linear infinite;
+    }
+  }
+
+  @keyframes button-spinner {
+    to {
+      transform: rotate(360deg);
+    }
+  }
+}

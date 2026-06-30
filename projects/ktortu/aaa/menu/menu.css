@@ -1,0 +1,228 @@
+@layer kt-aaa.components {
+  /* Styles des directives Menu ([ktMenu] / [ktMenuItem] / [ktMenuSeparator]).
+   Global : enregistré comme button.css / card.css / dialog.css (les directives se posent sur les
+   hôtes d'@angular/aria, hors de toute vue de composant). Tokens (--kt-menu-*) dans
+   menu-tokens.css (chargé avant).
+
+   Le COMPORTEMENT (ouverture, clavier, focus roving, retour focus, sous-menus, typeahead) vient
+   d'aria. Ce fichier ne fait que l'APPARENCE + le POSITIONNEMENT (CSS Anchor Positioning), piloté
+   par `data-visible` (posé par aria) et les anchor-name/position-anchor (posés par [ktMenuTrigger]
+   et [ktMenuItem]). Aucune dépendance à une police d'icônes : chevron et coche sont dessinés en CSS. */
+
+  /* ===== Surface du menu ===== */
+  [ktMenu] {
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    margin: 0;
+    padding: var(--kt-menu-padding, 0.25rem);
+    min-inline-size: var(--kt-menu-min-width, 12rem);
+    max-inline-size: min(90vw, 22rem);
+    list-style: none;
+    background: var(--kt-menu-bg, #fff);
+    color: var(--kt-menu-fg, #1f1f1f);
+    border: var(--kt-menu-border-width, 1px) solid var(--kt-menu-border-color, #c4c7c5);
+    border-radius: var(--kt-menu-radius, 8px);
+    box-shadow: var(--kt-menu-shadow, 0 4px 12px rgb(0 0 0 / 12%));
+    /* Translucidité (verre) : bascule => aucun effet par défaut. */
+    backdrop-filter: var(--kt-menu-backdrop-filter, none);
+    z-index: var(--kt-menu-z, 1000);
+  }
+
+  /* Masqué tant que NON explicitement ouvert : aria pose data-visible="true" à l'ouverture, "false"
+   sinon. On masque sur `:not([data-visible='true'])` (et non sur ='false') pour rester caché AUSSI
+   avant l'initialisation d'aria (SSR / 1er paint, où l'attribut est encore absent) — pas de flash.
+   `display:none` retire l'élément du flux ET du parcours de tabulation (items non focusables). */
+  [ktMenu]:not([data-visible='true']) {
+    display: none;
+  }
+
+  /* ===== Positionnement : dropdown ancré (CSS Anchor Positioning), comme le popup du Select ===== */
+  @supports (anchor-name: --x) {
+    [ktMenu] {
+      position: fixed;
+      inset: auto;
+      /* Dropdown sous le déclencheur, aligné sur son bord inline-start. On utilise `position-area`
+         et NON la fonction `anchor()` : `anchor()` résout mal une ancre imbriquée dans un sous-arbre
+         déjà ancré → les sous-menus s'EMPILENT dès le 3ᵉ niveau. `position-area` cascade correctement
+         à n'importe quelle profondeur (validé Chrome 125+ / Firefox 147+ / Safari 26+). */
+      position-area: block-end span-inline-end;
+      margin-block-start: var(--kt-menu-offset, 0.25rem);
+      /* Bascule de côté / au-dessus si le bas/droite manque de place. */
+      position-try-fallbacks:
+        flip-block,
+        flip-inline,
+        flip-block flip-inline;
+    }
+
+    /* Sous-menu : s'ouvre en latéral (inline-end), ancré au bord droit de son item parent, avec un
+     petit espace visuel (--kt-menu-submenu-gap). */
+    [ktMenu][data-kt-submenu] {
+      /* Décalage TOTAL depuis le bord de l'item (= l'ancre) jusqu'au bord de la surface du sous-menu :
+       padding + bordure du menu PARENT (que l'item ne traverse pas) + l'espace visuel voulu. Ainsi
+       l'écart SURFACE-à-SURFACE vaut exactement --kt-menu-submenu-gap, quel que soit le thème. */
+      --_submenu-offset: calc(
+        var(--kt-menu-padding, 0.25rem) + var(--kt-menu-border-width, 1px) + var(--kt-menu-submenu-gap, 0.375rem)
+      );
+      /* À l'inline-end de l'item parent, aligné sur son haut. `position-area` (et non `anchor()`)
+         pour cascader correctement à toute profondeur — cf. note sur le menu racine ci-dessus. */
+      position-area: inline-end span-block-end;
+      margin-block-start: 0;
+      margin-inline-start: var(--_submenu-offset);
+      position-try-fallbacks:
+        flip-inline,
+        flip-block,
+        flip-block flip-inline;
+    }
+  }
+
+  /* Ponts de survol invisibles comblant l'espace menu↔sous-menu : le gap reste élégant, mais le
+   pointeur ne quitte jamais une zone survolable en le traversant (sinon aria annule l'ouverture
+   sur trajectoire diagonale). Chaque pont couvre TOUTE la distance bord-d'item → bord-de-sous-menu
+   (--_submenu-offset), sur toute la hauteur (inset-block:0). Hors de la boîte des items → aucun
+   clic bloqué. Deux côtés : ::before pour l'ouverture normale, ::after pour le cas rabattu (flip). */
+  [ktMenu][data-kt-submenu]::before,
+  [ktMenu][data-kt-submenu]::after {
+    content: '';
+    position: absolute;
+    inset-block: 0;
+    inline-size: var(--_submenu-offset);
+  }
+
+  [ktMenu][data-kt-submenu]::before {
+    inset-inline-start: calc(-1 * var(--_submenu-offset));
+  }
+
+  [ktMenu][data-kt-submenu]::after {
+    inset-inline-end: calc(-1 * var(--_submenu-offset));
+  }
+
+  /* Repli sans anchor positioning (ex. iOS < 26) : le menu reste rendu près de son trigger dans le
+   flux (position statique). Moins joli mais sûr — jamais coincé en 0,0. */
+  @supports not (anchor-name: --x) {
+    [ktMenu] {
+      position: absolute;
+      margin-block-start: var(--kt-menu-offset, 0.25rem);
+    }
+  }
+
+  /* Déclencheur OUVERT = ancre du dropdown : s'il se transforme (animation de thème au hover/active
+   du bouton — cf. --btn-transform-hover/-active), il déplace le menu ancré. On fige donc sa
+   transformation TANT QUE le menu est ouvert (aria pose aria-expanded sur le trigger) ; l'animation
+   reste normale menu fermé. `!important` car les règles :hover/:active de ktButton sont plus
+   spécifiques. Le retour visuel de couleur/fond au survol n'est pas concerné (seul le déplacement
+   l'est) ; la transition est neutralisée pour éviter une ré-animation au moment du figeage. */
+  [ktMenuTrigger][aria-expanded='true'] {
+    transform: none !important;
+    translate: none !important;
+    scale: none !important;
+    /* On neutralise SEULEMENT les transitions de déplacement (pour éviter une ré-animation du
+     figeage) ; le fondu de couleur/fond/bord au survol du déclencheur reste préservé. */
+    transition-property: background-color, color, border-color, box-shadow, outline-color !important;
+  }
+
+  /* Entrée du dropdown : token de BASCULE (non déclaré => aucune animation). Joué uniquement à
+   l'ouverture réelle (data-visible="true"). */
+  [ktMenu][data-visible='true'] {
+    animation: var(--kt-menu-enter-animation, none);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    [ktMenu] {
+      animation: none;
+    }
+  }
+
+  /* ===== Items ===== */
+  [ktMenuItem] {
+    display: flex;
+    align-items: center;
+    gap: var(--kt-menu-item-gap, 0.625rem);
+    box-sizing: border-box;
+    min-block-size: var(--kt-menu-item-min-height, 44px);
+    padding: var(--kt-menu-item-padding, 0.5rem 0.75rem);
+    border: 0;
+    border-radius: var(--kt-menu-item-radius, 6px);
+    background: transparent;
+    color: inherit;
+    font: inherit;
+    text-align: start;
+    text-decoration: none;
+    inline-size: 100%;
+    cursor: pointer;
+    user-select: none;
+    transition: var(--kt-menu-item-transition, none);
+  }
+
+  /* Item actif : aria utilise le focus roving (focus DOM réel) → on style `:focus-visible`. Le survol
+   souris partage le même voile. (`:focus` simple couvre aussi le focus programmatique d'aria.) */
+  [ktMenuItem]:focus:not([aria-disabled='true']),
+  [ktMenuItem]:hover:not([aria-disabled='true']) {
+    background: var(--kt-menu-item-hover-bg, color-mix(in srgb, currentColor 8%, transparent));
+    outline: none;
+  }
+
+  [ktMenuItem]:focus-visible {
+    outline: var(--kt-menu-focus-ring-width, 2px) solid var(--kt-menu-focus-ring-color, #0842a0);
+    outline-offset: -2px;
+  }
+
+  [ktMenuItem][aria-disabled='true'] {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+
+  /* Tonalité destructrice (opt-in : [data-tone="danger"] posé par le consommateur). */
+  [ktMenuItem][data-tone='danger'] {
+    color: var(--kt-menu-item-danger-color, #8c1d18);
+  }
+
+  /* ===== Indicateur de sous-menu : chevron dessiné en CSS (aria pose aria-haspopup) ===== */
+  [ktMenuItem][aria-haspopup='true']::after {
+    content: '';
+    flex: none;
+    margin-inline-start: auto;
+    inline-size: 0.4em;
+    block-size: 0.4em;
+    border-top: 2px solid currentColor;
+    border-right: 2px solid currentColor;
+    transform: rotate(45deg); /* pointe vers l'inline-end (chevron ›) */
+    opacity: 0.7;
+  }
+
+  /* Support RTL pour le chevron du sous-menu (doit pointer vers la gauche) */
+  [dir='rtl'] [ktMenuItem][aria-haspopup='true']::after,
+  :host-context([dir='rtl']) [ktMenuItem][aria-haspopup='true']::after {
+    transform: rotate(-135deg); /* pointe vers l'inline-start (chevron ‹) */
+  }
+
+  /* ===== Indicateur coché : checkbox / radio (aria-checked, posé par [ktMenuItemCheckbox/Radio]) =====
+   La coche occupe un emplacement de tête réservé pour aligner les libellés ; dessinée via un mask
+   SVG (suit currentColor, pas de police d'icônes). */
+  [ktMenuItem][aria-checked]::before {
+    content: '';
+    flex: none;
+    inline-size: 1.15em;
+    block-size: 1.15em;
+    background-color: currentColor;
+    mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M9 16.17 4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z'/%3E%3C/svg%3E")
+      center / contain no-repeat;
+    visibility: hidden; /* réserve la place quand non coché → libellés alignés */
+  }
+
+  [ktMenuItem][aria-checked='true'] {
+    color: var(--kt-menu-item-checked-color, #0842a0);
+  }
+
+  [ktMenuItem][aria-checked='true']::before {
+    visibility: visible;
+  }
+
+  /* ===== Séparateur ===== */
+  [ktMenuSeparator] {
+    block-size: 0;
+    margin-block: var(--kt-menu-padding, 0.25rem);
+    border: 0;
+    border-block-start: 1px solid var(--kt-menu-separator-color, #c4c7c5);
+  }
+}

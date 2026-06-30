@@ -1,0 +1,102 @@
+/* Design tokens du composant Chip — contrat public de theming.
+   Les couleurs et géométries dérivent du socle (--kt-*) et des champs (--field-*). */
+@layer kt-aaa.tokens {
+  :root {
+    /* Géométrie */
+    --chip-radius: 50px;
+    --chip-padding-y: 0.25rem;
+    --chip-padding-x: 0.625rem;
+    --chip-gap: 0.25rem;
+    --chip-font-size: 0.875rem;
+
+    /* Couleurs (dérivées de ds-primary) */
+    --chip-bg: color-mix(in srgb, var(--kt-primary) 10%, transparent);
+    --chip-bg-hover: color-mix(in srgb, var(--kt-primary) 18%, transparent);
+    --chip-border: color-mix(in srgb, var(--kt-primary) 20%, transparent);
+
+    /* Texte et icônes */
+    --chip-color: var(--field-color);
+    --chip-remove-color: var(--field-icon-color);
+    --chip-remove-color-hover: var(--kt-danger); /* rouge au survol du bouton × */
+    --chip-remove-bg-hover: color-mix(in srgb, currentColor 15%, transparent);
+
+    /* Animations d'entrée/sortie : keyframes jouées sur les PSEUDO-ÉLÉMENTS View Transition
+     (cf. règles ::view-transition-* plus bas), PAS sur les chips eux-mêmes — la suppression
+     DOM reste synchrone (indispensable : un retrait différé casse la capture de l'état
+     « après » et tue la transition en plein vol). Les keyframes d'un thème ne doivent animer
+     que transform / opacity / filter : la géométrie (largeur, position) est déjà morphée par
+     l'animation de groupe. Défaut : fondu équivalent à celui du navigateur. */
+    --chip-enter-animation: chip-vt-fade-in 0.25s ease both;
+    --chip-leave-animation: chip-vt-fade-out 0.25s ease both;
+
+    /* Focus */
+    --chip-focus-ring: var(--field-border-color-focus);
+
+    /* Token de BASCULE (NON déclaré exprès, cf. button-tokens.css) :
+     --chip-remove-transition — transition du bouton « retirer » au survol
+     (défaut : background-color 0.15s ease, posé dans chip.css). */
+  }
+
+  /* ============ Intégration View Transition (API document.startViewTransition) ============
+   Chaque chip porte un view-transition-name unique + la classe .chip-transition (cf. Chip).
+   Ces règles ciblent les pseudo-éléments de la transition, rattachés à la racine du document :
+   elles doivent vivre dans une feuille GLOBALE (les styles de composant scopés ne les
+   atteignent pas). Les tokens --chip-*-animation y sont résolus par héritage depuis <html>,
+   donc surchargeables par thème ([data-theme='…']). */
+
+  @keyframes chip-vt-fade-in {
+    from {
+      opacity: 0;
+    }
+  }
+
+  @keyframes chip-vt-fade-out {
+    to {
+      opacity: 0;
+    }
+  }
+
+  /* Chips à template custom (ktChipItem / chipTemplate) : la lib ne rend pas kt-chip,
+   c'est l'élément RACINE du template consommateur qui reçoit un nom automatique → il
+   participe aux mêmes animations (entrée/sortie/morph) que les chips standards.
+   Scopé à [data-vt-active] (posé par ChipList UNIQUEMENT pendant SA transition) : un nom
+   permanent ferait participer tous les chips de la page à chaque View Transition —
+   glissement individuel au moindre reflow (même principe que le gating de kt-chip).
+   Surcharge consommateur : redéclarer view-transition-name sur son élément —
+   `none` = opt-out, un nom explicite = chorégraphie maison ; ou une autre
+   view-transition-class pour des keyframes dédiées. Le bouton « +N » (dans le même
+   wrapper) n'est pas concerné : son nom est posé en style inline (prioritaire).
+   Navigateurs sans `view-transition-name: auto` : dégradation = pas d'animation
+   par chip (comportement antérieur), le reste de la transition est inchangé. */
+  [data-vt-active] .kt-chip-list__item > * {
+    /* Double déclaration volontaire : `match-element` (Chrome 140+) prime quand il est
+     compris, sinon retombée sur `auto` (spec antérieure) ; aucun des deux compris =
+     déclaration ignorée (dégradation propre). */
+    view-transition-name: auto;
+    view-transition-name: match-element;
+    view-transition-class: chip-transition;
+  }
+
+  /* Chip qui APPARAÎT (présent uniquement dans l'état « après ») : animation d'entrée. */
+  ::view-transition-new(.chip-transition):only-child {
+    animation: var(--chip-enter-animation);
+  }
+
+  /* Chip qui DISPARAÎT (présent uniquement dans l'état « avant ») : animation de sortie. */
+  ::view-transition-old(.chip-transition):only-child {
+    animation: var(--chip-leave-animation);
+  }
+
+  /* Chip qui PERSISTE (déplacement) : pas de cross-fade — l'ancienne image est masquée, la
+   nouvelle (rendu live) suit le morph de géométrie du groupe. Évite le scintillement
+   plus-lighter quand le contenu is identique mais que les ombres du thème bougent. */
+  ::view-transition-old(.chip-transition):not(:only-child) {
+    animation: none;
+    opacity: 0;
+  }
+
+  ::view-transition-new(.chip-transition):not(:only-child) {
+    animation: none;
+    opacity: 1;
+  }
+}

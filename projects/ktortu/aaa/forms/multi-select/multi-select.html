@@ -1,0 +1,277 @@
+<kt-field
+  [label]="label()"
+  [hint]="hint()"
+  [helpText]="helpText()"
+  [helpLabel]="helpLabel()"
+  [customDescribedBy]="customDescribedBy()"
+  [errors]="fieldErrors()"
+  [invalid]="showInvalid()"
+  [required]="required()"
+  [fieldId]="id()"
+  [appearance]="appearance()"
+  [floatLabel]="floatLabel()"
+  (helpClick)="helpClick.emit($event)"
+>
+  <ng-content select="[ktFieldHelp]" />
+  <div class="kt-select" [class.kt-select--open]="expanded()">
+    <button
+      #combobox="ngCombobox"
+      #trigger
+      ngCombobox
+      ktFieldControl
+      type="button"
+      class="kt-field-box kt-select__trigger"
+      [class.kt-select__trigger--clearable]="showClear()"
+      [(expanded)]="expanded"
+      [disabled]="disabled()"
+      [softDisabled]="false"
+      [attr.data-invalid]="showInvalid() ? '' : null"
+      [attr.data-disabled]="disabled() ? '' : null"
+      [attr.data-filled]="selectedOptions().length ? '' : null"
+      [attr.data-pending]="pending() ? '' : null"
+      [attr.aria-busy]="pending() ? 'true' : null"
+      (keydown)="onTriggerKeydown($event)"
+    >
+      <span class="kt-select__value">
+        @if (triggerDef(); as def) {
+          <ng-container
+            [ngTemplateOutlet]="def.template"
+            [ngTemplateOutletContext]="{ $implicit: selectedOptions() }"
+          />
+        } @else if (selectedOptions().length > 0) {
+          {{ triggerText() }}
+        } @else {
+          <span class="kt-select__placeholder">{{ resolvedPlaceholder() }}</span>
+        }
+      </span>
+      <span class="kt-select__arrow" aria-hidden="true">arrow_drop_down</span>
+    </button>
+
+    <!-- Tout effacer depuis le champ : sibling du trigger (pas de bouton imbriqué dans un bouton). -->
+    @if (showClear()) {
+      <button
+        type="button"
+        class="kt-select__clear"
+        [attr.aria-label]="clearLabel()"
+        (mousedown)="$event.preventDefault()"
+        (click)="clearSelection()"
+      >
+        <span class="kt-select__clear-icon" aria-hidden="true">close</span>
+      </button>
+    }
+
+    <!-- Popup Popover (top-layer). Même logique mobile bottom-sheet adaptative que le select classique. -->
+    <ng-template ngComboboxPopup [combobox]="combobox" [popupType]="dialogMode() ? 'dialog' : 'listbox'">
+      <div #popup popover="manual" class="kt-select__popup" [class.kt-select__popup--sheet]="compact()">
+        @if (compact()) {
+          <div class="kt-select__sheet-scrim" aria-hidden="true" (click)="expanded.set(false)"></div>
+        }
+        <div class="kt-select__sheet-card">
+          @if (compact()) {
+            <div
+              class="kt-select__sheet-grab"
+              aria-hidden="true"
+              (pointerdown)="onDragStart($event)"
+              (mousedown)="$event.preventDefault()"
+            ></div>
+            <header class="kt-select__sheet-header">
+              <span class="kt-select__sheet-title">{{ label() }}</span>
+              <button
+                type="button"
+                class="kt-select__sheet-close"
+                [attr.aria-label]="resolvedCloseLabel()"
+                (click)="expanded.set(false)"
+              >
+                <span class="kt-select__sheet-close-icon" aria-hidden="true">close</span>
+              </button>
+            </header>
+          }
+          @if (dialogMode()) {
+            <!-- Mode panneau (filtre et/ou actions de masse) : Widget Dialog -->
+            <div
+              ngComboboxWidget
+              role="dialog"
+              class="kt-select__panel"
+              [id]="panelId"
+              [attr.aria-label]="label()"
+              [activeDescendant]="lb.activeDescendant()"
+              (keydown)="onPanelKeydown($event)"
+            >
+              @if (selectionActions()) {
+                <div class="kt-select__actions">
+                  <button type="button" class="kt-select__action" (click)="selectAllFiltered()">
+                    {{ resolvedSelectAllLabel() }}
+                  </button>
+                  <button type="button" class="kt-select__action" (click)="clearAllFiltered()">
+                    {{ resolvedClearAllLabel() }}
+                  </button>
+                </div>
+              }
+              @if (filterable()) {
+                <div class="kt-select__filter">
+                  <input
+                    #filterInput
+                    type="search"
+                    role="combobox"
+                    aria-autocomplete="list"
+                    aria-expanded="true"
+                    class="kt-select__filter-input"
+                    autocomplete="off"
+                    [placeholder]="resolvedFilterPlaceholder()"
+                    [attr.aria-label]="resolvedFilterLabel()"
+                    [attr.aria-controls]="lb.id()"
+                    [attr.aria-activedescendant]="lb.activeDescendant()"
+                    [value]="filterText()"
+                    (input)="onFilterInput($event)"
+                    (keydown)="onFilterKeydown($event)"
+                  />
+                </div>
+              }
+              @if (selectedOptions().length > 0) {
+                <!-- Rappel visuel (sélections potentiellement masquées par le filtre) ;
+                     l'info SR passe par la live region ci-dessous → aria-hidden. -->
+                <div class="kt-select__count" aria-hidden="true">{{ selectionCountLabel() }}</div>
+              }
+              <div class="kt-select__sr-only kt-select__filter-status" role="status" aria-live="polite">
+                {{ announcedCount() }}
+              </div>
+              <ul
+                #lb="ngListbox"
+                #listboxEl
+                ngListbox
+                [multi]="true"
+                [focusMode]="compact() && !filterable() ? 'roving' : 'activedescendant'"
+                selectionMode="explicit"
+                class="kt-select__listbox"
+                [attr.aria-label]="label()"
+                [value]="listboxValue()"
+                (valueChange)="onListboxValueChange($event)"
+                [disabled]="disabled()"
+                [readonly]="readonly()"
+              >
+                @for (item of displayedOptions(); track keyOf(item)) {
+                  <li
+                    #opt="ngOption"
+                    ngOption
+                    class="kt-select__option kt-select__option--multiple"
+                    [value]="keyOf(item)"
+                    [label]="labelOf(item)"
+                    [disabled]="disabledOf(item)"
+                    [class.kt-select__option--active]="opt.active()"
+                  >
+                    <span class="kt-select__checkbox" aria-hidden="true">
+                      @if (opt.selected()) {
+                        <span class="kt-select__checkbox-icon">check_box</span>
+                      } @else {
+                        <span class="kt-select__checkbox-icon">check_box_outline_blank</span>
+                      }
+                    </span>
+                    <span class="kt-select__option-content">
+                      @if (optionDef(); as def) {
+                        <ng-container
+                          [ngTemplateOutlet]="def.template"
+                          [ngTemplateOutletContext]="{
+                            $implicit: item,
+                            selected: !!opt.selected(),
+                            active: opt.active(),
+                          }"
+                        />
+                      } @else {
+                        {{ labelOf(item) }}
+                      }
+                    </span>
+                  </li>
+                } @empty {
+                  <li class="kt-select__empty" role="option" aria-disabled="true" aria-selected="false">
+                    {{ resolvedEmptyText() }}
+                  </li>
+                }
+                @if (filterable() && filteredOptions().length > maxVisibleOptions()) {
+                  <li class="kt-select__truncated-info" role="option" aria-disabled="true" aria-selected="false">
+                    {{ resolvedTruncatedResultsText()(maxVisibleOptions(), filteredOptions().length) }}
+                  </li>
+                }
+              </ul>
+            </div>
+          } @else {
+            <!-- Mode simple : Widget Listbox direct -->
+            <ul
+              #listbox="ngListbox"
+              #listboxEl
+              ngComboboxWidget
+              ngListbox
+              [multi]="true"
+              [focusMode]="compact() ? 'roving' : 'activedescendant'"
+              selectionMode="explicit"
+              class="kt-select__listbox"
+              [attr.aria-label]="label()"
+              [value]="listboxValue()"
+              (valueChange)="onListboxValueChange($event)"
+              [disabled]="disabled()"
+              [readonly]="readonly()"
+              [activeDescendant]="listbox.activeDescendant()"
+            >
+              @for (item of options(); track keyOf(item)) {
+                <li
+                  #opt="ngOption"
+                  ngOption
+                  class="kt-select__option kt-select__option--multiple"
+                  [value]="keyOf(item)"
+                  [label]="labelOf(item)"
+                  [disabled]="disabledOf(item)"
+                  [class.kt-select__option--active]="opt.active()"
+                >
+                  <span class="kt-select__checkbox" aria-hidden="true">
+                    @if (opt.selected()) {
+                      <span class="kt-select__checkbox-icon">check_box</span>
+                    } @else {
+                      <span class="kt-select__checkbox-icon">check_box_outline_blank</span>
+                    }
+                  </span>
+                  <span class="kt-select__option-content">
+                    @if (optionDef(); as def) {
+                      <ng-container
+                        [ngTemplateOutlet]="def.template"
+                        [ngTemplateOutletContext]="{
+                          $implicit: item,
+                          selected: !!opt.selected(),
+                          active: opt.active(),
+                        }"
+                      />
+                    } @else {
+                      {{ labelOf(item) }}
+                    }
+                  </span>
+                </li>
+              } @empty {
+                <li class="kt-select__empty" role="option" aria-disabled="true" aria-selected="false">
+                  {{ resolvedEmptyText() }}
+                </li>
+              }
+            </ul>
+          }
+        </div>
+      </div>
+    </ng-template>
+  </div>
+
+  <!-- Chips révocables (Option 1) sous le trigger : délégués au composant réutilisable
+       kt-chip-list (focus management, repli +N, live region). Les textes résolus depuis
+       KT_SELECT_CONFIG sont passés en inputs (ils priment sur un éventuel KT_CHIPS_CONFIG). -->
+  <kt-chip-list
+    [items]="selectedOptions()"
+    [itemLabel]="chipLabelOf"
+    [itemKey]="chipKeyOf"
+    [disabled]="disabled()"
+    [readonly]="readonly()"
+    [maxVisible]="maxVisibleChips()"
+    [listLabel]="resolvedSelectedItemsLabel()"
+    [removeItemLabel]="resolvedRemoveItemLabel()"
+    [itemRemovedText]="resolvedItemRemovedText()"
+    [moreLabel]="resolvedMoreChipsLabel()"
+    [lessLabel]="resolvedLessChipsLabel()"
+    [chipTemplate]="chipDef()?.template ?? null"
+    [emptyFocusTarget]="triggerEl()?.nativeElement"
+    (removed)="removeOption($event.item)"
+  />
+</kt-field>

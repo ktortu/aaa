@@ -1,0 +1,5 @@
+@layer kt-aaa.tokens, kt-aaa.base, kt-aaa.components;
+
+/* Styles des onglets. Nécessite le socle (@ktortu/aaa/foundation.css).
+     @import '@ktortu/aaa/tabs.css'; */
+@import '../cdk/styles/tabs.css';

@@ -1,0 +1,152 @@
+:host {
+  display: block;
+}
+
+.page {
+  max-width: 64rem;
+}
+
+.page__head {
+  padding: 1rem 0 1.5rem;
+  border-bottom: 1px solid var(--kt-outline);
+}
+
+.page__eyebrow {
+  margin: 0 0 0.6rem;
+  font:
+    600 0.8125rem/1 ui-monospace,
+    monospace;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--kt-primary);
+}
+
+.page__title {
+  margin: 0;
+  font-size: clamp(1.75rem, 4vw, 2.25rem);
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  color: var(--kt-on-surface);
+}
+
+.page__lead {
+  margin: 0.85rem 0 0;
+  max-width: 64ch;
+  font-size: 1.0625rem;
+  line-height: 1.6;
+  color: var(--kt-muted);
+}
+
+.page__lead code {
+  font-family: ui-monospace, monospace;
+  font-size: 0.9375em;
+  color: var(--kt-on-surface);
+}
+
+.page__codes {
+  display: grid;
+  /* minmax(0, 1fr) : empêche la piste de s'élargir à la largeur min-content du code. */
+  grid-template-columns: minmax(0, 1fr);
+  gap: 1rem;
+}
+
+/* --- Galerie de pastilles de couleur --- */
+.swatches {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+.swatch {
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.45rem;
+  min-width: 8rem;
+}
+
+.swatch__chip {
+  display: block;
+  block-size: 3.5rem;
+  border-radius: var(--kt-control-radius, 8px);
+  /* Bordure : rend visibles les pastilles claires (surface, outline) sur fond clair. */
+  border: 1px solid var(--kt-outline);
+}
+
+.swatch__cap {
+  display: flex;
+  flex-direction: column;
+  gap: 0.1rem;
+  font-size: 0.8125rem;
+}
+
+.swatch__cap code {
+  font-family: ui-monospace, monospace;
+  color: var(--kt-on-surface);
+}
+
+.swatch__val {
+  color: var(--kt-muted);
+  font-variant-numeric: tabular-nums;
+}
+
+/* --- Échantillons de texte --- */
+.texts {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.text-sample {
+  margin: 0;
+  font-size: 1.0625rem;
+}
+
+.text-sample code {
+  font-family: ui-monospace, monospace;
+  font-size: 0.875em;
+}
+
+.text-sample--on-surface {
+  color: var(--kt-on-surface);
+}
+
+.text-sample--muted {
+  color: var(--kt-muted);
+}
+
+/* --- Géométrie & focus --- */
+.geo {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 1rem;
+}
+
+.geo__box {
+  display: inline-flex;
+  align-items: center;
+  padding-inline: 1rem;
+  block-size: var(--kt-control-height, 44px);
+  border: 1px solid var(--kt-outline);
+  border-radius: var(--kt-control-radius, 8px);
+  background: var(--kt-surface);
+  color: var(--kt-muted);
+  font-size: 0.875rem;
+}
+
+.geo__focusable {
+  block-size: var(--kt-control-height, 44px);
+  padding-inline: 1.1rem;
+  border: 1px solid var(--kt-outline);
+  border-radius: var(--kt-control-radius, 8px);
+  background: var(--kt-surface);
+  color: var(--kt-on-surface);
+  font: inherit;
+  cursor: pointer;
+}
+
+.geo__focusable:focus-visible {
+  outline: var(--kt-focus-ring-width, 2px) solid var(--kt-focus-ring-color, #0842a0);
+  outline-offset: 2px;
+}

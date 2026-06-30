@@ -1,0 +1,74 @@
+/* Thème « Material You » (light) — LA démo du DYNAMIC COLOR par tokens seuls.
+   Différence avec le thème « Material 3 » (baseline statique) : ici, TOUTE la palette
+   DÉRIVE d'un unique seed (--myou-seed) via les couleurs relatives CSS
+   (`oklch(from var(--myou-seed) L C h)`). Changer le seed recolore tout le système —
+   c'est le principe Material You (couleur extraite du fond d'écran).
+
+   Garantie AA PAR CONSTRUCTION (équivalent du système tonal M3) : le seed ne fournit
+   que la TEINTE (h) — la luminosité L et le chroma C de chaque rôle sont FIGÉS ici,
+   calqués sur les tons M3 (40 pour les fills, 90+ pour les surfaces, 10-25 pour les
+   textes). Les ratios restent donc valides quel que soit le seed.
+   NB : les tokens étant déclarés (et donc calculés) sur <html>, le seed se surcharge
+   à CE niveau (autre règle ou style inline sur html) — pas sur un sous-arbre.
+
+   Le danger reste la palette d'erreur M3 STATIQUE (#b3261e) : conforme au vrai
+   Material You, qui ne dérive pas l'erreur du seed. */
+[data-theme='material-you'] {
+  /* ============ LE token : tout dérive de lui ============ */
+  --myou-seed: #0b6e63; /* teal — essayez #7c4dff, #b3261e, #386a20… */
+
+  /* ============ Socle (tons M3 figés, teinte du seed) ============ */
+  --kt-surface: oklch(from var(--myou-seed) 0.985 0.008 h); /* tone ~98, teinté */
+  --kt-on-surface: oklch(from var(--myou-seed) 0.22 0.02 h); /* tone ~10 */
+  --kt-muted: oklch(from var(--myou-seed) 0.42 0.03 h); /* neutral-variant ~30 */
+  --kt-outline: oklch(from var(--myou-seed) 0.55 0.03 h); /* tone ~50 (3:1 non-texte) */
+  --kt-outline-strong: oklch(from var(--myou-seed) 0.45 0.04 h);
+  --kt-primary: oklch(from var(--myou-seed) 0.46 0.09 h); /* tone ~40 : blanc ≥ 6:1 */
+  --kt-danger: #b3261e; /* erreur M3 statique (non dérivée — fidèle à You) */
+  --kt-neutral: oklch(from var(--myou-seed) 0.4 0.02 h); /* neutre teinté, blanc ≥ 7:1 */
+  --kt-focus-ring-color: oklch(from var(--myou-seed) 0.46 0.09 h);
+  --kt-font: 'Roboto', system-ui, sans-serif;
+
+  /* ============ Géométrie : rondeurs expressives ============ */
+  --kt-control-radius: 12px;
+  --btn-radius: 999px; /* pilule M3 */
+  --kt-sheet-radius: 28px;
+
+  /* ============ Champs : surface-container teintée (la signature You) ============ */
+  --field-bg: oklch(from var(--myou-seed) 0.94 0.02 h); /* tone ~94 */
+  --field-focus-ring: color-mix(in srgb, oklch(from var(--myou-seed) 0.46 0.09 h) 55%, transparent);
+  --field-transition: border-color 150ms ease;
+
+  /* ============ Boutons : containers/fg dérivés par la lib depuis les 3 bases ============ */
+  --btn-tonal-weight: 18%; /* containers un peu plus présents que le défaut */
+  /* on-containers teintés par le seed (tone ~25 sur container ~90 : ≥ 8:1 par construction) —
+     les défauts statiques de la lib resteraient AA mais d'une teinte étrangère au seed. */
+  --btn-on-primary-container: oklch(from var(--myou-seed) 0.25 0.06 h);
+  --btn-on-neutral-container: oklch(from var(--myou-seed) 0.25 0.02 h);
+
+  /* ============ Caret + sélection ============ */
+  --field-caret-color: oklch(from var(--myou-seed) 0.46 0.09 h);
+  --kt-selection-bg: oklch(from var(--myou-seed) 0.88 0.05 h); /* container ~tone 90 */
+  --kt-selection-fg: oklch(from var(--myou-seed) 0.25 0.05 h);
+
+  /* ============ Select / tooltip ============ */
+  --select-popup-bg: oklch(from var(--myou-seed) 0.97 0.01 h);
+  --select-popup-shadow: 0 4px 16px oklch(from var(--myou-seed) 0.3 0.04 h / 25%);
+  --kt-sheet-scrim: oklch(from var(--myou-seed) 0.2 0.03 h / 50%);
+  --kt-sheet-shadow: 0 -4px 16px oklch(from var(--myou-seed) 0.3 0.04 h / 22%); /* élévation M3 teintée */
+  --tooltip-bg: oklch(from var(--myou-seed) 0.27 0.03 h);
+  --tooltip-fg: oklch(from var(--myou-seed) 0.96 0.01 h);
+
+  /* ============ Dialog (M3 expressive : rayon hérité de la feuille, sans bord) ============ */
+  --dialog-bg: oklch(from var(--myou-seed) 0.97 0.01 h); /* surface-container teinté */
+  --dialog-radius: 28px;
+  --dialog-border-width: 0;
+
+  /* ============ Card (M3 expressive : surfaces teintées du seed, rayon 16) ============ */
+  --card-radius: 16px;
+  --card-bg: oklch(from var(--myou-seed) 0.97 0.01 h);
+  --card-filled-bg: oklch(from var(--myou-seed) 0.94 0.02 h);
+  --card-shadow: 0 1px 3px oklch(from var(--myou-seed) 0.3 0.04 h / 20%);
+  --card-shadow-hover: 0 2px 8px oklch(from var(--myou-seed) 0.3 0.04 h / 26%);
+  --card-transition: box-shadow 150ms ease;
+}

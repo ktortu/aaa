@@ -1,0 +1,20 @@
+{
+  "$schema": "./node_modules/@stryker-mutator/core/schema/stryker-schema.json",
+  "_comment": "Helpers forms purs (datalist, error-messages) ; typescript-checker écarte les non-compilables ; hors CI, à la demande via npm run mutation:forms.",
+  "packageManager": "npm",
+  "testRunner": "command",
+  "commandRunner": {
+    "command": "npm run test:mutation:forms"
+  },
+  "mutate": ["projects/ktortu/aaa/forms/datalist.ts", "projects/ktortu/aaa/forms/field/error-messages.ts"],
+  "checkers": ["typescript"],
+  "tsconfigFile": "projects/ktortu/aaa/tsconfig.mutation-checker.json",
+  "reporters": ["html", "clear-text", "progress", "json"],
+  "concurrency": 4,
+  "timeoutMS": 60000,
+  "thresholds": {
+    "high": 90,
+    "low": 80,
+    "break": 80
+  }
+}

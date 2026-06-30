@@ -1,0 +1,321 @@
+@layer kt-aaa.components {
+  /* Boîte de contrôle partagée par les champs simples (TextField, NumberField) et la famille
+   Temporal (Date/Time/DateTime/YearMonth/Instant), qui réutilise la même `.kt-field-box`.
+   Globale + classes namespacées : partagée entre plusieurs composants, donc non scopable. */
+  kt-text-field,
+  kt-text-area,
+  kt-number-field,
+  kt-date-field,
+  kt-time-field,
+  kt-date-time-field,
+  kt-year-month-field,
+  kt-instant-field,
+  kt-select,
+  kt-multi-select {
+    display: block;
+    /* Largeur pilotable d'un coup via --field-width. Défaut `auto` : remplit le conteneur en
+     contexte bloc (formulaire), se dimensionne au contenu en flex. Surcharger sur :root ou un
+     conteneur pour fixer tous les champs (ex. --field-width: 320px). */
+    width: var(--field-width, auto);
+  }
+
+  .kt-field-box {
+    display: flex;
+    align-items: center;
+    gap: var(--field-control-gap, 0.5rem);
+    /* border-box : min-height inclut padding + bordure → 44px réels, alignés sur le bouton
+     (qui est déjà en border-box). Sans ça, content-box ajoute padding+bordure → ~62px. */
+    box-sizing: border-box;
+    min-height: var(--field-min-height, 44px); /* hauteur unifiée avec le bouton md */
+    padding: var(--field-padding-y, 0.5rem) var(--field-padding-x, 0.75rem);
+    background: var(--field-bg, #fff);
+    /* Longhands (PAS le shorthand) : width et style acceptent 1 à 4 valeurs (haut droite bas
+     gauche) => bordures par côté (ex. underline `0 0 2px 0`) et styles mixtes (`solid dashed`).
+     --field-border-color reste UNE seule couleur (réutilisée ailleurs, ex. poignée de sheet). */
+    border-width: var(--field-border-width, 1px);
+    border-style: var(--field-border-style, solid);
+    border-color: var(--field-border-color, #c4c7c5);
+    border-radius: var(--field-radius, 8px);
+    color: var(--field-color, inherit);
+    /* Ombres par état : tokens de bascule NON déclarés à :root (cf. tokens.css) => `none` par
+     défaut. hover/focus retombent en cascade sur l'ombre de repos si non définis. */
+    box-shadow: var(--field-shadow, none);
+    /* Translucidité (verre) : bascule => aucun effet par défaut. Un thème pose un --field-bg
+     semi-transparent + blur/saturate ici (cf. theme-liquid-glass). À neutraliser sous
+     prefers-reduced-transparency côté thème. */
+    backdrop-filter: var(--field-backdrop-filter, none);
+    /* Mouvement : bascule => inerte par défaut. Pas de token transform sur la boîte : le trigger
+     du select sert d'ancre (anchor positioning), un transform fausserait le rattachement. */
+    transition: var(--field-transition, none);
+  }
+
+  .kt-field-box:hover {
+    border-color: var(--field-border-color-hover, #5f6368);
+    box-shadow: var(--field-shadow-hover, var(--field-shadow, none));
+  }
+
+  /* Focus visible au niveau de la boîte (l'input lui-même n'a pas de bordure). */
+  .kt-field-box:focus-within {
+    border-color: var(--field-border-color-focus, #0b57d0);
+    outline: var(--field-focus-ring-width, 2px) var(--field-focus-ring-style, solid)
+      var(--field-focus-ring, color-mix(in srgb, var(--field-border-color-focus, #0b57d0) 35%, transparent));
+    outline-offset: var(--field-focus-ring-offset, 1px);
+    box-shadow: var(--field-shadow-focus, var(--field-shadow, none));
+  }
+
+  .kt-field-box[data-invalid] {
+    border-color: var(--field-error-color, #b3261e);
+  }
+
+  .kt-field-box[data-invalid]:focus-within {
+    outline-color: color-mix(in srgb, var(--field-error-color, #b3261e) 35%, transparent);
+  }
+
+  .kt-field-box[data-disabled] {
+    background: var(--field-disabled-bg, #f1f3f4);
+    cursor: not-allowed;
+    box-shadow: none; /* un champ inerte ne « rayonne » pas, quel que soit le thème */
+  }
+
+  .kt-field-box__input {
+    flex: 1;
+    min-width: 0;
+    border: none;
+    outline: none;
+    background: transparent;
+    color: inherit;
+    font: inherit;
+    caret-color: var(--field-caret-color, auto); /* bascule (thème terminal, etc.) */
+    padding-inline-end: 0.5rem;
+  }
+
+  .kt-field-box__input:disabled {
+    cursor: not-allowed;
+    color: color-mix(in srgb, currentColor 50%, transparent);
+  }
+
+  /* Datalist : masque la flèche déroulante native (Chromium) sur les champs texte/number. Le
+   pseudo-élément étant partagé avec l'icône de picker des champs date/heure (qui peuvent eux
+   aussi porter un `list`), on restreint aux types concernés pour ne pas masquer leur picker. */
+  .kt-field-box__input[list]:is(
+      [type='text'],
+      [type='email'],
+      [type='password'],
+      [type='search'],
+      [type='tel'],
+      [type='url'],
+      [type='number']
+    )::-webkit-calendar-picker-indicator {
+    display: none !important;
+  }
+
+  .kt-field-box__affix {
+    flex: none;
+    color: var(--field-hint-color, #5f6368);
+  }
+
+  /* Icône via ligature de police d'icône (même mécanisme que Button). Police configurable :
+   --field-icon-font (par champ) > --kt-icon-font (global) > Material Symbols. Pour un set
+   NON-ligature (ex. Font Awesome), passer par `prefix`/`suffix` (TemplateRef). */
+  .kt-field-box__icon {
+    flex: none;
+    font-family: var(--field-icon-font, var(--kt-icon-font, 'Material Symbols Outlined'));
+    font-weight: var(--field-icon-font-weight, var(--kt-icon-font-weight, normal));
+    font-style: normal;
+    font-size: 1.25em;
+    line-height: 1;
+    font-feature-settings: 'liga';
+    color: var(--field-icon-color, #5f6368);
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* Le bouton « effacer » est une icône INTERNE de la lib : toujours Material Symbols,
+   indépendante de --kt-icon-font (sinon un override consommateur casserait la croix). */
+  .kt-field-box__clear .kt-field-box__icon {
+    font-family: 'Material Symbols Outlined';
+    font-weight: normal;
+  }
+
+  .kt-field-box__clear {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex: none;
+    padding: 0;
+    border: none;
+    border-radius: 50%;
+    background: transparent;
+    color: var(--field-icon-color, #5f6368);
+    cursor: pointer;
+    position: relative; /* requis pour le positionnement de ::after */
+  }
+
+  /* Cible tactile AAA 44x44px étendue via un pseudo-élément transparent */
+  .kt-field-box__clear::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 44px;
+    height: 44px;
+  }
+
+  .kt-field-box__clear:hover {
+    color: var(--field-color, inherit);
+  }
+
+  .kt-field-box__clear:focus-visible {
+    outline: 2px solid var(--field-border-color-focus, #0b57d0);
+    outline-offset: 1px;
+  }
+
+  /* Multi-ligne (textarea) : affixes et clear s'alignent en haut, pas au centre. */
+  .kt-field-box[data-multiline] {
+    align-items: flex-start;
+  }
+
+  textarea.kt-field-box__input {
+    /* Autosize natif (navigateurs récents) ; `rows` = hauteur initiale ;
+     repli sur navigateurs sans field-sizing : redimensionnement manuel vertical. */
+    field-sizing: content;
+    resize: vertical;
+  }
+
+  /* =========================================================================
+     Apparence OUTLINE (opt-in via [appearance]="'outline'" ou KT_FIELD_CONFIG).
+     Label flottant qui se loge dans la bordure haute de la boîte (façon Material).
+     Rendu GLOBAL (et non dans field.css scopé) car il référence .kt-field-box*,
+     contenu PROJETÉ depuis le composant de champ — inatteignable en CSS scopé.
+     L'apparence par défaut (fill) n'est jamais touchée.
+     ========================================================================= */
+  kt-field[data-appearance='outline'] {
+    position: relative;
+    margin-top: 0.5rem; /* espace pour le label une fois flotté au-dessus de la bordure */
+  }
+
+  /* Le header (label + aide) recouvre la boîte sans réserver de hauteur en flux. */
+  kt-field[data-appearance='outline'] .kt-field__header {
+    position: absolute;
+    inset: 0 0 auto 0;
+    height: var(--field-min-height, 44px);
+    margin: 0;
+    padding-inline: var(--field-padding-x, 0.75rem);
+    z-index: 1;
+    pointer-events: none; /* la boîte/l'input dessous restent cliquables */
+  }
+
+  /* Label au repos = position « placeholder » (centré verticalement dans la boîte). */
+  kt-field[data-appearance='outline'] .kt-field__label {
+    position: absolute;
+    inset-inline-start: var(--field-padding-x, 0.75rem);
+    top: 50%;
+    transform: translateY(-50%);
+    transform-origin: left center;
+    max-width: calc(100% - 2 * var(--field-padding-x, 0.75rem));
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    background: transparent;
+    padding-inline: 0.25rem;
+    font-size: var(--field-font-size, 1rem);
+    font-weight: 400;
+    color: var(--field-hint-color, #5f6368);
+    transition:
+      transform 0.15s ease,
+      color 0.15s ease;
+  }
+
+  /* RTL : `transform-origin` n'accepte pas de mot-clé logique → on bascule l'origine de la mise à
+     l'échelle vers le bord de départ (droite en RTL) pour rester aligné sur `inset-inline-start`. */
+  [dir='rtl'] kt-field[data-appearance='outline'] .kt-field__label {
+    transform-origin: right center;
+  }
+
+  /* Bouton d'aide : recliquable et calé à droite du header. */
+  kt-field[data-appearance='outline'] .kt-field__help {
+    margin-inline-start: auto;
+    pointer-events: auto;
+  }
+
+  /* Label flotté — DEUX règles séparées à dessein (dégradation gracieuse) : la 1re (focus / always)
+     reste valide même si le moteur ne supporte pas `:has()`. Une seule pseudo-classe inconnue dans une
+     liste de sélecteurs invaliderait TOUTE la liste → le label ne flotterait jamais, focus compris.
+     La 2nde ajoute les cas qui exigent `:has()` (input rempli, select `[data-filled]`). Les inputs
+     date/heure n'ayant pas de placeholder CSS, `:not(:placeholder-shown)` les garde flottés en permanence. */
+  kt-field[data-appearance='outline'][data-float-label='always'] .kt-field__label,
+  kt-field[data-appearance='outline']:focus-within .kt-field__label {
+    transform: translateY(-50%) translateY(calc(var(--field-min-height, 44px) / -2)) scale(0.75);
+    color: var(--field-label-color, inherit);
+    /* Fond du label flotté : masque la ligne d'outline sous le label. Défaut : fond PLEIN du champ.
+       Le consommateur peut poser un gradient (ex. `linear-gradient(transparent 50%, var(--field-bg) 50%)`)
+       via le token --field-label-float-bg. */
+    background: var(--field-label-float-bg, var(--field-bg, #fff));
+  }
+  kt-field[data-appearance='outline']:has(.kt-field-box[data-filled]) .kt-field__label,
+  kt-field[data-appearance='outline']:has(.kt-field-box__input:not(:placeholder-shown)) .kt-field__label {
+    transform: translateY(-50%) translateY(calc(var(--field-min-height, 44px) / -2)) scale(0.75);
+    color: var(--field-label-color, inherit);
+    background: var(--field-label-float-bg, var(--field-bg, #fff));
+  }
+
+  /* Bordure de l'outline : token dédié (état de repos). Surcharge possible indépendamment du
+     mode `fill`. Les états hover/focus/invalid gardent leurs propres tokens (réaffirmés ici
+     pour rester prioritaires sur la règle de repos). */
+  kt-field[data-appearance='outline'] .kt-field-box {
+    border-color: var(--field-outline-border-color, var(--field-border-color, #c4c7c5));
+  }
+  kt-field[data-appearance='outline'] .kt-field-box:hover {
+    border-color: var(--field-border-color-hover, #5f6368);
+  }
+  kt-field[data-appearance='outline'] .kt-field-box:focus-within {
+    border-color: var(--field-border-color-focus, #0b57d0);
+  }
+  kt-field[data-appearance='outline'] .kt-field-box[data-invalid] {
+    border-color: var(--field-error-color, #b3261e);
+  }
+
+  /* En outline AUTO, le label flottant tient lieu de placeholder au repos : on masque le placeholder
+     propre du select (sinon doublon avec le label en position « placeholder »). En ALWAYS, le label
+     est déjà en haut → on laisse le placeholder du select s'afficher. */
+  kt-field[data-appearance='outline']:not([data-float-label='always']) .kt-select__placeholder {
+    visibility: hidden;
+  }
+
+  /* En outline, le placeholder natif ne s'affiche QUE lorsque le label flotte : au repos le label
+     tient lieu de placeholder (sinon les deux se superposeraient). Masqué par défaut, révélé au
+     focus ou en floatLabel='always'. (Quand le champ est rempli, le navigateur ne le rend pas.) */
+  kt-field[data-appearance='outline'] .kt-field-box__input::placeholder {
+    color: transparent;
+  }
+  kt-field[data-appearance='outline']:focus-within .kt-field-box__input::placeholder,
+  kt-field[data-appearance='outline'][data-float-label='always'] .kt-field-box__input::placeholder {
+    color: var(--field-placeholder-color, var(--field-hint-color, #5f6368));
+  }
+
+  /* Accent au focus / état d'erreur. */
+  kt-field[data-appearance='outline']:focus-within .kt-field__label {
+    color: var(--field-border-color-focus, #0b57d0);
+  }
+  kt-field[data-appearance='outline']:has(.kt-field-box[data-invalid]) .kt-field__label {
+    color: var(--field-error-color, #b3261e);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    kt-field[data-appearance='outline'] .kt-field__label {
+      transition: none;
+    }
+  }
+
+  /* Contraste forcé (Windows High Contrast) : le fond du label flotté masque la bordure ; un gradient
+     custom `--field-label-float-bg` serait ignoré → on force une couleur système opaque pour garantir
+     le « notch ». Au repos le label est transparent (non listé), donc rien à forcer. */
+  @media (forced-colors: active) {
+    kt-field[data-appearance='outline'][data-float-label='always'] .kt-field__label,
+    kt-field[data-appearance='outline']:focus-within .kt-field__label,
+    kt-field[data-appearance='outline']:has(.kt-field-box[data-filled]) .kt-field__label,
+    kt-field[data-appearance='outline']:has(.kt-field-box__input:not(:placeholder-shown)) .kt-field__label {
+      background: Canvas;
+    }
+  }
+}

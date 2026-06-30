@@ -1,0 +1,5 @@
+@layer kt-aaa.tokens, kt-aaa.base, kt-aaa.components;
+
+/* Tooltip (ktTooltip). Nécessite le socle (@ktortu/aaa/foundation.css).
+     @import '@ktortu/aaa/tooltip.css'; */
+@import '../tooltip/tooltip.css';

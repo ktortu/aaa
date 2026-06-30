@@ -1,0 +1,49 @@
+/* Design tokens de la carte (directive ktCard) — contrat public de theming.
+
+   Même architecture que --btn-* / --field-* / --dialog-* : tout DÉRIVE du socle --kt-*.
+   Surcharger un --kt-* (ex. --kt-surface) rebrande la carte avec le reste de la lib ;
+   surcharger un --card-* ici (ou sur un conteneur de spécificité ≥) ne touche que la carte.
+   Bascules NON déclarées (cf. plus bas) => effets inertes par défaut.
+
+   Chargé APRÈS foundation.css (qui pose les --kt-*). */
+@layer kt-aaa.tokens {
+  :root {
+    /* ============ Surface ============ */
+    --card-bg: var(--kt-surface, #ffffff);
+    --card-fg: var(--kt-on-surface, #1f1f1f);
+
+    /* Fond de la variante `filled` : surface légèrement teintée (DÉRIVÉ, suit chaque thème). */
+    --card-filled-bg: color-mix(in oklab, var(--kt-on-surface, #1f1f1f) 5%, var(--kt-surface, #fff));
+
+    /* ============ Bordure ============ */
+    --card-border-color: var(--kt-outline, #c4c7c5);
+    --card-border-width: 1px;
+
+    /* ============ Forme & rythme ============ */
+    --card-radius: var(--kt-control-radius, 8px);
+    --card-padding: 1rem;
+    --card-gap: 0.75rem;
+
+    /* ============ Élévation (variante `elevated`) ============ */
+    --card-shadow: 0 1px 3px rgb(0 0 0 / 12%), 0 1px 2px rgb(0 0 0 / 8%);
+
+    /* ============ Voile d'état (carte interactive) — opacités discrètes ============ */
+    --card-state-hover-opacity: 0.04;
+    --card-state-pressed-opacity: 0.08;
+
+    /* ============ Anneau de focus (relayé sur toute la carte) ============ */
+    --card-focus-ring-color: var(--kt-focus-ring-color, #0842a0);
+    --card-focus-ring-width: var(--kt-focus-ring-width, 2px);
+    --card-focus-ring-offset: 2px;
+
+    /* ============ Bascules NON déclarées exprès (défauts entre parenthèses) ============
+     Même principe que --btn-* : non définies => effet neutre ; un thème (ou un conteneur) les
+     pose pour activer l'effet, sans qu'aucune carte n'ait à les redéclarer.
+       --card-shadow-hover   (= --card-shadow) : élévation au survol d'une carte interactive.
+       --card-transition     (none)            : anime ombre/translation (carte inerte sinon).
+       --card-transform       (none)           : transform au repos.
+       --card-transform-hover (= --card-transform) : transform au survol (ex. translateY(-2px)).
+       --card-fill-image      (none)           : dégradé/motif empilé SOUS le voile d'état.
+       --card-backdrop-filter (none)           : flou de la surface (thèmes verre). */
+  }
+}

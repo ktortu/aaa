@@ -1,0 +1,46 @@
+@layer kt-cdk, kt-aaa, kt-themes, app-styles;
+
+/* Overlay CDK (requis par le Dialog et la Snackbar) */
+@import '@angular/cdk/overlay-prebuilt.css' layer(kt-cdk);
+/* Masque l'élément du LiveAnnouncer (requis par la Snackbar) */
+@import '@angular/cdk/a11y-prebuilt.css' layer(kt-cdk);
+
+/* Socle + styles de base de TOUS les composants de la lib */
+@import '../../ktortu/aaa/styles/styles.css' layer(kt-aaa);
+
+/* Thèmes de la lib */
+@import '../../ktortu/aaa/themes/theme-material.css' layer(kt-themes);
+@import '../../ktortu/aaa/themes/theme-material-you.css' layer(kt-themes);
+@import '../../ktortu/aaa/themes/theme-primer.css' layer(kt-themes);
+@import '../../ktortu/aaa/themes/theme-carbon.css' layer(kt-themes);
+@import '../../ktortu/aaa/themes/theme-fluent.css' layer(kt-themes);
+@import '../../ktortu/aaa/themes/theme-ant.css' layer(kt-themes);
+@import '../../ktortu/aaa/themes/theme-bootstrap.css' layer(kt-themes);
+@import '../../ktortu/aaa/themes/theme-catppuccin.css' layer(kt-themes);
+@import '../../ktortu/aaa/themes/theme-architecte.css' layer(kt-themes);
+@import '../../ktortu/aaa/themes/theme-vegetal.css' layer(kt-themes);
+@import '../../ktortu/aaa/themes/theme-cyberpunk.css' layer(kt-themes);
+@import '../../ktortu/aaa/themes/theme-aurora.css' layer(kt-themes);
+
+/* Styles de l'application de Démo */
+@layer app-styles {
+  body {
+    margin: 0;
+    /* Neutre : le shell occupe tout le viewport et le contenu reflète le thème
+       (--kt-surface / --kt-on-surface). Cette couleur n'apparaît qu'en overscroll. */
+    background: #0e1017;
+    color: var(--kt-on-surface, #e2e8f0);
+    font-family: var(--kt-font, 'Inter', sans-serif);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  ::selection {
+    background-color: var(--kt-primary, #00f3ff);
+    color: #000000;
+  }
+}
+
+:root {
+  --field-width: min(250px, 100%);
+}

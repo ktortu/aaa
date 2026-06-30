@@ -1,0 +1,355 @@
+/* ==========================================================================
+   Design tokens & Styles génériques pour les Tabs (@angular/aria)
+   ========================================================================== */
+@layer kt-aaa.tokens {
+  :root {
+    /* ============ TOKENS DES TABS ============ */
+    /* Dérivés du socle global foundation.css (--kt-*) */
+
+    --tab-height: var(--kt-control-height, 44px);
+    --tab-text-color: var(--kt-muted);
+    --tab-text-hover: var(--kt-on-surface);
+    /* Couleur (et non opacité) de l'état désactivé : idiome de la lib (cf. button.css), évite de
+     faire baisser le contraste de tout le sous-arbre. Surchargeable par le thème. */
+    --tab-text-disabled: color-mix(in srgb, var(--tab-text-color) 55%, transparent);
+
+    /* L'état actif prend la couleur primaire du thème par défaut */
+    --tab-active-color: var(--kt-primary);
+
+    /* Indicateur visuel (ligne du bas) */
+    --tab-indicator-width: 3px;
+    --tab-indicator-color: var(--tab-active-color);
+
+    /* Focus Ring AAA */
+    --tab-focus-ring-color: var(--kt-focus-ring-color);
+    --tab-focus-ring-width: var(--kt-focus-ring-width, 2px);
+
+    /* Bordures */
+    --tab-list-border-width: 2px;
+    --tab-list-border-color: var(--kt-outline);
+
+    /* ============ DÉBORDEMENT / DÉFILEMENT ============ */
+    /* La liste scrolle sur son propre axe quand elle déborde (jamais la page → WCAG 1.4.10).
+     `visible` pour désactiver. */
+    --tab-list-overflow: auto;
+    /* Affordance : ombres de défilement (Lea Verou) visibles seulement s'il reste du contenu
+     hors-champ, estompées aux extrémités. `--tab-scroll-shadow-spread: 0` les coupe. */
+    --tab-list-bg: var(--kt-surface);
+    --tab-scroll-shadow-size: 2rem; /* largeur du "cache" couleur de surface */
+    --tab-scroll-shadow-spread: 0.85rem; /* taille de l'ombre */
+    /* Dérivée du socle : ombre sombre en thème clair, claire en thème sombre. */
+    --tab-scroll-shadow-color: color-mix(in srgb, var(--kt-on-surface, #1f1f1f) 18%, transparent);
+    /* Marge laissée autour de l'onglet amené dans la vue (focus clavier / directive ktTabScroll). */
+    --tab-scroll-margin: 1rem;
+    --tab-scroll-snap: none; /* `x proximity` pour activer l'accroche */
+    --tab-scrollbar-width: thin;
+
+    /* ============ PAGINATION (directive ktTabScroller / composant kt-tab-scroller) ============ */
+    /* Quand la pagination réactive est active, la scrollbar native est masquée (les chevrons +
+     ombres prennent le relais). Réafficher la barre via `--tab-scroller-scrollbar: thin`. */
+    --tab-scroller-scrollbar: none;
+    --tab-scroller-gap: 0; /* espace boutons chevrons ↔ viewport */
+    /* Géométrie et fond (pour les thèmes extrêmes comme Win98) */
+    --tab-bg: transparent;
+    --tab-bg-hover: color-mix(in srgb, var(--tab-text-hover) 5%, transparent);
+    --tab-bg-active: transparent;
+    --tab-shadow: none;
+    --tab-shadow-hover: none;
+    --tab-shadow-active: none;
+    --tab-border: none;
+    --tab-border-active: none;
+    --tab-margin: 0;
+    --tab-padding-y: 0;
+    --tab-z-index-active: 1;
+    --tab-transform: none;
+    --tab-transform-hover: none;
+    --tab-transform-active: none;
+    --tab-radius: 0;
+    --tab-backdrop-filter: none;
+    --tab-transition: background-color 0.2s, color 0.2s, transform 0.1s, box-shadow 0.1s, backdrop-filter 0.2s;
+  }
+}
+
+@layer kt-aaa.components {
+  /* ==========================================================================
+   STYLES GLOBAUX (Ciblage des attributs ARIA natifs)
+   ========================================================================== */
+
+  /* 1. Le conteneur principal */
+  [ngTabs] {
+    display: flex;
+    flex-direction: column;
+  }
+
+  /* 2. La liste des onglets */
+  [ngTabList] {
+    display: flex;
+    list-style: none;
+    border-bottom: var(--tab-list-border-width) solid var(--tab-list-border-color);
+    padding: 0;
+    margin: 0;
+    align-items: flex-end; /* Pour permettre aux onglets de tailles différentes (ex: actif plus grand) de s'aligner en bas */
+    position: relative; /* Établit le contexte de positionnement pour offsetTop/offsetLeft des enfants */
+
+    /* Débordement : la LISTE scrolle sur l'axe en ligne — jamais la page (corrige WCAG 1.4.10).
+     Le focus clavier d'@angular/aria amène l'onglet actif dans la vue ; la directive ktTabScroll
+     couvre l'onglet actif hors-champ au montage / en sélection programmatique. */
+    overflow-x: var(--tab-list-overflow, auto);
+    overflow-y: hidden;
+    scroll-behavior: smooth;
+    scrollbar-width: var(--tab-scrollbar-width, thin);
+    scroll-snap-type: var(--tab-scroll-snap, none);
+
+    /* Ombres de défilement (Lea Verou) : couche "cache" (couleur surface, attachement local) +
+     couche "ombre" (attachement scroll). L'ombre n'apparaît que s'il reste du contenu de ce côté
+     et s'estompe à l'extrémité → pas de "ghosting" permanent du 1er/dernier onglet.
+     Longhands (et non shorthand `background`) pour NE PAS réinitialiser `background-color` : un
+     consommateur peut donc poser sa propre couleur de fond sans collision. */
+    background-image:
+      linear-gradient(to right, var(--tab-list-bg, var(--kt-surface, #fff)) 30%, transparent),
+      linear-gradient(to left, var(--tab-list-bg, var(--kt-surface, #fff)) 30%, transparent),
+      radial-gradient(farthest-side at 0 50%, var(--tab-scroll-shadow-color, rgb(0 0 0 / 16%)), transparent),
+      radial-gradient(farthest-side at 100% 50%, var(--tab-scroll-shadow-color, rgb(0 0 0 / 16%)), transparent);
+    background-position:
+      0 0,
+      100% 0,
+      0 0,
+      100% 0;
+    background-size:
+      var(--tab-scroll-shadow-size, 2rem) 100%,
+      var(--tab-scroll-shadow-size, 2rem) 100%,
+      var(--tab-scroll-shadow-spread, 0.85rem) 100%,
+      var(--tab-scroll-shadow-spread, 0.85rem) 100%;
+    background-repeat: no-repeat;
+    background-attachment: local, local, scroll, scroll;
+  }
+
+  /* 2b. Pagination active (directive ktTabScroller) → scrollbar native masquée ; les chevrons et
+     les ombres Lea Verou prennent le relais. `--tab-scroller-scrollbar: thin` réaffiche la barre. */
+  [ngTabList][data-kt-tab-scroller] {
+    scrollbar-width: var(--tab-scroller-scrollbar, none);
+  }
+  [ngTabList][data-kt-tab-scroller]::-webkit-scrollbar {
+    width: 0;
+    height: 0;
+  }
+
+  /* 3. Un onglet individuel */
+  [ngTab] {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    flex: none; /* ne pas rétrécir : les onglets gardent leur taille et débordent → scroll */
+    scroll-snap-align: start;
+    scroll-margin-inline: var(--tab-scroll-margin, 1rem); /* gap quand on l'amène dans la vue */
+    padding: var(--tab-padding-y) 1.5rem;
+    margin: var(--tab-margin);
+    height: var(--tab-height);
+    font-weight: 600;
+    color: var(--tab-text-color);
+    background-color: var(--tab-bg);
+    box-shadow: var(--tab-shadow);
+    border: var(--tab-border);
+    border-radius: var(--tab-radius);
+    transform: var(--tab-transform);
+    backdrop-filter: var(--tab-backdrop-filter);
+    -webkit-backdrop-filter: var(--tab-backdrop-filter);
+    cursor: pointer;
+    position: relative;
+    transition: var(--tab-transition);
+    user-select: none;
+  }
+
+  [ngTab]:hover:not([disabled]):not([aria-disabled='true']) {
+    color: var(--tab-text-hover);
+    background-color: var(--tab-bg-hover);
+    box-shadow: var(--tab-shadow-hover);
+    transform: var(--tab-transform-hover);
+  }
+
+  /* 4. Onglet Actif / Sélectionné */
+  [ngTab][aria-selected='true'] {
+    color: var(--tab-active-color);
+    background-color: var(--tab-bg-active);
+    box-shadow: var(--tab-shadow-active);
+    border: var(--tab-border-active);
+    transform: var(--tab-transform-active);
+    z-index: var(--tab-z-index-active);
+  }
+
+  /* Indicateur du bas pour l'onglet actif */
+  [ngTab][aria-selected='true']::after {
+    content: '';
+    position: absolute;
+    bottom: calc(var(--tab-list-border-width) * -1); /* Superpose la bordure de la liste */
+    left: 0;
+    right: 0;
+    height: var(--tab-indicator-width);
+    background-color: var(--tab-indicator-color);
+    border-radius: var(--tab-indicator-width) var(--tab-indicator-width) 0 0;
+  }
+
+  /* 5. Focus AAA (Immanquable au clavier) */
+  [ngTab]:focus-visible {
+    outline: var(--tab-focus-ring-width) solid var(--tab-focus-ring-color);
+    outline-offset: calc(var(--tab-focus-ring-width) * -1);
+    background-color: color-mix(in srgb, var(--tab-focus-ring-color) 10%, transparent);
+    border-radius: 4px 4px 0 0;
+  }
+
+  /* 6. État désactivé */
+  [ngTab][disabled],
+  [ngTab][aria-disabled='true'] {
+    cursor: not-allowed;
+    color: var(--tab-text-disabled);
+  }
+
+  /* 7. Panneaux de contenu (Tab Panels) */
+  [ngTabPanel] {
+    padding: var(--tab-panel-padding, 1.5rem 0);
+    background-color: var(--tab-panel-bg, transparent);
+    backdrop-filter: var(--tab-panel-backdrop-filter, none);
+    -webkit-backdrop-filter: var(--tab-panel-backdrop-filter, none);
+    border: var(--tab-panel-border, none);
+    border-radius: var(--tab-panel-radius, 0);
+    box-shadow: var(--tab-panel-shadow, none);
+    animation: tabFadeIn 0.3s ease-in-out;
+    margin-top: var(--tab-panel-margin-top, 0);
+  }
+
+  [ngTabPanel][inert] {
+    display: none;
+  }
+
+  [ngTabPanel]:focus-visible {
+    outline: var(--tab-focus-ring-width) solid var(--tab-focus-ring-color);
+    outline-offset: -2px; /* Intérieur pour ne pas déborder de la carte en verre */
+    border-radius: var(--tab-panel-radius, 4px);
+  }
+
+  /* Animation fluide respectant les préférences système */
+  @keyframes tabFadeIn {
+    from {
+      opacity: 0;
+      transform: translateY(5px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    [ngTabPanel] {
+      animation: none;
+    }
+    [ngTabList] {
+      scroll-behavior: auto; /* pas de défilement animé lors de l'amenée dans la vue */
+    }
+  }
+
+  /* ==========================================================================
+   ORIENTATION VERTICALE
+   ========================================================================== */
+
+  [ngTabs]:has([ngTabList][aria-orientation='vertical']),
+  [ngTabs]:has([ngTabList][orientation='vertical']) {
+    flex-direction: row;
+  }
+
+  [ngTabList][aria-orientation='vertical'],
+  [ngTabList][orientation='vertical'] {
+    flex-direction: column;
+    border-bottom: none;
+    border-right: var(--tab-list-border-width) solid var(--tab-list-border-color);
+    align-items: stretch;
+
+    /* Débordement vertical (la hauteur est contrainte par le conteneur hôte) + ombres haut/bas. */
+    overflow-x: hidden;
+    overflow-y: var(--tab-list-overflow, auto);
+    /* Longhands (cf. bloc horizontal) : préserve un éventuel `background-color` du consommateur. */
+    background-image:
+      linear-gradient(to bottom, var(--tab-list-bg, var(--kt-surface, #fff)) 30%, transparent),
+      linear-gradient(to top, var(--tab-list-bg, var(--kt-surface, #fff)) 30%, transparent),
+      radial-gradient(farthest-side at 50% 0, var(--tab-scroll-shadow-color, rgb(0 0 0 / 16%)), transparent),
+      radial-gradient(farthest-side at 50% 100%, var(--tab-scroll-shadow-color, rgb(0 0 0 / 16%)), transparent);
+    background-position:
+      0 0,
+      0 100%,
+      0 0,
+      0 100%;
+    background-size:
+      100% var(--tab-scroll-shadow-size, 2rem),
+      100% var(--tab-scroll-shadow-size, 2rem),
+      100% var(--tab-scroll-shadow-spread, 0.85rem),
+      100% var(--tab-scroll-shadow-spread, 0.85rem);
+    background-repeat: no-repeat;
+    background-attachment: local, local, scroll, scroll;
+  }
+
+  [ngTabList][aria-orientation='vertical'] [ngTab],
+  [ngTabList][orientation='vertical'] [ngTab] {
+    justify-content: flex-start;
+    scroll-margin-block: var(--tab-scroll-margin, 1rem);
+  }
+
+  /* On déplace l'indicateur sur le bord droit pour l'orientation verticale */
+  [ngTabList][aria-orientation='vertical'] [ngTab][aria-selected='true']::after,
+  [ngTabList][orientation='vertical'] [ngTab][aria-selected='true']::after {
+    bottom: 0;
+    left: auto;
+    right: calc(var(--tab-list-border-width) * -1); /* Superpose la bordure droite */
+    width: var(--tab-indicator-width);
+    height: auto;
+    top: 0;
+    border-radius: var(--tab-indicator-width) 0 0 var(--tab-indicator-width);
+  }
+
+  [ngTabs]:has([ngTabList][aria-orientation='vertical']) [ngTabPanel],
+  [ngTabs]:has([ngTabList][orientation='vertical']) [ngTabPanel] {
+    flex-grow: 1;
+    padding: 0 1.5rem;
+  }
+
+  /* ==========================================================================
+   PAGINATION CLÉ-EN-MAIN (composant <kt-tab-scroller>)
+   On ne stylise QUE le layout (flex : chevron / viewport / chevron) — l'apparence des chevrons
+   vient de [ktButton]. `min-inline-size: 0` est critique : sans lui, le `ul` (dont les onglets
+   sont `flex: none`) impose sa largeur intrinsèque et la liste ne déborde jamais.
+   ========================================================================== */
+  kt-tab-scroller {
+    display: flex;
+    align-items: stretch;
+    gap: var(--tab-scroller-gap, 0);
+    min-inline-size: 0;
+  }
+
+  kt-tab-scroller > .kt-tab-scroller__viewport {
+    flex: 1 1 auto;
+    min-inline-size: 0;
+    display: flex;
+  }
+
+  kt-tab-scroller > .kt-tab-scroller__viewport > [ngTabList] {
+    flex: 1 1 auto;
+    min-inline-size: 0;
+  }
+
+  .kt-tab-scroller__chevron {
+    flex: none;
+    align-self: center;
+  }
+
+  /* Pas de débordement → chevrons retirés (la liste occupe toute la barre). */
+  kt-tab-scroller:not([data-overflowing]) > .kt-tab-scroller__chevron {
+    display: none;
+  }
+
+  /* Orientation verticale : barre en colonne, chevrons haut/bas. */
+  kt-tab-scroller[data-orientation='vertical'] {
+    flex-direction: column;
+  }
+  kt-tab-scroller[data-orientation='vertical'] > .kt-tab-scroller__viewport {
+    min-block-size: 0;
+  }
+}

@@ -1,0 +1,49 @@
+/* Thème « IBM Carbon » (light, White/g10) — uniquement des redéclarations de tokens.
+   Signature Carbon : coins CARRÉS partout (radius 0) — le stress-test géométrie du contrat —,
+   champs gris #f4f4f4, bleu interactif #0f62fe, IBM Plex Sans (stack avec repli système). */
+[data-theme='carbon'] {
+  /* ============ Socle ============ */
+  --kt-primary: #0043ce; /* interactive — blanc 7.6:1 (AAA) */
+  --kt-danger: #750e13; /* support-error — blanc 9.0:1 (AAA) */
+  --kt-neutral: #393939; /* button-secondary Carbon */
+  --kt-surface: #ffffff;
+  --kt-on-surface: #161616; /* text-primary */
+  --kt-muted: #525252; /* text-secondary, ~7.4:1 */
+  --kt-outline: #8d8d8d; /* border-strong (les inputs Carbon ont une bordure marquée) */
+  --kt-outline-strong: #161616;
+  --kt-font: 'IBM Plex Sans', system-ui, sans-serif;
+
+  /* ============ Géométrie : coins carrés ============ */
+  --kt-control-radius: 0;
+  --btn-radius: 0; /* bascule : 0 sur toutes les tailles */
+  --kt-sheet-radius: 0;
+  --chip-radius: 0;
+
+  /* ============ Champs ============ */
+  --field-bg: #f4f4f4; /* field-01 sur fond blanc */
+  /* L'input Carbon authentique : fill gris + UNIQUEMENT la bordure du bas
+     (rétrofit lot 5, bordures par côté) ; le menu du select garde sa bordure complète. */
+  --field-border-width: 0 0 1px 0;
+  --select-popup-border-width: 1px;
+
+  /* ============ Boutons ============ */
+  --btn-letter-spacing: 0.01em; /* body-compact Carbon, +0.16px (rétrofit lot 6) */
+  --btn-on-primary-container: #002c9b; /* sur container dérivé bleu pâle, >7:1 (AAA) */
+  --btn-on-danger-container: #750e13;
+  --btn-on-neutral-container: #161616;
+
+  /* ============ Tooltip ============ */
+  --tooltip-bg: #393939;
+  --tooltip-fg: #ffffff;
+
+  /* ============ Dialog (IBM Carbon : angles vifs, sans bord) ============ */
+  --dialog-radius: 0;
+  --dialog-border-width: 0;
+  --dialog-shadow: 0 2px 6px rgb(0 0 0 / 20%);
+  --kt-sheet-shadow: 0 -2px 6px rgb(0 0 0 / 30%); /* ombre minimale et nette (Carbon) */
+
+  /* ============ Card (IBM Carbon : tuile carrée, layer-01) ============ */
+  --card-radius: 0;
+  --card-filled-bg: #f4f4f4; /* layer-01 */
+  --card-shadow: 0 2px 6px rgb(0 0 0 / 20%); /* élévation nette, sans flou diffus */
+}

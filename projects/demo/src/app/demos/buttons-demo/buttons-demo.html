@@ -1,0 +1,74 @@
+<article class="page">
+  <header class="page__head">
+    <p class="page__eyebrow">Directive</p>
+    <h1 class="page__title">Boutons</h1>
+    <p class="page__lead">
+      La directive <code>[ktButton]</code> s'applique sur un <code>&lt;button&gt;</code> ou un <code>&lt;a&gt;</code>.
+      Cibles tactiles AAA, états accessibles (<code>aria-busy</code>, <code>aria-disabled</code>), apparence pilotée par
+      des tokens CSS. Aucune sortie : les évènements restent natifs.
+    </p>
+  </header>
+
+  <kt-doc-section title="Exemples" subtitle="Variantes combinables : mode, couleur, taille, icône et état.">
+    <kt-doc-example label="Modes">
+      <button ktButton mode="filled">Filled</button>
+      <button ktButton mode="tonal">Tonal</button>
+      <button ktButton mode="outlined">Outlined</button>
+      <button ktButton mode="text">Text</button>
+    </kt-doc-example>
+
+    <kt-doc-example label="Couleurs">
+      <button ktButton color="primary">Primary</button>
+      <button ktButton color="neutral">Neutral</button>
+      <button ktButton color="danger">Danger</button>
+      <button ktButton mode="tonal" color="primary">Primary</button>
+      <button ktButton mode="tonal" color="neutral">Neutral</button>
+      <button ktButton mode="tonal" color="danger">Danger</button>
+    </kt-doc-example>
+
+    <kt-doc-example label="Tailles">
+      <button ktButton size="sm">Small</button>
+      <button ktButton size="md">Medium</button>
+      <button ktButton size="lg">Large</button>
+    </kt-doc-example>
+
+    <kt-doc-example label="Icônes">
+      <button ktButton icon="download" iconPosition="start">Télécharger</button>
+      <button ktButton icon="arrow_forward" iconPosition="end">Suivant</button>
+      <button ktButton iconOnly icon="favorite" ariaLabel="Aimer" mode="tonal"></button>
+      <button ktButton iconOnly icon="close" ariaLabel="Fermer" mode="text"></button>
+    </kt-doc-example>
+
+    <kt-doc-example label="États">
+      <button ktButton [loading]="true">Chargement</button>
+      <button ktButton [disabled]="true">Désactivé</button>
+      <button ktButton [disabled]="true" [disabledInteractive]="true">Désactivé (focalisable)</button>
+    </kt-doc-example>
+
+    <kt-doc-example label="Pleine largeur & lien">
+      <button ktButton [fullWidth]="true">Pleine largeur</button>
+      <a ktButton mode="outlined" href="#buttons">Lien stylé en bouton</a>
+    </kt-doc-example>
+  </kt-doc-section>
+
+  <kt-doc-section title="Utilisation" subtitle="Importer la directive, puis l'appliquer sur un bouton ou un lien.">
+    <div class="page__codes">
+      <kt-doc-code language="ts" [code]="tsSnippet" />
+      <kt-doc-code language="html" [code]="htmlSnippet" />
+    </div>
+  </kt-doc-section>
+
+  <kt-doc-section
+    title="Propriétés"
+    subtitle="Inputs publics de la directive. Configurables globalement via KT_BUTTON_CONFIG."
+  >
+    <kt-doc-props [rows]="props" />
+  </kt-doc-section>
+
+  <kt-doc-section
+    title="Tokens CSS"
+    subtitle="Contrat de personnalisation : surchargez ces variables sur :root ou un conteneur de spécificité ≥."
+  >
+    <kt-doc-tokens [groups]="tokens" />
+  </kt-doc-section>
+</article>
