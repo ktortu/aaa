@@ -19,6 +19,12 @@ beforeEach(() => {
 // Restaure les spies `vi.spyOn`, retire les `vi.stubGlobal`, et rend les timers réels.
 // → permet de supprimer les `mockRestore()` / `try { … } finally { vi.useRealTimers() }` manuels.
 afterEach(() => {
+  try {
+    vi.runAllTimers();
+  } catch {
+    // Faux timers non actifs
+  }
+  vi.clearAllTimers();
   vi.restoreAllMocks();
   vi.unstubAllGlobals();
   vi.useRealTimers();
