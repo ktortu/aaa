@@ -1,5 +1,6 @@
 import { Component, signal } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { vi } from 'vitest';
 
 import { KtDisclosure } from './disclosure';
 import { KtDisclosureContent } from './disclosure-content';
@@ -158,6 +159,7 @@ describe('Disclosure', () => {
 
   describe('garde-fou a11y (dev)', () => {
     it('avertit quand le déclencheur n’a pas de nom accessible', async () => {
+      vi.useFakeTimers();
       const warn = vi.spyOn(console, 'warn').mockImplementation(() => undefined);
       @Component({
         imports: [KtDisclosure, KtDisclosureToggle, KtDisclosureContent],
@@ -175,12 +177,15 @@ describe('Disclosure', () => {
       });
       const f = TestBed.createComponent(NamelessHost);
       f.detectChanges();
-      await new Promise((resolve) => setTimeout(resolve, 50));
+      await f.whenStable();
+      vi.runAllTimers();
       expect(warn).toHaveBeenCalledWith(expect.stringContaining('[ktDisclosureToggle]'));
       f.destroy();
+      TestBed.resetTestingModule();
     });
 
     it('n’avertit pas quand le déclencheur a un aria-label', async () => {
+      vi.useFakeTimers();
       const warn = vi.spyOn(console, 'warn').mockImplementation(() => undefined);
       @Component({
         imports: [KtDisclosure, KtDisclosureToggle, KtDisclosureContent],
@@ -198,12 +203,15 @@ describe('Disclosure', () => {
       });
       const f = TestBed.createComponent(LabelledHost);
       f.detectChanges();
-      await new Promise((resolve) => setTimeout(resolve, 50));
+      await f.whenStable();
+      vi.runAllTimers();
       expect(warn).not.toHaveBeenCalledWith(expect.stringContaining('[ktDisclosureToggle]'));
       f.destroy();
+      TestBed.resetTestingModule();
     });
 
     it('avertit quand l’hôte contient plusieurs panneaux', async () => {
+      vi.useFakeTimers();
       const warn = vi.spyOn(console, 'warn').mockImplementation(() => undefined);
       @Component({
         imports: [KtDisclosure, KtDisclosureToggle, KtDisclosureContent],
@@ -222,12 +230,15 @@ describe('Disclosure', () => {
       });
       const f = TestBed.createComponent(MultiPanelHost);
       f.detectChanges();
-      await new Promise((resolve) => setTimeout(resolve, 50));
+      await f.whenStable();
+      vi.runAllTimers();
       expect(warn).toHaveBeenCalledWith(expect.stringContaining('[ktDisclosure] attend UN seul'));
       f.destroy();
+      TestBed.resetTestingModule();
     });
 
     it('n’avertit pas pour des disclosures imbriqués (un panneau chacun)', async () => {
+      vi.useFakeTimers();
       const warn = vi.spyOn(console, 'warn').mockImplementation(() => undefined);
       @Component({
         imports: [KtDisclosure, KtDisclosureToggle, KtDisclosureContent],
@@ -250,9 +261,11 @@ describe('Disclosure', () => {
       });
       const f = TestBed.createComponent(NestedHost);
       f.detectChanges();
-      await new Promise((resolve) => setTimeout(resolve, 50));
+      await f.whenStable();
+      vi.runAllTimers();
       expect(warn).not.toHaveBeenCalledWith(expect.stringContaining('[ktDisclosure] attend UN seul'));
       f.destroy();
+      TestBed.resetTestingModule();
     });
   });
 });

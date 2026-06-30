@@ -224,26 +224,34 @@ describe('Button', () => {
 
   describe('iconOnly accessibility guard', () => {
     it('should warn when iconOnly has no accessible name', async () => {
+      vi.useFakeTimers();
       const warn = vi.spyOn(console, 'warn').mockImplementation(() => undefined);
       setup(true);
       host.iconOnly.set(true);
       host.icon.set('close');
       fixture.detectChanges();
-      await new Promise((resolve) => setTimeout(resolve, 50));
+      await fixture.whenStable();
+      vi.runAllTimers();
 
       expect(warn).toHaveBeenCalledWith(expect.stringContaining('[ktButton] iconOnly'));
+      fixture.destroy();
+      TestBed.resetTestingModule();
     });
 
     it('should not warn when iconOnly has an ariaLabel', async () => {
+      vi.useFakeTimers();
       const warn = vi.spyOn(console, 'warn').mockImplementation(() => undefined);
       setup(true);
       host.iconOnly.set(true);
       host.icon.set('close');
       host.ariaLabel.set('Fermer');
       fixture.detectChanges();
-      await new Promise((resolve) => setTimeout(resolve, 50));
+      await fixture.whenStable();
+      vi.runAllTimers();
 
       expect(warn).not.toHaveBeenCalledWith(expect.stringContaining('[ktButton] iconOnly'));
+      fixture.destroy();
+      TestBed.resetTestingModule();
     });
 
     it('should preserve a native aria-label when no input is provided', () => {
@@ -490,13 +498,17 @@ describe('Button', () => {
     });
 
     it('avertit spécifiquement quand iconOnly sans [icon]', async () => {
+      vi.useFakeTimers();
       const warn = vi.spyOn(console, 'warn').mockImplementation(() => undefined);
       setup(true);
       host.iconOnly.set(true); // pas d'icône
       host.ariaLabel.set('Fermer'); // nom accessible OK → seule la garde "icône" doit parler
       fixture.detectChanges();
-      await new Promise((resolve) => setTimeout(resolve, 50));
+      await fixture.whenStable();
+      vi.runAllTimers();
       expect(warn).toHaveBeenCalledWith('[ktButton] iconOnly attend une icône via [icon].');
+      fixture.destroy();
+      TestBed.resetTestingModule();
     });
   });
 
@@ -514,6 +526,7 @@ describe('Button', () => {
     });
 
     it('aria-labelledby sur l’hôte court-circuite la garde de nom accessible (pas d’avertissement)', async () => {
+      vi.useFakeTimers();
       const warn = vi.spyOn(console, 'warn').mockImplementation(() => undefined);
       @Component({
         imports: [KtButton],
@@ -526,9 +539,11 @@ describe('Button', () => {
       });
       const f = TestBed.createComponent(LabelledByHost);
       f.detectChanges();
-      await new Promise((resolve) => setTimeout(resolve, 50));
+      await f.whenStable();
+      vi.runAllTimers();
       expect(warn).not.toHaveBeenCalledWith(expect.stringContaining('sans nom accessible'));
       f.destroy();
+      TestBed.resetTestingModule();
     });
   });
 

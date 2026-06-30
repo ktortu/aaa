@@ -264,6 +264,7 @@ describe('Checkbox', () => {
 
 describe('Checkbox — garde-fou a11y dev (nom accessible)', () => {
   it('avertit quand la case n’a ni label, ni ariaLabel, ni contenu projeté', async () => {
+    vi.useFakeTimers();
     const warn = vi.spyOn(console, 'warn').mockImplementation(() => undefined);
     @Component({ imports: [KtCheckbox], template: `<kt-checkbox />` })
     class BareCheckbox {}
@@ -273,12 +274,15 @@ describe('Checkbox — garde-fou a11y dev (nom accessible)', () => {
     });
     const f = TestBed.createComponent(BareCheckbox);
     f.detectChanges();
-    await new Promise((resolve) => setTimeout(resolve, 50));
+    await f.whenStable();
+    vi.runAllTimers();
     expect(warn).toHaveBeenCalledWith(expect.stringContaining('sans nom accessible'));
     f.destroy();
+    TestBed.resetTestingModule();
   });
 
   it('n’avertit pas quand un label est présent', async () => {
+    vi.useFakeTimers();
     const warn = vi.spyOn(console, 'warn').mockImplementation(() => undefined);
     @Component({ imports: [KtCheckbox], template: `<kt-checkbox label="Accepter" />` })
     class NamedCheckbox {}
@@ -288,8 +292,10 @@ describe('Checkbox — garde-fou a11y dev (nom accessible)', () => {
     });
     const f = TestBed.createComponent(NamedCheckbox);
     f.detectChanges();
-    await new Promise((resolve) => setTimeout(resolve, 50));
+    await f.whenStable();
+    vi.runAllTimers();
     expect(warn).not.toHaveBeenCalled();
     f.destroy();
+    TestBed.resetTestingModule();
   });
 });

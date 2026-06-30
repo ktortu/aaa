@@ -1,4 +1,4 @@
-import { Directive, ElementRef, afterNextRender, booleanAttribute, inject, input } from '@angular/core';
+import { DestroyRef, Directive, ElementRef, afterNextRender, booleanAttribute, inject, input } from '@angular/core';
 import { KT_AUDIT_ENABLED } from '@ktortu/aaa/cdk';
 import { KtDisclosure } from './disclosure';
 
@@ -31,11 +31,16 @@ export class KtDisclosureToggle {
   readonly disclosure = inject(KtDisclosure);
   private readonly host = inject<ElementRef<HTMLElement>>(ElementRef).nativeElement;
   private readonly auditEnabled = inject(KT_AUDIT_ENABLED);
+  private isDestroyed = false;
 
   /** Affiche le chevron décoratif (qui pivote selon l'état). @default true */
   readonly chevron = input(true, { transform: booleanAttribute });
 
   constructor() {
+    inject(DestroyRef).onDestroy(() => {
+      this.isDestroyed = true;
+    });
+
     // `type="button"` SI ABSENT (comme @angular/aria) : un attribut statique de host ne surchargerait
     // pas un `type` posé dans le template, donc on le force impérativement à la construction.
     if (!this.host.hasAttribute('type')) {
@@ -43,6 +48,7 @@ export class KtDisclosureToggle {
     }
 
     afterNextRender(() => {
+      if (this.isDestroyed) return;
       if (!this.auditEnabled) return;
 
       const hasName =

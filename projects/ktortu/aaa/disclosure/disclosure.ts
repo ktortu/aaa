@@ -1,4 +1,4 @@
-import { Directive, ElementRef, afterNextRender, contentChildren, inject, model } from '@angular/core';
+import { DestroyRef, Directive, ElementRef, afterNextRender, contentChildren, inject, model } from '@angular/core';
 import { KT_AUDIT_ENABLED, KtIdGenerator } from '@ktortu/aaa/cdk';
 import { KtDisclosureToggle } from './disclosure-toggle';
 import { KtDisclosureContent } from './disclosure-content';
@@ -37,6 +37,7 @@ import { KtDisclosureContent } from './disclosure-content';
 export class KtDisclosure {
   private readonly idGen = inject(KtIdGenerator);
   private readonly host = inject<ElementRef<HTMLElement>>(ElementRef).nativeElement;
+  private isDestroyed = false;
 
   /** Identifiant stable du panneau contrôlé : cible de l'`aria-controls` du déclencheur. */
   readonly contentId = `kt-disclosure-content-${this.idGen.generateId('disclosure')}`;
@@ -55,8 +56,13 @@ export class KtDisclosure {
   readonly contents = contentChildren(KtDisclosureContent, { descendants: true });
 
   constructor() {
+    inject(DestroyRef).onDestroy(() => {
+      this.isDestroyed = true;
+    });
+
     // Garde-fou dev : un disclosure = UN toggle + UN panneau.
     afterNextRender(() => {
+      if (this.isDestroyed) return;
       if (!this.auditEnabled) return;
       const myToggles = this.toggles().filter((t) => t.disclosure === this);
       const myContents = this.contents().filter((c) => c.disclosure === this);

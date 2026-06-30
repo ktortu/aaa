@@ -1,6 +1,7 @@
 import {
   ChangeDetectionStrategy,
   Component,
+  DestroyRef,
   ElementRef,
   afterNextRender,
   booleanAttribute,
@@ -150,6 +151,7 @@ export class KtCheckbox<V = unknown> implements FormValueControl<boolean> {
   private readonly el = inject<ElementRef<HTMLElement>>(ElementRef);
   private readonly errorResolver = inject(KtFieldErrorResolver);
   private readonly auditEnabled = inject(KT_AUDIT_ENABLED);
+  private isDestroyed = false;
 
   private readonly idGen = inject(KtIdGenerator);
   private readonly uid = this.idGen.generateId('checkbox');
@@ -191,6 +193,10 @@ export class KtCheckbox<V = unknown> implements FormValueControl<boolean> {
   });
 
   constructor() {
+    inject(DestroyRef).onDestroy(() => {
+      this.isDestroyed = true;
+    });
+
     // `indeterminate` est une PROPRIÉTÉ (non un attribut) : poussée impérativement sur l'input natif.
     effect(() => {
       this.inputEl().nativeElement.indeterminate = this.indeterminate();
@@ -199,6 +205,7 @@ export class KtCheckbox<V = unknown> implements FormValueControl<boolean> {
     // Garde-fou a11y (navigateur uniquement) : nom accessible = `label`, `ariaLabel` OU contenu
     // projeté. Sans aucun des trois, la case est annoncée vide (WCAG 4.1.2).
     afterNextRender(() => {
+      if (this.isDestroyed) return;
       if (!this.auditEnabled || this.label() || this.ariaLabel()) return;
       const labelText = this.el.nativeElement
         .querySelector('.kt-checkbox__label')

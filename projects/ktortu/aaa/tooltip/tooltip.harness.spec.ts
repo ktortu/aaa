@@ -2,7 +2,7 @@
 // délai 0) puis la lit via le harness, en atteignant le nœud rendu dans le body.
 import { Component } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
-import { afterEach, describe, expect, it } from 'vitest';
+import { afterEach, describe, expect, it, vi } from 'vitest';
 import { TestbedHarnessEnvironment } from '@angular/cdk/testing/testbed';
 import { KtTooltip } from './tooltip';
 import { KtTooltipHarness } from './tooltip.harness';
@@ -19,12 +19,13 @@ describe('KtTooltipHarness (dogfood)', () => {
   });
 
   it('lit le texte, le rôle et la position de l infobulle affichée', async () => {
+    vi.useFakeTimers();
     const fixture = TestBed.createComponent(Host);
     fixture.detectChanges();
 
     // Affichage : piloté par le test (survol du déclencheur + délai 0).
     (fixture.nativeElement.querySelector('button') as HTMLElement).dispatchEvent(new MouseEvent('mouseenter'));
-    await new Promise((r) => setTimeout(r)); // laisse passer le showDelay=0
+    vi.advanceTimersByTime(0); // laisse passer le showDelay=0
     fixture.detectChanges();
 
     const tip = await TestbedHarnessEnvironment.documentRootLoader(fixture).getHarness(KtTooltipHarness);
