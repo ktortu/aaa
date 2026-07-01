@@ -326,8 +326,8 @@ describe('KtTabScroller', () => {
       mockScrollWidth = 800; // débordement après ajout
       fixture.componentInstance.tabs.set(['a', 'b', 'c', 'd', 'e']);
       fixture.detectChanges();
-      await new Promise((r) => queueMicrotask(() => r(undefined))); // laisse jouer le MutationObserver
-      await fixture.whenStable();
+      await new Promise((r) => queueMicrotask(() => r(undefined))); // laisse jouer le MutationObserver (microtask)
+      fixture.detectChanges();
       expect(dir.overflowing()).toBe(true);
     });
 

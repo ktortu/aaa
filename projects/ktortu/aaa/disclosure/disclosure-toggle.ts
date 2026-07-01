@@ -1,6 +1,6 @@
-import { DestroyRef, Directive, ElementRef, afterNextRender, booleanAttribute, inject, input } from '@angular/core';
+import { AfterViewInit, Directive, ElementRef, booleanAttribute, inject, input } from '@angular/core';
 import { KT_AUDIT_ENABLED } from '@ktortu/aaa/cdk';
-import { KtDisclosure } from './disclosure';
+import { KT_DISCLOSURE } from './disclosure-token';
 
 /**
  * Déclencheur d'un [ktDisclosure] : posé sur un **vrai `<button>`** (clavier Entrée/Espace
@@ -27,40 +27,34 @@ import { KtDisclosure } from './disclosure';
     '(click)': 'disclosure.toggle()',
   },
 })
-export class KtDisclosureToggle {
-  readonly disclosure = inject(KtDisclosure);
+export class KtDisclosureToggle implements AfterViewInit {
+  readonly disclosure = inject(KT_DISCLOSURE);
   private readonly host = inject<ElementRef<HTMLElement>>(ElementRef).nativeElement;
   private readonly auditEnabled = inject(KT_AUDIT_ENABLED);
-  private isDestroyed = false;
 
   /** Affiche le chevron décoratif (qui pivote selon l'état). @default true */
   readonly chevron = input(true, { transform: booleanAttribute });
 
   constructor() {
-    inject(DestroyRef).onDestroy(() => {
-      this.isDestroyed = true;
-    });
-
     // `type="button"` SI ABSENT (comme @angular/aria) : un attribut statique de host ne surchargerait
     // pas un `type` posé dans le template, donc on le force impérativement à la construction.
     if (!this.host.hasAttribute('type')) {
       this.host.setAttribute('type', 'button');
     }
+  }
 
-    afterNextRender(() => {
-      if (this.isDestroyed) return;
-      if (!this.auditEnabled) return;
+  ngAfterViewInit(): void {
+    if (!this.auditEnabled) return;
 
-      const hasName =
-        !!this.host.textContent?.trim() ||
-        !!this.host.getAttribute('aria-label')?.trim() ||
-        this.host.hasAttribute('aria-labelledby');
-      if (!hasName) {
-        console.warn(
-          '[ktDisclosureToggle] bouton sans nom accessible : ajoutez du texte visible, ' +
-            '[attr.aria-label] ou aria-labelledby (WCAG 4.1.2).',
-        );
-      }
-    });
+    const hasName =
+      !!this.host.textContent?.trim() ||
+      !!this.host.getAttribute('aria-label')?.trim() ||
+      this.host.hasAttribute('aria-labelledby');
+    if (!hasName) {
+      console.warn(
+        '[ktDisclosureToggle] bouton sans nom accessible : ajoutez du texte visible, ' +
+          '[attr.aria-label] ou aria-labelledby (WCAG 4.1.2).',
+      );
+    }
   }
 }

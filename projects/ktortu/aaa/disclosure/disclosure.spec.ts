@@ -11,7 +11,7 @@ import { KT_AUDIT_ENABLED } from '@ktortu/aaa/cdk';
   imports: [KtDisclosure, KtDisclosureToggle, KtDisclosureContent],
   template: `
     <div ktDisclosure #d="ktDisclosure" [(expanded)]="open">
-      <button ktDisclosureToggle>{{ d.expanded() ? 'Voir moins' : 'Voir plus' }}</button>
+      <button ktDisclosureToggle aria-label="Contrôle">{{ d.expanded() ? 'Voir moins' : 'Voir plus' }}</button>
       <kt-disclosure-content>
         <p>Contenu du panneau</p>
       </kt-disclosure-content>
@@ -21,6 +21,45 @@ import { KT_AUDIT_ENABLED } from '@ktortu/aaa/cdk';
 class TestHost {
   open = signal(false);
 }
+
+@Component({
+  imports: [KtDisclosure, KtDisclosureToggle, KtDisclosureContent],
+  template: `
+    <div ktDisclosure>
+      <button ktDisclosureToggle></button>
+      <kt-disclosure-content>x</kt-disclosure-content>
+    </div>
+  `,
+})
+class DisclosureNamelessHost {}
+
+@Component({
+  imports: [KtDisclosure, KtDisclosureToggle, KtDisclosureContent],
+  template: `
+    <div ktDisclosure>
+      <button ktDisclosureToggle>T</button>
+      <kt-disclosure-content>a</kt-disclosure-content>
+      <kt-disclosure-content>b</kt-disclosure-content>
+    </div>
+  `,
+})
+class DisclosureMultiPanelHost {}
+
+@Component({
+  imports: [KtDisclosure, KtDisclosureToggle, KtDisclosureContent],
+  template: `
+    <div ktDisclosure>
+      <button ktDisclosureToggle>Externe</button>
+      <kt-disclosure-content>
+        <div ktDisclosure>
+          <button ktDisclosureToggle>Interne</button>
+          <kt-disclosure-content>x</kt-disclosure-content>
+        </div>
+      </kt-disclosure-content>
+    </div>
+  `,
+})
+class DisclosureNestedHost {}
 
 describe('Disclosure', () => {
   let fixture: ComponentFixture<TestHost>;
@@ -164,21 +203,11 @@ describe('Disclosure', () => {
     it('avertit quand le déclencheur n’a pas de nom accessible', async () => {
       vi.useFakeTimers();
       const warn = vi.spyOn(console, 'warn').mockImplementation(() => undefined);
-      @Component({
-        imports: [KtDisclosure, KtDisclosureToggle, KtDisclosureContent],
-        template: `
-          <div ktDisclosure>
-            <button ktDisclosureToggle></button>
-            <kt-disclosure-content>x</kt-disclosure-content>
-          </div>
-        `,
-      })
-      class NamelessHost {}
       TestBed.configureTestingModule({
-        imports: [NamelessHost],
+        imports: [DisclosureNamelessHost],
         providers: [{ provide: KT_AUDIT_ENABLED, useValue: true }],
       });
-      const f = TestBed.createComponent(NamelessHost);
+      const f = TestBed.createComponent(DisclosureNamelessHost);
       f.detectChanges();
       await f.whenStable();
       vi.runAllTimers();
@@ -190,21 +219,11 @@ describe('Disclosure', () => {
     it('n’avertit pas quand le déclencheur a un aria-label', async () => {
       vi.useFakeTimers();
       const warn = vi.spyOn(console, 'warn').mockImplementation(() => undefined);
-      @Component({
-        imports: [KtDisclosure, KtDisclosureToggle, KtDisclosureContent],
-        template: `
-          <div ktDisclosure>
-            <button ktDisclosureToggle aria-label="Détails"></button>
-            <kt-disclosure-content>x</kt-disclosure-content>
-          </div>
-        `,
-      })
-      class LabelledHost {}
       TestBed.configureTestingModule({
-        imports: [LabelledHost],
+        imports: [TestHost],
         providers: [{ provide: KT_AUDIT_ENABLED, useValue: true }],
       });
-      const f = TestBed.createComponent(LabelledHost);
+      const f = TestBed.createComponent(TestHost);
       f.detectChanges();
       await f.whenStable();
       vi.runAllTimers();
@@ -216,22 +235,11 @@ describe('Disclosure', () => {
     it('avertit quand l’hôte contient plusieurs panneaux', async () => {
       vi.useFakeTimers();
       const warn = vi.spyOn(console, 'warn').mockImplementation(() => undefined);
-      @Component({
-        imports: [KtDisclosure, KtDisclosureToggle, KtDisclosureContent],
-        template: `
-          <div ktDisclosure>
-            <button ktDisclosureToggle>T</button>
-            <kt-disclosure-content>a</kt-disclosure-content>
-            <kt-disclosure-content>b</kt-disclosure-content>
-          </div>
-        `,
-      })
-      class MultiPanelHost {}
       TestBed.configureTestingModule({
-        imports: [MultiPanelHost],
+        imports: [DisclosureMultiPanelHost],
         providers: [{ provide: KT_AUDIT_ENABLED, useValue: true }],
       });
-      const f = TestBed.createComponent(MultiPanelHost);
+      const f = TestBed.createComponent(DisclosureMultiPanelHost);
       f.detectChanges();
       await f.whenStable();
       vi.runAllTimers();
@@ -243,26 +251,11 @@ describe('Disclosure', () => {
     it('n’avertit pas pour des disclosures imbriqués (un panneau chacun)', async () => {
       vi.useFakeTimers();
       const warn = vi.spyOn(console, 'warn').mockImplementation(() => undefined);
-      @Component({
-        imports: [KtDisclosure, KtDisclosureToggle, KtDisclosureContent],
-        template: `
-          <div ktDisclosure>
-            <button ktDisclosureToggle>Externe</button>
-            <kt-disclosure-content>
-              <div ktDisclosure>
-                <button ktDisclosureToggle>Interne</button>
-                <kt-disclosure-content>x</kt-disclosure-content>
-              </div>
-            </kt-disclosure-content>
-          </div>
-        `,
-      })
-      class NestedHost {}
       TestBed.configureTestingModule({
-        imports: [NestedHost],
+        imports: [DisclosureNestedHost],
         providers: [{ provide: KT_AUDIT_ENABLED, useValue: true }],
       });
-      const f = TestBed.createComponent(NestedHost);
+      const f = TestBed.createComponent(DisclosureNestedHost);
       f.detectChanges();
       await f.whenStable();
       vi.runAllTimers();

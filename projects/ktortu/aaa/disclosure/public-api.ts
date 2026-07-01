@@ -5,6 +5,7 @@ import { KtDisclosureToggle } from './disclosure-toggle';
 export * from './disclosure';
 export * from './disclosure-toggle';
 export * from './disclosure-content';
+export * from './disclosure-token';
 
 /**
  * Import ergonomique de toute la famille disclosure en une fois :

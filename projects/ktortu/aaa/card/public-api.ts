@@ -1,8 +1,6 @@
-import { KtCard } from './card';
-import { KtCardActions, KtCardContent, KtCardHeader, KtCardLink, KtCardMedia } from './card-structure';
+import { KtCard, KtCardActions, KtCardContent, KtCardHeader, KtCardLink, KtCardMedia } from './card';
 
 export * from './card';
-export * from './card-structure';
 
 /**
  * Import ergonomique de toute la famille card en une fois :

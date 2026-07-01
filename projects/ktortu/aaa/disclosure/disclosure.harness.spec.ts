@@ -13,7 +13,7 @@ import { KtDisclosureToggle } from './disclosure-toggle';
   imports: [KtDisclosure, KtDisclosureToggle, KtDisclosureContent],
   template: `
     <div ktDisclosure #d="ktDisclosure" [(expanded)]="open">
-      <button ktDisclosureToggle>{{ d.expanded() ? 'Voir moins' : 'Voir plus' }}</button>
+      <button ktDisclosureToggle aria-label="Contrôle">{{ d.expanded() ? 'Voir moins' : 'Voir plus' }}</button>
       <kt-disclosure-content><p>Contenu secret</p></kt-disclosure-content>
     </div>
   `,

@@ -1,9 +1,9 @@
 import {
+  AfterViewInit,
   ChangeDetectionStrategy,
   Component,
   DestroyRef,
   ElementRef,
-  afterNextRender,
   booleanAttribute,
   computed,
   effect,
@@ -96,7 +96,7 @@ import { KtIdGenerator } from '@ktortu/aaa/cdk';
     </div>
   `,
 })
-export class KtCheckbox<V = unknown> implements FormValueControl<boolean> {
+export class KtCheckbox<V = unknown> implements FormValueControl<boolean>, AfterViewInit {
   private readonly config = inject(KT_FIELD_CONFIG, { optional: true });
 
   /** Groupe parent optionnel : présent ⇒ la case appartient à un `kt-checkbox-group`. */
@@ -201,22 +201,22 @@ export class KtCheckbox<V = unknown> implements FormValueControl<boolean> {
     effect(() => {
       this.inputEl().nativeElement.indeterminate = this.indeterminate();
     });
+  }
 
+  ngAfterViewInit(): void {
     // Garde-fou a11y (navigateur uniquement) : nom accessible = `label`, `ariaLabel` OU contenu
     // projeté. Sans aucun des trois, la case est annoncée vide (WCAG 4.1.2).
-    afterNextRender(() => {
-      if (this.isDestroyed) return;
-      if (!this.auditEnabled || this.label() || this.ariaLabel()) return;
-      const labelText = this.el.nativeElement
-        .querySelector('.kt-checkbox__label')
-        ?.textContent?.replace('*', '')
-        .trim();
-      if (!labelText) {
-        console.warn(
-          '[ktCheckbox] sans `label`, `ariaLabel` ni contenu projeté : annoncée sans nom accessible (WCAG 4.1.2).',
-        );
-      }
-    });
+    if (this.isDestroyed) return;
+    if (!this.auditEnabled || this.label() || this.ariaLabel()) return;
+    const labelText = this.el.nativeElement
+      .querySelector('.kt-checkbox__label')
+      ?.textContent?.replace('*', '')
+      .trim();
+    if (!labelText) {
+      console.warn(
+        '[ktCheckbox] sans `label`, `ariaLabel` ni contenu projeté : annoncée sans nom accessible (WCAG 4.1.2).',
+      );
+    }
   }
 
   /** Focus la case native (utilisé par Signal Forms `focusBoundControl`). */

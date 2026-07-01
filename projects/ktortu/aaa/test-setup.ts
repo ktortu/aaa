@@ -31,8 +31,8 @@ afterEach(async () => {
   vi.clearAllTimers();
   vi.useRealTimers();
 
-  // 3. Always wait 100ms to let all real requestAnimationFrame / setTimeout settle
-  await new Promise<void>((resolve) => setTimeout(resolve, 100));
+  // 3. Always wait 300ms to let all real requestAnimationFrame / setTimeout settle
+  await new Promise<void>((resolve) => setTimeout(resolve, 300));
 
   vi.restoreAllMocks();
   vi.unstubAllGlobals();

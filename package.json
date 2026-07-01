@@ -9,7 +9,7 @@
     "build:demo": "ng build demo",
     "watch": "ng build --watch --configuration development",
     "test": "ng test",
-    "test:ci": "ng test @ktortu/aaa --configuration ci --no-watch",
+    "test:ci": "ng test @ktortu/aaa --configuration ci --no-watch --isolate",
     "test:mutation": "ng test @ktortu/aaa --configuration mutation --no-watch",
     "test:mutation:forms": "ng test @ktortu/aaa --configuration mutation-forms --no-watch",
     "test:mutation:i18n-cdk": "ng test @ktortu/aaa --configuration mutation-i18n-cdk --no-watch",

@@ -1,5 +1,6 @@
-import { DestroyRef, Directive, ElementRef, afterNextRender, contentChildren, inject, model } from '@angular/core';
+import { AfterContentInit, Directive, ElementRef, contentChildren, forwardRef, inject, model } from '@angular/core';
 import { KT_AUDIT_ENABLED, KtIdGenerator } from '@ktortu/aaa/cdk';
+import { KT_DISCLOSURE } from './disclosure-token';
 import { KtDisclosureToggle } from './disclosure-toggle';
 import { KtDisclosureContent } from './disclosure-content';
 
@@ -33,11 +34,16 @@ import { KtDisclosureContent } from './disclosure-content';
   host: {
     '[attr.data-expanded]': 'expanded()',
   },
+  providers: [
+    {
+      provide: KT_DISCLOSURE,
+      useExisting: forwardRef(() => KtDisclosure),
+    },
+  ],
 })
-export class KtDisclosure {
+export class KtDisclosure implements AfterContentInit {
   private readonly idGen = inject(KtIdGenerator);
   private readonly host = inject<ElementRef<HTMLElement>>(ElementRef).nativeElement;
-  private isDestroyed = false;
 
   /** Identifiant stable du panneau contrôlé : cible de l'`aria-controls` du déclencheur. */
   readonly contentId = `kt-disclosure-content-${this.idGen.generateId('disclosure')}`;
@@ -52,28 +58,24 @@ export class KtDisclosure {
 
   private readonly auditEnabled = inject(KT_AUDIT_ENABLED);
 
-  readonly toggles = contentChildren(KtDisclosureToggle, { descendants: true });
-  readonly contents = contentChildren(KtDisclosureContent, { descendants: true });
+  readonly toggles = contentChildren<KtDisclosureToggle>(forwardRef(() => KtDisclosureToggle), {
+    descendants: true,
+  });
+  readonly contents = contentChildren<KtDisclosureContent>(forwardRef(() => KtDisclosureContent), {
+    descendants: true,
+  });
 
-  constructor() {
-    inject(DestroyRef).onDestroy(() => {
-      this.isDestroyed = true;
-    });
-
-    // Garde-fou dev : un disclosure = UN toggle + UN panneau.
-    afterNextRender(() => {
-      if (this.isDestroyed) return;
-      if (!this.auditEnabled) return;
-      const myToggles = this.toggles().filter((t) => t.disclosure === this);
-      const myContents = this.contents().filter((c) => c.disclosure === this);
-      if (myToggles.length > 1 || myContents.length > 1) {
-        console.warn(
-          '[ktDisclosure] attend UN seul [ktDisclosureToggle] et UN seul <kt-disclosure-content> par ' +
-            'hôte (id de panneau unique / aria-controls non ambigu). Pour plusieurs volets, utilisez ' +
-            'plusieurs [ktDisclosure].',
-        );
-      }
-    });
+  ngAfterContentInit(): void {
+    if (!this.auditEnabled) return;
+    const myToggles = this.toggles().filter((t) => t.disclosure === this);
+    const myContents = this.contents().filter((c) => c.disclosure === this);
+    if (myToggles.length > 1 || myContents.length > 1) {
+      console.warn(
+        '[ktDisclosure] attend UN seul [ktDisclosureToggle] et UN seul <kt-disclosure-content> par ' +
+          'hôte (id de panneau unique / aria-controls non ambigu). Pour plusieurs volets, utilisez ' +
+          'plusieurs [ktDisclosure].',
+      );
+    }
   }
 
   /** Bascule l'état. */

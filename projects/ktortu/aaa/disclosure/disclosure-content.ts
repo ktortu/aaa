@@ -1,10 +1,10 @@
 import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
-import { KtDisclosure } from './disclosure';
+import { KT_DISCLOSURE } from './disclosure-token';
 
 /**
  * Panneau repliable d'un [ktDisclosure]. **Composant** (et non directive) car l'animation grid
  * `0fr ↔ 1fr` exige un **unique enfant `overflow:hidden`** autour du contenu projeté — ce wrapper
- * (`.kt-disclosure-content__inner`) est fourni par le template, le consommateur reste libre d'y
+ * (`.kt-disclosure-content__inner`) est fourni by le template, le consommateur reste libre d'y
  * mettre autant de blocs qu'il veut.
  *
  * Porte l'`id` (cible de `aria-controls`) et passe **`inert`** quand c'est fermé : le contenu
@@ -30,5 +30,5 @@ import { KtDisclosure } from './disclosure';
   },
 })
 export class KtDisclosureContent {
-  readonly disclosure = inject(KtDisclosure);
+  readonly disclosure = inject(KT_DISCLOSURE);
 }
