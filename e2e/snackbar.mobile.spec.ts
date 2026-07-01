@@ -15,10 +15,12 @@ test.describe('Snackbar mobile', () => {
     const vp = page.viewportSize()!;
 
     // Attend que la snackbar soit positionnée correctement en bas de l'écran (layout stabilisé après animation)
-    await expect.poll(async () => {
-      const box = await snackbar.boundingBox();
-      return box ? box.y + box.height : 0;
-    }).toBeGreaterThan(vp.height - 40);
+    await expect
+      .poll(async () => {
+        const box = await snackbar.boundingBox();
+        return box ? box.y + box.height : 0;
+      })
+      .toBeGreaterThan(vp.height - 40);
 
     const box = (await snackbar.boundingBox())!;
     // Tient dans le viewport et reste centrée horizontalement.
