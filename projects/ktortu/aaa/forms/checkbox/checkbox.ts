@@ -208,10 +208,7 @@ export class KtCheckbox<V = unknown> implements FormValueControl<boolean>, After
     // projeté. Sans aucun des trois, la case est annoncée vide (WCAG 4.1.2).
     if (this.isDestroyed) return;
     if (!this.auditEnabled || this.label() || this.ariaLabel()) return;
-    const labelText = this.el.nativeElement
-      .querySelector('.kt-checkbox__label')
-      ?.textContent?.replace('*', '')
-      .trim();
+    const labelText = this.el.nativeElement.querySelector('.kt-checkbox__label')?.textContent?.replace('*', '').trim();
     if (!labelText) {
       console.warn(
         '[ktCheckbox] sans `label`, `ariaLabel` ni contenu projeté : annoncée sans nom accessible (WCAG 4.1.2).',

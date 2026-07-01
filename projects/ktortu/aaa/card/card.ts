@@ -80,15 +80,18 @@ export class KtCard implements AfterContentInit {
   private readonly auditEnabled = inject(KT_AUDIT_ENABLED);
 
   /** Référence réactive sur le lien primaire de la carte */
-  readonly cardLink = contentChild<KtCardLink>(forwardRef(() => KtCardLink), { descendants: true });
+  readonly cardLink = contentChild<KtCardLink>(
+    forwardRef(() => KtCardLink),
+    { descendants: true },
+  );
 
   /** Apparence de la surface : `elevated` | `outlined` | `filled`. @default 'elevated' (ou `KT_CARD_CONFIG.variant`) */
   readonly variant = input<KtCardVariant>(this.config?.variant ?? 'elevated');
 
   /**
-     * Affordance visuelle d'élément cliquable (hover/focus). N'AJOUTE pas de rôle : un lien/bouton
-     * primaire ([ktCardLink]) porte l'interaction et le nom accessible. @default false
-     */
+   * Affordance visuelle d'élément cliquable (hover/focus). N'AJOUTE pas de rôle : un lien/bouton
+   * primaire ([ktCardLink]) porte l'interaction et le nom accessible. @default false
+   */
   readonly interactive = input<boolean, unknown>(false, { transform: booleanAttribute });
 
   /** Rend la surface inerte (état `data-disabled`). @default false */
@@ -214,7 +217,10 @@ export class KtCardLink implements AfterViewInit {
    * hiérarchie d'éléments) : `null` si [ktCardLink] est utilisé hors d'une [ktCard]. Sert à relayer
    * l'état `disabled` de la carte (aria-disabled / tabindex) sans planter hors contexte.
    */
-  protected readonly card = inject<KtCard>(forwardRef(() => KtCard), { optional: true });
+  protected readonly card = inject<KtCard>(
+    forwardRef(() => KtCard),
+    { optional: true },
+  );
 
   handleClick(event: Event): void {
     if (this.card?.disabled()) {

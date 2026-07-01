@@ -58,12 +58,18 @@ export class KtDisclosure implements AfterContentInit {
 
   private readonly auditEnabled = inject(KT_AUDIT_ENABLED);
 
-  readonly toggles = contentChildren<KtDisclosureToggle>(forwardRef(() => KtDisclosureToggle), {
-    descendants: true,
-  });
-  readonly contents = contentChildren<KtDisclosureContent>(forwardRef(() => KtDisclosureContent), {
-    descendants: true,
-  });
+  readonly toggles = contentChildren<KtDisclosureToggle>(
+    forwardRef(() => KtDisclosureToggle),
+    {
+      descendants: true,
+    },
+  );
+  readonly contents = contentChildren<KtDisclosureContent>(
+    forwardRef(() => KtDisclosureContent),
+    {
+      descendants: true,
+    },
+  );
 
   ngAfterContentInit(): void {
     if (!this.auditEnabled) return;

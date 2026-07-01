@@ -2,7 +2,15 @@ import { Component, signal } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { vi } from 'vitest';
 
-import { KT_CARD_CONFIG, KtCard, KtCardActions, KtCardContent, KtCardHeader, KtCardLink, type KtCardVariant } from './card';
+import {
+  KT_CARD_CONFIG,
+  KtCard,
+  KtCardActions,
+  KtCardContent,
+  KtCardHeader,
+  KtCardLink,
+  type KtCardVariant,
+} from './card';
 import { KT_AUDIT_ENABLED } from '@ktortu/aaa/cdk';
 
 @Component({
@@ -47,7 +55,7 @@ class CardNamelessLinkHost {}
 
 @Component({
   imports: [KtCard],
-  template: `<article ktCard interactive disabled>x</article>`
+  template: `<article ktCard interactive disabled>x</article>`,
 })
 class CardBareAttrHost {}
 
@@ -68,13 +76,13 @@ class CardLabelledByLinkHost {}
 
 @Component({
   imports: [KtCard],
-  template: `<a ktCard interactive href="/x">Ouvrir</a>`
+  template: `<a ktCard interactive href="/x">Ouvrir</a>`,
 })
 class CardOnAnchorHost {}
 
 @Component({
   imports: [KtCardLink],
-  template: `<a ktCardLink href="/x">Lien</a>`
+  template: `<a ktCardLink href="/x">Lien</a>`,
 })
 class CardOrphanLinkHost {}
 
