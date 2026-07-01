@@ -54,9 +54,16 @@
     <kt-doc-example label="Champ texte — types">
       <kt-text-field label="Texte" type="text" placeholder="Votre nom" />
       <kt-text-field label="E-mail" type="email" placeholder="vous@exemple.fr" />
-      <kt-text-field label="Mot de passe" type="password" />
+      <kt-text-field label="Mot de passe (standard)" type="password" />
       <kt-text-field label="Recherche" type="search" />
       <kt-text-field label="URL" type="url" placeholder="https://…" />
+    </kt-doc-example>
+
+    <kt-doc-example label="Champ mot de passe (kt-password-field)">
+      <kt-password-field label="Mot de passe (bouton œil intégré)" placeholder="Saisissez votre mot de passe" />
+      <kt-password-field label="Nouveau mot de passe" autocomplete="new-password" placeholder="Créer un mot de passe" />
+      <kt-password-field label="Mot de passe outline" appearance="outline" />
+      <kt-password-field label="Désactivé" [value]="'secret123'" [disabled]="true" />
     </kt-doc-example>
 
     <kt-doc-example label="Icône, préfixe & suffixe">

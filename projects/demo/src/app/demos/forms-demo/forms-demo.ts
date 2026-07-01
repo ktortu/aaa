@@ -1,6 +1,6 @@
 import { ChangeDetectionStrategy, Component, computed, signal } from '@angular/core';
 
-import { KtNumberField, KtSwitch, KtTextArea, KtTextField } from '@ktortu/aaa/forms';
+import { KtNumberField, KtPasswordField, KtSwitch, KtTextArea, KtTextField } from '@ktortu/aaa/forms';
 import { CodeBlock } from '../../shared/code-block/code-block';
 import { DocExample } from '../../shared/example/example';
 import { DocSection } from '../../shared/doc-section/doc-section';
@@ -22,6 +22,7 @@ import {
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
     KtTextField,
+    KtPasswordField,
     KtTextArea,
     KtNumberField,
     KtSwitch,

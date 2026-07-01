@@ -21,6 +21,7 @@ export { KtBaseInputField } from './base-input/base-input';
 export { KtNumberField } from './number-field/number-field';
 export { KtTextArea } from './text-area/text-area';
 export { KtTextField, type KtTextFieldType } from './text-field/text-field';
+export { KtPasswordField, type KtPasswordAutocomplete } from './password-field/password-field';
 export { KtSwitch } from './switch/switch';
 export { KtCheckbox } from './checkbox/checkbox';
 export { KtCheckboxGroup } from './checkbox/checkbox-group';

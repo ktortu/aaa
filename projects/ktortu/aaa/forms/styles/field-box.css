@@ -3,6 +3,7 @@
    Temporal (Date/Time/DateTime/YearMonth/Instant), qui réutilise la même `.kt-field-box`.
    Globale + classes namespacées : partagée entre plusieurs composants, donc non scopable. */
   kt-text-field,
+  kt-password-field,
   kt-text-area,
   kt-number-field,
   kt-date-field,
@@ -131,12 +132,14 @@
 
   /* Le bouton « effacer » est une icône INTERNE de la lib : toujours Material Symbols,
    indépendante de --kt-icon-font (sinon un override consommateur casserait la croix). */
-  .kt-field-box__clear .kt-field-box__icon {
+  .kt-field-box__clear .kt-field-box__icon,
+  .kt-field-box__toggle .kt-field-box__icon {
     font-family: 'Material Symbols Outlined';
     font-weight: normal;
   }
 
-  .kt-field-box__clear {
+  .kt-field-box__clear,
+  .kt-field-box__toggle {
     display: inline-flex;
     align-items: center;
     justify-content: center;
@@ -151,7 +154,8 @@
   }
 
   /* Cible tactile AAA 44x44px étendue via un pseudo-élément transparent */
-  .kt-field-box__clear::after {
+  .kt-field-box__clear::after,
+  .kt-field-box__toggle::after {
     content: '';
     position: absolute;
     top: 50%;
@@ -161,11 +165,13 @@
     height: 44px;
   }
 
-  .kt-field-box__clear:hover {
+  .kt-field-box__clear:hover,
+  .kt-field-box__toggle:hover {
     color: var(--field-color, inherit);
   }
 
-  .kt-field-box__clear:focus-visible {
+  .kt-field-box__clear:focus-visible,
+  .kt-field-box__toggle:focus-visible {
     outline: 2px solid var(--field-border-color-focus, #0b57d0);
     outline-offset: 1px;
   }
