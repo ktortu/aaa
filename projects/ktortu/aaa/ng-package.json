@@ -7,6 +7,7 @@
   "assets": [
     "./styles/*.css",
     "./button/*.css",
+    "./progress-bar/*.css",
     "./card/*.css",
     "./dialog/*.css",
     "./menu/*.css",

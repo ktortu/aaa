@@ -48,6 +48,7 @@ export const NAV_ITEMS: readonly NavItem[] = [
   { link: '/tabs', path: 'tabs', label: 'Tabs' },
   { link: '/menu', path: 'menu', label: 'Menu' },
   { link: '/disclosure', path: 'disclosure', label: 'Disclosure' },
+  { link: '/progress-bar', path: 'progress-bar', label: 'Progress Bar' },
 ];
 
 /** Pages « composants » pour l'index d'accueil : exclut l'Accueil et les groupes (Fondations). */

@@ -1,0 +1,88 @@
+<article class="page">
+  <header class="page__head">
+    <p class="page__eyebrow">Composants</p>
+    <h1 class="page__title">Progress Bar</h1>
+    <p class="page__lead">
+      Le composant <code>&lt;kt-progress-bar&gt;</code> est un indicateur de chargement linéaire. Par défaut, il fonctionne en mode <code>indeterminate</code> pour signaler une attente de durée inconnue (ex: chargement d'une fiche produit). Il supporte également le mode <code>determinate</code> pour représenter une progression précise (ex: transfert de fichier).
+    </p>
+
+    <aside class="progress-bar-demo__callout" role="note">
+      <p class="progress-bar-demo__callout-title">Accessibilité par conception (A11y) :</p>
+      <ul>
+        <li>Le composant lie automatiquement le label visible à la barre via <code>aria-labelledby</code> grâce à des IDs uniques.</li>
+        <li>Si aucun label n'est fourni, il retombe sur un <code>aria-label="Chargement"</code> par défaut.</li>
+        <li>Il supporte le masquage visuel du texte (<code>[labelVisible]="false"</code>) tout en préservant son annonce par les lecteurs d'écran (classe <code>kt-sr-only</code>).</li>
+        <li>Il écoute <code>prefers-reduced-motion: reduce</code> pour remplacer l'animation de translation continue par une pulsation douce.</li>
+      </ul>
+    </aside>
+  </header>
+
+  <kt-doc-section title="Exemples" subtitle="Mode indéterminé par défaut, mode déterminé interactif, réduction de mouvement et masquage accessible.">
+    
+    <kt-doc-example label="Mode Indéterminé (par défaut, avec texte projeté)">
+      <div class="progress-bar-demo__container">
+        <kt-progress-bar>Chargement de la fiche produit en cours...</kt-progress-bar>
+      </div>
+    </kt-doc-example>
+
+    <kt-doc-example label="Mode Déterminé interactif">
+      <div class="progress-bar-demo__container">
+        <kt-progress-bar 
+          mode="determinate" 
+          [value]="determinateValue()" 
+          [label]="'Copie des fichiers (' + determinateValue() + '%)'" 
+        />
+        
+        <div class="progress-bar-demo__controls">
+          <input 
+            type="range" 
+            class="progress-bar-demo__slider" 
+            min="0" 
+            max="100" 
+            [value]="determinateValue()"
+            (input)="onValueChange($event)"
+          />
+          <button ktButton mode="outlined" size="sm" (click)="resetValue()">Réinitialiser</button>
+        </div>
+      </div>
+    </kt-doc-example>
+
+    <kt-doc-example label="Label masqué visuellement (A11y uniquement)">
+      <div class="progress-bar-demo__container">
+        <kt-progress-bar [labelVisible]="false">
+          Chargement en arrière-plan (invisible à l'écran mais lu par les lecteurs d'écran)
+        </kt-progress-bar>
+        <p class="progress-bar-demo__muted">
+          La barre ci-dessus n'affiche aucun texte visuel, mais son attribut <code>aria-labelledby</code> est correctement câblé pour la sémantique.
+        </p>
+      </div>
+    </kt-doc-example>
+
+    <kt-doc-example label="Pulsation douce (Simulation de Reduced Motion)">
+      <div class="progress-bar-demo__container">
+        <kt-progress-bar [reducedMotion]="true">
+          Animation de pulsation (reduced-motion forcée)
+        </kt-progress-bar>
+      </div>
+    </kt-doc-example>
+
+  </kt-doc-section>
+
+  <kt-doc-section title="Utilisation" subtitle="Importer le composant standalone KtProgressBar et l'intégrer.">
+    <div class="page__codes">
+      <kt-doc-code language="ts" [code]="tsSnippet" />
+      <kt-doc-code language="html" [code]="htmlSnippet" />
+    </div>
+  </kt-doc-section>
+
+  <kt-doc-section title="API" subtitle="Propriétés et Inputs du composant <kt-progress-bar>.">
+    <kt-doc-props [rows]="props" />
+  </kt-doc-section>
+
+  <kt-doc-section
+    title="Tokens CSS"
+    subtitle="Personnalisation visuelle via les variables CSS."
+  >
+    <kt-doc-tokens [groups]="tokens" />
+  </kt-doc-section>
+</article>

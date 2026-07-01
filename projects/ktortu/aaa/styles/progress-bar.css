@@ -1,0 +1,5 @@
+@layer kt-aaa.tokens, kt-aaa.base, kt-aaa.components;
+
+/* Barre de progression (kt-progress-bar) : apparence. Nécessite le socle (@ktortu/aaa/foundation.css).
+     @import '@ktortu/aaa/progress-bar.css'; */
+@import '../progress-bar/progress-bar.css';

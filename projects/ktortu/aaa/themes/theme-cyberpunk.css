@@ -138,6 +138,10 @@
   --tab-radius: 6px 6px 0 0;
   --tab-border: none;
   --tab-margin: 0 4px 0 0;
+
+  /* ============ Progress Bar ============ */
+  --kt-progress-bar-track-color: #10182a;
+  --kt-progress-bar-indicator-color: transparent;
 }
 
 /* Fills DUOTONE cyan→magenta (ex-Synthwave) : niveau élément pour substituer var(--btn-fill) ;
@@ -156,6 +160,11 @@
 [data-theme='cyberpunk'] [ktButton]:is([data-mode='tonal'], [data-mode='outlined'], [data-mode='text']) {
   --btn-shadow-hover: 0 0 14px color-mix(in srgb, var(--btn-fg) 60%, transparent);
   --btn-shadow-focus: 0 0 16px color-mix(in srgb, var(--btn-fg) 75%, transparent);
+}
+
+[data-theme='cyberpunk'] .kt-progress-bar-indicator {
+  background-image: linear-gradient(90deg, #28d6ef, #ff3d8b);
+  box-shadow: 0 0 8px rgb(40 214 239 / 60%), 0 0 12px rgb(255 61 139 / 40%);
 }
 
 /* LASER en bord HAUT des cartes : ligne néon qui balaie (signature « partout »). Le pseudo

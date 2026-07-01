@@ -109,5 +109,10 @@ export const routes: Routes = [
     title: 'Disclosure — Design system',
     loadComponent: () => import('./demos/disclosure-demo/disclosure-demo').then((m) => m.DisclosureDemo),
   },
+  {
+    path: 'progress-bar',
+    title: 'Progress Bar — Design system',
+    loadComponent: () => import('./demos/progress-bar-demo/progress-bar-demo').then((m) => m.ProgressBarDemo),
+  },
   { path: '**', redirectTo: '' },
 ];
