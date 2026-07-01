@@ -1,4 +1,5 @@
 import {
+  DestroyRef,
   Directive,
   ElementRef,
   InjectionToken,
@@ -90,10 +91,17 @@ export class KtCard {
   /** Rend la surface inerte (état `data-disabled`). @default false */
   readonly disabled = input<boolean, unknown>(false, { transform: booleanAttribute });
 
+  private isDestroyed = false;
+
   constructor() {
+    inject(DestroyRef).onDestroy(() => {
+      this.isDestroyed = true;
+    });
+
     // Garde-fou a11y : une carte interactive sans cible cliquable affiche une
     // affordance trompeuse (hover/focus) qui ne mène à rien (WCAG 1.3.1).
     effect(() => {
+      if (this.isDestroyed) return;
       if (!isPlatformBrowser(this.platformId)) return;
       if (!this.auditEnabled || !this.interactive()) return;
 

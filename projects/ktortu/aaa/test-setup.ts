@@ -18,14 +18,22 @@ beforeEach(() => {
 // #3 — Nettoyage global de l'état de test (équivalent `restoreMocks`/`unstubGlobals` en config).
 // Restaure les spies `vi.spyOn`, retire les `vi.stubGlobal`, et rend les timers réels.
 // → permet de supprimer les `mockRestore()` / `try { … } finally { vi.useRealTimers() }` manuels.
-afterEach(() => {
+afterEach(async () => {
+  // 1. Flush any pending microtasks first (e.g. Angular scheduler microtasks)
+  await Promise.resolve();
+
+  // 2. Now that microtasks have run and scheduled their timers, flush the timers
   try {
     vi.runAllTimers();
   } catch {
     // Faux timers non actifs
   }
   vi.clearAllTimers();
+  vi.useRealTimers();
+
+  // 3. Always wait 100ms to let all real requestAnimationFrame / setTimeout settle
+  await new Promise<void>((resolve) => setTimeout(resolve, 100));
+
   vi.restoreAllMocks();
   vi.unstubAllGlobals();
-  vi.useRealTimers();
 });

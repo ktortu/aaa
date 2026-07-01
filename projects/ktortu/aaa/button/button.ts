@@ -1,4 +1,5 @@
 import {
+  DestroyRef,
   Directive,
   ElementRef,
   InjectionToken,
@@ -85,6 +86,7 @@ export class KtButton implements AfterViewInit {
   private readonly config = inject(KT_BUTTON_CONFIG, { optional: true });
   private readonly host = inject<ElementRef<HTMLElement>>(ElementRef).nativeElement;
   private readonly platformId = inject(PLATFORM_ID);
+  private isDestroyed = false;
   private readonly viewInitialized = signal(false);
   private readonly auditEnabled = inject(KT_AUDIT_ENABLED);
 
@@ -138,7 +140,12 @@ export class KtButton implements AfterViewInit {
   protected readonly resolvedAriaLabel = computed(() => this.ariaLabel()?.trim() || this.nativeAriaLabel || null);
 
   constructor() {
+    inject(DestroyRef).onDestroy(() => {
+      this.isDestroyed = true;
+    });
+
     effect(() => {
+      if (this.isDestroyed) return;
       if (!isPlatformBrowser(this.platformId)) return;
       if (!this.viewInitialized()) return;
       if (!this.auditEnabled || !this.iconOnly()) return;
