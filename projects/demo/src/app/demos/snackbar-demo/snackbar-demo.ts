@@ -27,6 +27,9 @@ export class SnackbarDemo {
   protected readonly configProps = SNACKBAR_CONFIG_PROPS;
   protected readonly tokens = SNACKBAR_TOKENS;
   protected readonly tsSnippet = SNACKBAR_TS_SNIPPET;
+  protected readonly importsSnippet = `@import '@angular/cdk/overlay-prebuilt.css';
+@import '@angular/cdk/a11y-prebuilt.css';
+@import '@ktortu/aaa/snackbar.css';`;
 
   /** Dernière raison de fermeture (preuve du flux `afterDismissed`). */
   protected readonly lastReason = signal<string | null>(null);

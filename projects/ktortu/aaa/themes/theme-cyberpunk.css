@@ -164,7 +164,9 @@
 
 [data-theme='cyberpunk'] .kt-progress-bar-indicator {
   background-image: linear-gradient(90deg, #28d6ef, #ff3d8b);
-  box-shadow: 0 0 8px rgb(40 214 239 / 60%), 0 0 12px rgb(255 61 139 / 40%);
+  box-shadow:
+    0 0 8px rgb(40 214 239 / 60%),
+    0 0 12px rgb(255 61 139 / 40%);
 }
 
 /* LASER en bord HAUT des cartes : ligne néon qui balaie (signature « partout »). Le pseudo

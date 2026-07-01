@@ -55,6 +55,11 @@ export const PROGRESS_BAR_TOKENS: readonly TokenGroup[] = [
         default: '2px',
         description: 'Arrondi des angles de la piste et de l’indicateur.',
       },
+      {
+        name: '--kt-progress-bar-label-align',
+        default: 'start',
+        description: 'Alignement du texte du label (start, center, end, etc.).',
+      },
     ],
   },
   {

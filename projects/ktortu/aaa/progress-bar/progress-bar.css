@@ -9,6 +9,7 @@
   font-family: var(--kt-font-family, sans-serif);
   font-size: var(--kt-font-size-sm, 0.875rem);
   color: var(--kt-text-color-secondary, var(--kt-neutral-dark, #555));
+  text-align: var(--kt-progress-bar-label-align, start);
 }
 
 /* Si le label est vide (pas d'input et ng-content vide), on le masque pour éviter le gap */
@@ -38,8 +39,8 @@
 }
 
 /* Mode indéterminé : triple animation parallèle dissociée */
-:host([data-mode="indeterminate"]) .kt-progress-bar-indicator {
-  animation: 
+:host([data-mode='indeterminate']) .kt-progress-bar-indicator {
+  animation:
     kt-progress-bar-indeterminate-translate 2.2s infinite cubic-bezier(0.4, 0, 0.2, 1),
     kt-progress-bar-indeterminate-scale 2.2s infinite ease-in-out,
     kt-progress-bar-indeterminate-fade 2.2s infinite linear;
@@ -100,7 +101,7 @@
 
 /* Support pour prefers-reduced-motion ou bypass réduit manuel */
 @media (prefers-reduced-motion: reduce) {
-  :host([data-mode="indeterminate"]) .kt-progress-bar-indicator {
+  :host([data-mode='indeterminate']) .kt-progress-bar-indicator {
     animation: kt-progress-bar-pulsate 2s infinite ease-in-out;
     transform: none;
     transform-origin: center;

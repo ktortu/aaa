@@ -39,7 +39,12 @@ interface KtSnackbarQueueItem {
  * - **Échap** ferme la snackbar affichée (la plus récente).
  *
  * Requiert côté hôte les styles `@angular/cdk/overlay-prebuilt.css` **et**
- * `@angular/cdk/a11y-prebuilt.css` (ce dernier masque l'élément du LiveAnnouncer).
+ * `@angular/cdk/a11y-prebuilt.css` (ce dernier masque l'élément du LiveAnnouncer), en plus de
+ * `@ktortu/aaa/snackbar.css`.
+ *
+ * > [!IMPORTANT]
+ * > **Prérequis d'intégration obligatoire :**
+ * > Ce service ne fonctionnera pas correctement sans l'importation de ces deux fichiers CSS de l'overlay CDK et d'accessibilité dans votre feuille de styles globale ou votre build.
  *
  * @example
  * ```ts
@@ -71,6 +76,9 @@ export class KtSnackbar implements OnDestroy {
    * Une seule snackbar est visible : si une autre est affichée, celle-ci patiente en file (FIFO).
    * Un `message` identique à une snackbar déjà affichée ou en attente est **fusionné** : on renvoie
    * alors la référence existante sans rien ré-empiler.
+   *
+   * > [!IMPORTANT]
+   * > Assurez-vous d'avoir importé `@angular/cdk/overlay-prebuilt.css` et `@angular/cdk/a11y-prebuilt.css` dans votre application hôte.
    *
    * @param message Texte affiché et annoncé au lecteur d'écran.
    * @param options Surcharges ponctuelles (durée, régime, position, politesse, variante, fermeture).

@@ -25,9 +25,7 @@ class TestHost {
 
 @Component({
   imports: [KtProgressBar],
-  template: `
-    <kt-progress-bar>Chargement projeté</kt-progress-bar>
-  `,
+  template: ` <kt-progress-bar>Chargement projeté</kt-progress-bar> `,
 })
 class TestHostWithProjection {}
 
@@ -52,13 +50,13 @@ describe('KtProgressBar', () => {
     expect(barEl.nativeElement.getAttribute('role')).toBe('progressbar');
   });
 
-  it('devrait appliquer le aria-label par défaut de fallback si aucun label n\'est fourni', () => {
+  it("devrait appliquer le aria-label par défaut de fallback si aucun label n'est fourni", () => {
     const barEl = fixture.debugElement.query(By.css('kt-progress-bar'));
     expect(barEl.nativeElement.getAttribute('aria-label')).toBe('Chargement');
     expect(barEl.nativeElement.getAttribute('aria-labelledby')).toBeNull();
   });
 
-  it('devrait associer le label via aria-labelledby si l\'input label est fourni', () => {
+  it("devrait associer le label via aria-labelledby si l'input label est fourni", () => {
     host.label.set('Chargement en cours...');
     fixture.detectChanges();
 
@@ -81,7 +79,7 @@ describe('KtProgressBar', () => {
     expect(labelEl.nativeElement.classList.contains('kt-sr-only')).toBe(true);
   });
 
-  it('devrait gérer la projection de contenu pour le label et l\'associer à aria-labelledby', () => {
+  it("devrait gérer la projection de contenu pour le label et l'associer à aria-labelledby", () => {
     const projFixture = TestBed.createComponent(TestHostWithProjection);
     projFixture.detectChanges();
 
@@ -102,7 +100,7 @@ describe('KtProgressBar', () => {
 
     const indicatorEl = fixture.debugElement.query(By.css('.kt-progress-bar-indicator'));
     expect(indicatorEl.nativeElement.style.transform).toBe('scaleX(0.45)');
-    
+
     const barEl = fixture.debugElement.query(By.css('kt-progress-bar'));
     expect(barEl.nativeElement.getAttribute('aria-valuenow')).toBe('45');
   });

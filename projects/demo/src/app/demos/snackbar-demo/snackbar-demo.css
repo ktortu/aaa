@@ -73,3 +73,19 @@
   font-size: 0.9375em;
   color: var(--kt-on-surface);
 }
+
+.page__note--warn {
+  margin: 1.5rem 0 0;
+  padding: 0.85rem 1rem;
+  border-radius: var(--kt-control-radius, 8px);
+  border: 1px solid color-mix(in srgb, var(--kt-danger, #8c1d18) 40%, var(--kt-outline));
+  background: color-mix(in srgb, var(--kt-danger, #8c1d18) 8%, var(--kt-surface, #ffffff));
+  color: var(--kt-on-surface);
+}
+
+.page__note--warn code {
+  font-family: ui-monospace, monospace;
+  font-size: 0.9375em;
+  color: var(--kt-danger, #8c1d18);
+  font-weight: 600;
+}

@@ -17,15 +17,7 @@ import {
 @Component({
   selector: 'kt-progress-bar-demo',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [
-    KtProgressBar,
-    KtButton,
-    DocSection,
-    DocExample,
-    CodeBlock,
-    PropsTable,
-    TokensTable,
-  ],
+  imports: [KtProgressBar, KtButton, DocSection, DocExample, CodeBlock, PropsTable, TokensTable],
   templateUrl: './progress-bar-demo.html',
   styleUrl: './progress-bar-demo.css',
 })

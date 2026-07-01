@@ -1,24 +1,11 @@
-import {
-  Component,
-  input,
-  computed,
-  booleanAttribute,
-  inject,
-  ElementRef,
-  signal,
-  AfterViewInit,
-} from '@angular/core';
+import { Component, input, computed, booleanAttribute, inject, ElementRef, signal, AfterViewInit } from '@angular/core';
 import { KtIdGenerator } from '@ktortu/aaa/cdk';
 
 @Component({
   selector: 'kt-progress-bar',
   standalone: true,
   template: `
-    <div
-      [id]="labelId"
-      class="kt-progress-bar-label"
-      [class.kt-sr-only]="!labelVisible()"
-    >
+    <div [id]="labelId" class="kt-progress-bar-label" [class.kt-sr-only]="!labelVisible()">
       @if (label()) {
         {{ label() }}
       } @else {
@@ -35,7 +22,7 @@ import { KtIdGenerator } from '@ktortu/aaa/cdk';
   `,
   styleUrl: './progress-bar.css',
   host: {
-    'role': 'progressbar',
+    role: 'progressbar',
     'data-testid': 'kt-progress-bar',
     '[attr.aria-valuemin]': '0',
     '[attr.aria-valuemax]': '100',
@@ -48,7 +35,7 @@ import { KtIdGenerator } from '@ktortu/aaa/cdk';
 export class KtProgressBar implements AfterViewInit {
   private readonly idGen = inject(KtIdGenerator);
   private readonly elementRef = inject(ElementRef);
-  
+
   protected readonly labelId = `kt-progress-bar-label-${this.idGen.generateId('progress-bar')}`;
   private readonly hasProjectedContent = signal(false);
 

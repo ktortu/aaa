@@ -17,6 +17,14 @@
     </p>
   </header>
 
+  <div class="page__note page__note--warn" role="note">
+    <p style="margin: 0 0 0.75rem">
+      <strong>⚠️ Prérequis d'intégration obligatoire :</strong> Pour fonctionner correctement, la snackbar requiert
+      l'importation globale des styles de l'overlay CDK et d'accessibilité dans votre application :
+    </p>
+    <kt-doc-code language="css" [code]="importsSnippet" />
+  </div>
+
   <kt-doc-section
     title="Variantes"
     subtitle="Apparence seule (couleur d'accent + icône de forme distincte), pilotée par data-variant et les tokens CSS. Découplée de la politesse."
@@ -64,11 +72,6 @@
     subtitle="Injecter KtSnackbar et appeler open(). Résolution en cascade : option d'open ?? KT_SNACKBAR_CONFIG ?? défaut."
   >
     <kt-doc-code language="ts" [code]="tsSnippet" />
-    <p class="page__note">
-      Prérequis côté hôte : importer <code>&#64;angular/cdk/overlay-prebuilt.css</code> (overlay) et
-      <code>&#64;angular/cdk/a11y-prebuilt.css</code> (masque l’élément du LiveAnnouncer), en plus de
-      <code>&#64;ktortu/aaa/snackbar.css</code>.
-    </p>
   </kt-doc-section>
 
   <kt-doc-section title="API TypeScript" subtitle="Service, référence et providers de configuration.">
