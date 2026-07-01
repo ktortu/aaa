@@ -261,6 +261,7 @@ describe('Button', () => {
       const nativeButton: HTMLButtonElement = nativeFixture.nativeElement.querySelector('button');
 
       expect(nativeButton.getAttribute('aria-label')).toBe('Fermer natif');
+      nativeFixture.destroy();
     });
   });
 
@@ -523,6 +524,7 @@ describe('Button', () => {
       const f = TestBed.createComponent(BothAriaHost);
       f.detectChanges();
       expect(f.nativeElement.querySelector('button')!.getAttribute('aria-label')).toBe('depuis-input');
+      f.destroy();
     });
 
     it('aria-labelledby sur l’hôte court-circuite la garde de nom accessible (pas d’avertissement)', async () => {
@@ -559,6 +561,7 @@ describe('Button', () => {
 
       expect(configButton.disabled).toBe(false);
       expect(configButton.getAttribute('aria-disabled')).toBe('true');
+      configFixture.destroy();
     });
 
     it('should default mode/color/size from BUTTON_CONFIG', () => {
@@ -578,6 +581,7 @@ describe('Button', () => {
       expect(configButton.getAttribute('data-mode')).toBe('tonal');
       expect(configButton.getAttribute('data-color')).toBe('danger');
       expect(configButton.getAttribute('data-size')).toBe('lg');
+      configFixture.destroy();
     });
   });
 });

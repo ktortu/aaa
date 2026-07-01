@@ -195,8 +195,10 @@ describe('Dialog directives — trous (audit)', () => {
       imports: [NamelessHost],
       providers: [{ provide: DialogRef, useValue: { close: vi.fn() } }],
     });
-    TestBed.createComponent(NamelessHost).detectChanges();
+    const f = TestBed.createComponent(NamelessHost);
+    f.detectChanges();
     expect(warn).toHaveBeenCalledWith(expect.stringContaining('[ktDialogClose]'));
+    f.destroy();
   });
 
   it('ktDialogDescription préserve un id consommateur et le nettoie au démontage', () => {

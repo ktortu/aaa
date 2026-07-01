@@ -204,8 +204,10 @@ describe('Menu', () => {
         checked = signal(false);
       }
       TestBed.configureTestingModule({ imports: [NoRoleCheckboxHost] });
-      TestBed.createComponent(NoRoleCheckboxHost).detectChanges();
+      const f = TestBed.createComponent(NoRoleCheckboxHost);
+      f.detectChanges();
       expect(warn).toHaveBeenCalledWith(expect.stringContaining('[ktMenuItemCheckbox]'));
+      f.destroy();
     });
 
     it('radio hors d’un ktMenuRadioGroup avertit', () => {
@@ -216,8 +218,10 @@ describe('Menu', () => {
       })
       class NoGroupRadioHost {}
       TestBed.configureTestingModule({ imports: [NoGroupRadioHost] });
-      TestBed.createComponent(NoGroupRadioHost).detectChanges();
+      const f = TestBed.createComponent(NoGroupRadioHost);
+      f.detectChanges();
       expect(warn).toHaveBeenCalledWith(expect.stringContaining('[ktMenuItemRadio]'));
+      f.destroy();
     });
   });
 

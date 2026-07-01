@@ -89,6 +89,7 @@ describe('Disclosure', () => {
       f.detectChanges();
       const btn: HTMLButtonElement = f.nativeElement.querySelector('[ktDisclosureToggle]');
       expect(btn.getAttribute('type')).toBe('submit');
+      f.destroy();
     });
   });
 
@@ -109,6 +110,7 @@ describe('Disclosure', () => {
       f.detectChanges();
       const btn: HTMLButtonElement = f.nativeElement.querySelector('[ktDisclosureToggle]');
       expect(btn.classList.contains('kt-disclosure-toggle--chevron')).toBe(false);
+      f.destroy();
     });
   });
 
@@ -154,6 +156,7 @@ describe('Disclosure', () => {
       expect(dir.expanded()).toBe(false);
       dir.toggle();
       expect(dir.expanded()).toBe(true);
+      f.destroy();
     });
   });
 

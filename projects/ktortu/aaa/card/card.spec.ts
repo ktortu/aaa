@@ -232,6 +232,7 @@ describe('Card', () => {
       const configCard: HTMLElement = f.nativeElement.querySelector('[ktCard]');
 
       expect(configCard.getAttribute('data-variant')).toBe('outlined');
+      f.destroy();
     });
   });
 
@@ -245,6 +246,7 @@ describe('Card', () => {
       const c: HTMLElement = f.nativeElement.querySelector('[ktCard]');
       expect(c.getAttribute('data-interactive')).toBe('');
       expect(c.getAttribute('data-disabled')).toBe('');
+      f.destroy();
     });
 
     it('lien étiré vide étiqueté par aria-label : aucun avertissement', async () => {
@@ -292,6 +294,7 @@ describe('Card', () => {
       f.detectChanges();
       const link = f.nativeElement.querySelector('[ktCardLink]');
       expect(document.activeElement).not.toBe(link);
+      f.destroy();
     });
 
     it('carte interactive posée sur un <a> (sans [ktCardLink]) : aucun avertissement', async () => {
@@ -319,6 +322,7 @@ describe('Card', () => {
       expect(link.hasAttribute('aria-disabled')).toBe(false);
       expect(link.hasAttribute('tabindex')).toBe(false);
       expect(() => link.dispatchEvent(new MouseEvent('click', { cancelable: true }))).not.toThrow();
+      f.destroy();
     });
   });
 });
