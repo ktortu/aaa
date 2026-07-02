@@ -10,6 +10,7 @@
     "./progress-bar/*.css",
     "./card/*.css",
     "./dialog/*.css",
+    "./disclosure/*.css",
     "./menu/*.css",
     "./snackbar/*.css",
     "./tooltip/*.css",

@@ -106,6 +106,9 @@
               "optimization": false,
               "extractLicenses": false,
               "sourceMap": true
+            },
+            "ci": {
+              "tsConfig": "projects/demo/tsconfig.ci.json"
             }
           },
           "defaultConfiguration": "production"
@@ -121,6 +124,9 @@
             },
             "development": {
               "buildTarget": "demo:build:development"
+            },
+            "ci": {
+              "buildTarget": "demo:build:ci"
             }
           },
           "defaultConfiguration": "development"

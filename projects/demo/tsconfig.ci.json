@@ -1,0 +1,9 @@
+{
+  "extends": "./tsconfig.app.json",
+  "compilerOptions": {
+    "paths": {
+      "@ktortu/aaa": ["../../dist/ktortu/aaa"],
+      "@ktortu/aaa/*": ["../../dist/ktortu/aaa/*"]
+    }
+  }
+}

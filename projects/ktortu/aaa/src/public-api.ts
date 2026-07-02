@@ -5,6 +5,7 @@ export * from '@ktortu/aaa/button';
 export * from '@ktortu/aaa/card';
 export * from '@ktortu/aaa/cdk';
 export * from '@ktortu/aaa/dialog';
+export * from '@ktortu/aaa/disclosure';
 export * from '@ktortu/aaa/forms';
 export * from '@ktortu/aaa/i18n';
 export * from '@ktortu/aaa/menu';

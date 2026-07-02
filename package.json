@@ -18,7 +18,7 @@
     "mutation:forms": "stryker run stryker.forms.config.json",
     "mutation:i18n-cdk": "stryker run stryker.i18n-cdk.config.json",
     "mutation:temporal": "stryker run stryker.temporal.config.json",
-    "lint": "ng lint && eslint e2e",
+    "lint": "ng lint && eslint e2e && node scripts/validate-package-integrity.js",
     "serve:debug": "ng serve --port 4300",
     "e2e": "playwright test",
     "e2e:ci": "playwright test --project=chromium --project=firefox --project=mobile",

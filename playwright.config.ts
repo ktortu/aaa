@@ -32,7 +32,7 @@ export default defineConfig({
     },
   ],
   webServer: {
-    command: 'npm run serve:debug',
+    command: process.env.CI ? 'ng serve --port 4300 --configuration ci' : 'npm run serve:debug',
     url: 'http://localhost:4300',
     reuseExistingServer: true,
     timeout: 120_000,
