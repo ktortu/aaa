@@ -183,7 +183,8 @@ export class KtConfirmDialog {
 }
 
 /** Ouvreur co-localisé officiel pour la confirmation/décision. Utilise la présentation responsive par défaut. */
-export const injectConfirmDialog = () => confirmDialog.injectOpener(KtConfirmDialog, { presentation: 'centered-sheet' });
+export const injectConfirmDialog = () =>
+  confirmDialog.injectOpener(KtConfirmDialog, { presentation: 'centered-sheet' });
 
 /**
  * Service d'aide global pour l'ouverture simplifiée de boîtes de dialogue d'alerte et de confirmation.
@@ -223,11 +224,11 @@ export class KtQuickDialog {
     });
 
     return dialogRef.closed.pipe(
-      map(result => {
+      map((result) => {
         if (result === 'confirm') return true;
         if (result === 'reject') return false;
         return undefined;
-      })
+      }),
     );
   }
 
@@ -242,4 +243,3 @@ export class KtQuickDialog {
     return dialogRef.closed;
   }
 }
-

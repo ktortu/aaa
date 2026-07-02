@@ -32,5 +32,3 @@ Ce projet dispose d'une équipe d'experts virtuels prédéfinie pour le débat e
 
 - **Analyse de l'Existant Obligatoire** : Avant de proposer un choix d'architecture ou de lancer un débat d'experts, l'assistant doit impérativement explorer le codebase actuel (structures de dossiers, fichiers clés, conventions de nommage établies) pour s'appuyer sur l'architecture existante. L'utilisateur ne doit jamais avoir à rappeler les conventions techniques déjà en place dans le projet.
 - **Contrôle Qualité du Design & de la Démo** : Les modifications de composants ou de pages de démo doivent faire l'objet d'une revue de design minutieuse. Tout espacement négligé (comme des boutons collés sans marges), décalage de structure ou manque d'esthétique doit être corrigé avant d'être présenté. La démo sert de vitrine de documentation et de preuve de concept (POC) propre pour le reste de l'équipe de développement.
-
-

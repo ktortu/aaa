@@ -316,7 +316,6 @@ describe('KtQuickDialog', () => {
     ref.close();
   });
 
-
   it('confirm() résout true sur validation et false sur rejet', async () => {
     TestBed.configureTestingModule({ providers: [provideKtDialogDefaults()] });
     const service = TestBed.inject(KtQuickDialog);
@@ -343,7 +342,6 @@ describe('KtQuickDialog', () => {
     expect(await rejectPromise).toBe(false);
   });
 
-
   it('decide() supporte le mode ternaire et renvoie cancel sur annulation', async () => {
     TestBed.configureTestingModule({ providers: [provideKtDialogDefaults()] });
     const service = TestBed.inject(KtQuickDialog);
@@ -356,13 +354,13 @@ describe('KtQuickDialog', () => {
 
         rejectLabel: 'Rejeter',
         confirmLabel: 'Confirmer',
-      })
+      }),
     );
     TestBed.inject(ApplicationRef).tick();
 
     const buttons = document.querySelectorAll('button');
     expect(buttons.length).toBe(3); // Annuler, Rejeter, Confirmer
-    
+
     // Le premier bouton est le bouton d'annulation (mode text et focus initial)
     const cancelButton = buttons[0] as HTMLButtonElement;
     expect(cancelButton.textContent?.trim()).toBe('Annuler');
@@ -372,4 +370,3 @@ describe('KtQuickDialog', () => {
     expect(await decidePromise).toBe('cancel');
   });
 });
-

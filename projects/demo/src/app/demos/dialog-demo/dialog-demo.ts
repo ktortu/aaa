@@ -42,8 +42,6 @@ export class DialogDemo {
   private readonly openTerms = injectTermsDialog();
   private readonly dialog = inject(KtQuickDialog);
 
-
-
   /** Dernier résultat renvoyé par le dialog de confirmation (preuve du flux de résultat). */
   protected readonly lastResult = signal<string | null>(null);
   protected readonly serviceResult = signal<string | null>(null);
@@ -64,7 +62,7 @@ export class DialogDemo {
         title: 'Confirmer la suppression',
         message: [
           'Êtes-vous sûr de vouloir supprimer cet élément ?',
-          'Cette action est <strong>irréversible</strong> et détruira définitivement toutes les données associées.'
+          'Cette action est <strong>irréversible</strong> et détruira définitivement toutes les données associées.',
         ],
         color: 'danger',
         confirmLabel: 'Supprimer',
@@ -76,7 +74,6 @@ export class DialogDemo {
         else this.serviceResult.set('Fermé sans choix (Undefined)');
       });
   }
-
 
   protected showDecide(): void {
     this.dialog
@@ -94,7 +91,6 @@ export class DialogDemo {
         else this.serviceResult.set('Fermé sans choix (Undefined)');
       });
   }
-
 
   protected showCentered(): void {
     this.openTerms(undefined, { presentation: 'centered' });
@@ -120,4 +116,3 @@ export class DialogDemo {
     this.openTerms(undefined, { disableClose: true });
   }
 }
-

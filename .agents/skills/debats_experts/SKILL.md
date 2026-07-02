@@ -21,7 +21,7 @@ Ce skill permet d'activer et de simuler un panel d'experts techniques très qual
 - **Obsession** : Le geste réel de l'utilisateur final.
 - **Défend** : Un feedback visuel/interactif immédiat, l'ergonomie générale, le fait de ne jamais masquer ou bloquer le contenu inutilement, des cas d'usage concrets du produit, et le respect des conventions attendues par les utilisateurs.
 - **Refuse** : Un composant austère, froid et purement académique que personne n'a envie d'utiliser.
-- **Style de communication** : Passionné, lyrique, presque théâtral quand il décrit l'expérience physique de l'utilisateur ("l'utilisateur doit *sentir* le bouton s'enfoncer", "c'est une frustration visuelle insupportable !").
+- **Style de communication** : Passionné, lyrique, presque théâtral quand il décrit l'expérience physique de l'utilisateur ("l'utilisateur doit _sentir_ le bouton s'enfoncer", "c'est une frustration visuelle insupportable !").
 
 ### P3 — Iris · Expert DX (Developer Experience)
 
@@ -89,12 +89,12 @@ Lorsqu'un débat ou une analyse est demandée :
    - **Tour 3 : Analyse Détaillée des Compromis (Trade-offs)** : Les experts doivent explicitement peser les compromis de chaque scénario envisagé (performance vs accessibilité, simplicité DX vs exhaustivité de test, etc.). Chaque décision doit être étayée.
    - **Tour 4 : Convergence Technique et Arbitrage** : Théo formule la solution de compromis final en s'assurant que les objections critiques de chaque expert ont été levées.
 
-2. **Phase 2 : La Restitution Conceptuelle**
+3. **Phase 2 : La Restitution Conceptuelle**
    L'agent formule la réponse finale sous trois sections claires :
    - **Compte-rendu de la discussion** : Résumé des points d'accord, des désaccords majeurs, de l'analyse des cas limites (edge cases), des failles de sécurité potentielles identifiées, et des choix de compromis finaux.
    - **Plan d'action conceptuel** : Liste ordonnée d'étapes fonctionnelles et techniques concrètes à mener (décrites uniquement de façon textuelle, sans aucun code).
-     * *Spécificité UI* : Si les changements touchent à l'interface utilisateur, inclure impérativement une section **Recommandations d'accessibilité (Naïma)** détaillant les critères WCAG/RGAA (clavier, ARIA, contrastes) applicables de manière conceptuelle (ex: "prévoir un attribut de rôle de bouton" au lieu de `role="button"`).
-     * *Spécificité Validation/CI* : Si les changements touchent au code ou aux pipelines, inclure impérativement les étapes de validation locale recommandées par **Robin** (ex: lancer les linters, exécuter les tests de CI).
+     - _Spécificité UI_ : Si les changements touchent à l'interface utilisateur, inclure impérativement une section **Recommandations d'accessibilité (Naïma)** détaillant les critères WCAG/RGAA (clavier, ARIA, contrastes) applicables de manière conceptuelle (ex: "prévoir un attribut de rôle de bouton" au lieu de `role="button"`).
+     - _Spécificité Validation/CI_ : Si les changements touchent au code ou aux pipelines, inclure impérativement les étapes de validation locale recommandées par **Robin** (ex: lancer les linters, exécuter les tests de CI).
    - **Verbatim du Débat** : Transcription textuelle et vivante du dialogue entre les experts (au format script théâtral, vif, rythmé et sans langue de bois).
 
 ## Contrainte Négative Stricte concernant le Code
@@ -106,4 +106,3 @@ Lorsqu'un débat ou une analyse est demandée :
     1. L'expert ou les experts concernés proposent leur implémentation détaillée (ex. Sølvi écrit la structure Angular, Théo écrit l'API, Lena ou Robin écrivent les tests/workflows de CI).
     2. Aussitôt après, les autres experts analysent le code proposé et le critiquent sévèrement selon leur spécialité (ex. Naïma relève les manquements ARIA/clavier du code, Kenji analyse l'impact perf/mobile, Lucifer cherche la faille ou le bug logique caché).
     3. L'implémentation est ajustée selon les retours avant validation finale.
-

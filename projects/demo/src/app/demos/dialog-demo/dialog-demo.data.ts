@@ -87,8 +87,7 @@ export const DIALOG_API_PROPS: readonly PropRow[] = [
     name: 'KtQuickDialog.alert()',
     type: '(title, message, closeLabel?) => DialogRef',
     default: '—',
-    description:
-      'Service d’aide global. Ouvre une boîte d’alerte générique pré-configurée avec un seul bouton.',
+    description: 'Service d’aide global. Ouvre une boîte d’alerte générique pré-configurée avec un seul bouton.',
   },
   {
     name: 'KtQuickDialog.confirm()',
