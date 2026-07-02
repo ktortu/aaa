@@ -89,4 +89,57 @@ test.describe('Dialog (desktop)', () => {
     const serious = results.violations.filter((v) => v.impact === 'serious' || v.impact === 'critical');
     expect(serious.map((v) => v.id)).toEqual([]);
   });
+
+  test.describe('KtQuickDialog (helpers rapides)', () => {
+    test('Alerte : ouvre, montre le titre et se ferme via Fermer', async ({ page }) => {
+      await page.getByRole('button', { name: 'Alerte', exact: true }).click();
+      const container = page.locator('.cdk-dialog-container');
+      await expect(container).toBeVisible();
+      await expect(container.locator('[ktDialogTitle]')).toHaveText('Attention');
+
+      const closeBtn = container.getByRole('button', { name: 'Fermer' });
+      await expect(closeBtn).toBeFocused();
+      await closeBtn.click();
+      await expect(container).toBeHidden();
+    });
+
+    test('Confirmation : ouvre, montre le texte multi-lignes, et résout sur clic', async ({ page }) => {
+      await page.getByRole('button', { name: 'Confirmation (Binaire)', exact: true }).click();
+      const container = page.locator('.cdk-dialog-container');
+      await expect(container).toBeVisible();
+
+      // Assertions sur le multi-lignes HTML
+      const desc = container.locator('[ktDialogDescription]');
+      const paragraphs = desc.locator('p');
+      await expect(paragraphs).toHaveCount(2);
+      await expect(paragraphs.first()).toContainText('Êtes-vous sûr de vouloir supprimer cet élément ?');
+
+      // Clic sur "Supprimer" (action de validation, color danger)
+      const deleteBtn = container.getByRole('button', { name: 'Supprimer' });
+      await deleteBtn.click();
+      await expect(container).toBeHidden();
+
+      // Vérifie l'affichage du dernier choix
+      await expect(page.locator('.page__result', { hasText: 'Dernier choix service :' })).toContainText(
+        'Supprimé (True)',
+      );
+    });
+
+    test('Décision : ouvre en mode ternaire et résout cancel sur Annuler', async ({ page }) => {
+      await page.getByRole('button', { name: 'Décision (Ternaire)', exact: true }).click();
+      const container = page.locator('.cdk-dialog-container');
+      await expect(container).toBeVisible();
+
+      // Clic sur "Annuler"
+      const cancelBtn = container.getByRole('button', { name: 'Annuler' });
+      await expect(cancelBtn).toBeFocused(); // focus initial sur l'action neutre/annuler
+      await cancelBtn.click();
+      await expect(container).toBeHidden();
+
+      // Vérifie l'affichage du dernier choix
+      await expect(page.locator('.page__result', { hasText: 'Dernier choix service :' })).toContainText(
+        'Annulé (Cancel)',
+      );
+    });
+  });
 });
