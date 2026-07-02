@@ -347,4 +347,11 @@
       translate: 0 0;
     }
   }
+
+  /* Actions en colonne sur mobile / bottom-sheet */
+  .cdk-overlay-pane.kt-dialog--sheet [ktDialogActions] {
+    flex-direction: column-reverse;
+    align-items: stretch;
+  }
 }
+

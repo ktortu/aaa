@@ -1,7 +1,6 @@
 import { PropRow, TokenGroup } from '../../shared/doc-types';
 
-/** Directives structurelles de la famille dialog (regroupées dans `KtDialogImports`). Voir les sources
-    sous `@ktortu/aaa/dialog`. Sélecteurs sans logique, sauf `[ktDialogClose]` et `[ktDialogSheetHandle]`. */
+/** Directives structurelles de la famille dialog (regroupées dans `KtDialogImports`). */
 export const DIALOG_DIRECTIVE_PROPS: readonly PropRow[] = [
   {
     name: 'KtDialogImports',
@@ -61,7 +60,7 @@ export const DIALOG_DIRECTIVE_PROPS: readonly PropRow[] = [
   },
 ];
 
-/** API TypeScript d’ouverture & de configuration (cf. `dialog-opener.ts` / `dialog-config.ts`). */
+/** API TypeScript d’ouverture & de configuration. */
 export const DIALOG_API_PROPS: readonly PropRow[] = [
   {
     name: 'defineKtDialog<D, R>()',
@@ -85,6 +84,27 @@ export const DIALOG_API_PROPS: readonly PropRow[] = [
       'Bas-niveau (utilisé par `defineKtDialog`). Crée un ouvreur typé en répétant les génériques `<Composant, Data, Résultat>`. Préférer `defineKtDialog` qui lie les types.',
   },
   {
+    name: 'KtQuickDialog.alert()',
+    type: '(title, message, closeLabel?) => DialogRef',
+    default: '—',
+    description:
+      'Service d’aide global. Ouvre une boîte d’alerte générique pré-configurée avec un seul bouton.',
+  },
+  {
+    name: 'KtQuickDialog.confirm()',
+    type: '(config) => Observable<boolean | undefined>',
+    default: '—',
+    description:
+      'Service d’aide global. Ouvre une confirmation binaire (Oui/Non). Émet `true` (validation), `false` (rejet), ou `undefined` (fermeture externe/Echap).',
+  },
+  {
+    name: 'KtQuickDialog.decide()',
+    type: '(config) => Observable<KtConfirmResult | undefined>',
+    default: '—',
+    description:
+      'Service d’aide global. Ouvre une décision ternaire (Oui/Non/Annuler). Émet `confirm`, `reject`, `cancel`, ou `undefined` (fermeture externe/Echap).',
+  },
+  {
     name: 'provideKtDialogDefaults()',
     type: '(overrides?) => Provider',
     default: '—',
@@ -105,8 +125,7 @@ export const DIALOG_API_PROPS: readonly PropRow[] = [
   },
 ];
 
-/** Tokens CSS du dialog, groupés d’après `dialog.css`. Couleurs/surfaces dérivées du socle `--kt-*`
-    et des tokens « feuille/popup » du select (identité visuelle partagée des surfaces flottantes). */
+/** Tokens CSS du dialog. */
 export const DIALOG_TOKENS: readonly TokenGroup[] = [
   {
     title: 'Surface',
@@ -119,12 +138,12 @@ export const DIALOG_TOKENS: readonly TokenGroup[] = [
       {
         name: '--dialog-shadow',
         default: 'var(--select-popup-shadow, 0 10px 25px rgb(0 0 0 / 20%))',
-        description: 'Ombre portée (réutilise l’ombre de popup du select si le thème la pose).',
+        description: 'Ombre portée.',
       },
       {
         name: '--dialog-scrim',
         default: 'var(--kt-sheet-scrim, rgb(0 0 0 / 40%))',
-        description: 'Voile du backdrop derrière la fenêtre.',
+        description: 'Voile du backdrop.',
       },
       { name: '--dialog-backdrop-filter', default: 'none', description: 'Flou de la surface (thèmes verre).' },
       { name: '--dialog-scrim-backdrop-filter', default: 'none', description: 'Flou appliqué au backdrop.' },
@@ -136,11 +155,11 @@ export const DIALOG_TOKENS: readonly TokenGroup[] = [
       {
         name: '--dialog-radius',
         default: 'var(--kt-sheet-radius, var(--kt-control-radius, 8px))',
-        description: 'Rayon des coins de la fenêtre.',
+        description: 'Rayon des coins.',
       },
-      { name: '--dialog-pad', default: '1.5rem', description: 'Rembourrage des régions (titre, contenu, actions).' },
-      { name: '--dialog-gap', default: '1rem', description: 'Écart vertical entre les régions.' },
-      { name: '--dialog-max-width', default: '32rem', description: 'Largeur maximale (présentation centrée).' },
+      { name: '--dialog-pad', default: '1.5rem', description: 'Rembourrage.' },
+      { name: '--dialog-gap', default: '1rem', description: 'Écart vertical.' },
+      { name: '--dialog-max-width', default: '32rem', description: 'Largeur maximale.' },
     ],
   },
   {
@@ -149,71 +168,12 @@ export const DIALOG_TOKENS: readonly TokenGroup[] = [
       {
         name: '--dialog-focus-ring-color',
         default: 'var(--kt-focus-ring-color, #0842a0)',
-        description: 'Couleur de l’anneau de focus des éléments internes.',
+        description: 'Couleur de l’anneau.',
       },
       {
         name: '--dialog-focus-ring-width',
         default: 'var(--kt-focus-ring-width, 2px)',
-        description: 'Largeur de l’anneau de focus.',
-      },
-      {
-        name: '--dialog-scrollbar-thumb',
-        default: 'color-mix(--dialog-fg 26%, --dialog-bg)',
-        description: 'Couleur du curseur de la gouttière fine du contenu (dérivée de la surface).',
-      },
-      {
-        name: '--dialog-scrollbar-color',
-        default: 'curseur + piste transparente',
-        description: 'Couleur complète `scrollbar-color` du contenu (override de la gouttière).',
-      },
-      {
-        name: '--dialog-scroll-shadow',
-        default: 'radial-gradient(… 16%)',
-        description: 'Voile d’ombre sous le header, visible quand le contenu déborde par le haut.',
-      },
-      {
-        name: '--dialog-scroll-shadow-bottom',
-        default: 'radial-gradient(… 16%)',
-        description: 'Voile d’ombre au-dessus des actions, visible quand le contenu déborde par le bas.',
-      },
-    ],
-  },
-  {
-    title: 'Animation',
-    tokens: [
-      { name: '--dialog-anim-duration', default: '160ms', description: 'Durée de l’animation d’entrée.' },
-      { name: '--dialog-anim-easing', default: 'ease', description: 'Courbe de l’animation d’entrée.' },
-      {
-        name: '--dialog-anim-from-transform',
-        default: 'translateY(8px) scale(0.97)',
-        description: 'Transform initial de l’entrée (présentation centrée).',
-      },
-    ],
-  },
-  {
-    title: 'Typographie du titre',
-    tokens: [
-      { name: '--dialog-title-font', default: 'inherit', description: 'Police du titre.' },
-      { name: '--dialog-title-size', default: '1.25rem', description: 'Taille du titre.' },
-      { name: '--dialog-title-weight', default: '600', description: 'Graisse du titre.' },
-    ],
-  },
-  {
-    title: 'Bottom-sheet (tokens --kt-sheet-* partagés)',
-    tokens: [
-      { name: '--kt-sheet-radius', default: '16px', description: 'Rayon des coins hauts de la feuille (mode sheet).' },
-      { name: '--kt-sheet-max-block-size', default: '85svh', description: 'Hauteur maximale de la feuille.' },
-      {
-        name: '--kt-sheet-shadow',
-        default: '0 -4px 16px rgb(0 0 0 / 12%)',
-        description: 'Ombre portée de la feuille.',
-      },
-      { name: '--kt-sheet-anim-duration', default: '120ms', description: 'Durée du glissement d’entrée.' },
-      { name: '--kt-sheet-exit-duration', default: '90ms', description: 'Durée du glissement de sortie.' },
-      {
-        name: '--kt-sheet-grab-color',
-        default: 'var(--kt-outline, #c4c7c5)',
-        description: 'Couleur de la poignée de préhension.',
+        description: 'Largeur de l’anneau.',
       },
     ],
   },
@@ -224,59 +184,111 @@ export const DIALOG_TS_SNIPPET = `import { ChangeDetectionStrategy, Component } 
 import { KtButton } from '@ktortu/aaa/button';
 import { KtDialogImports, defineKtDialog } from '@ktortu/aaa/dialog';
 
-interface ConfirmData { name: string; }
+interface ProfileData { username: string; email: string; }
 
 // Contrat typé du dialog : data + résultat déclarés UNE SEULE fois.
 // data, référence et ouvreur en dérivent → aucune divergence de type possible.
-const confirmDialog = defineKtDialog<ConfirmData, 'confirm'>();
+const profileDialog = defineKtDialog<ProfileData, ProfileData>();
 
 @Component({
-  selector: 'app-confirm-dialog',
+  selector: 'app-profile-dialog',
   imports: [KtButton, KtDialogImports],
-  templateUrl: './confirm-dialog.html',
+  templateUrl: './profile-dialog.html',
 })
-export class ConfirmDialog {
-  protected readonly data = confirmDialog.injectData();   // ConfirmData garanti
-  private readonly ref = confirmDialog.injectRef();        // DialogRef<'confirm'>
+export class ProfileDialog {
+  protected readonly data = profileDialog.injectData();   // ProfileData garanti
+  private readonly ref = profileDialog.injectRef();        // DialogRef<ProfileData>
 
-  // Fermeture AVEC résultat → typée : seul 'confirm' est accepté.
-  protected confirm(): void {
-    this.ref.close('confirm');
+  // Fermeture AVEC résultat modifié typé
+  protected save(updatedName: string, updatedEmail: string): void {
+    this.ref.close({ username: updatedName, email: updatedEmail });
   }
 }
 
 // Ouvreur typé, co-localisé (dérive du contrat — pas de génériques à répéter)
-export const injectConfirmDialog = () => confirmDialog.injectOpener(ConfirmDialog);
+export const injectProfileDialog = () => profileDialog.injectOpener(ProfileDialog);
 
 // Côté consommateur : on appelle la factory, contrat 100 % typé
 export class MyComponent {
-  private readonly openConfirm = injectConfirmDialog(); // initialiseur de champ = contexte d'injection
+  private readonly openProfile = injectProfileDialog(); // initialiseur de champ = contexte d'injection
 
-  remove(name: string): void {
-    this.openConfirm({ name }).closed.subscribe((result) => {
-      // result: 'confirm' | undefined
+  editProfile(current: ProfileData): void {
+    this.openProfile(current).closed.subscribe((result) => {
+      // result: ProfileData | undefined
     });
   }
 
   // La présentation est un choix du consommateur, passé à l'appel :
-  openCentered(name: string): void {
-    this.openConfirm({ name }, { presentation: 'centered-sheet' });
+  openAsSheet(current: ProfileData): void {
+    this.openProfile(current, { presentation: 'centered-sheet' });
   }
 }`;
 
-export const DIALOG_HTML_SNIPPET = `<!-- Template du composant de dialogue (confirm-dialog.html) -->
-<h2 ktDialogTitle>Supprimer le fichier ?</h2>
-<p ktDialogDescription>« {{ data.name }} » sera supprimé définitivement.</p>
+export const DIALOG_HTML_SNIPPET = `<!-- Template du composant de dialogue (profile-dialog.html) -->
+<h2 ktDialogTitle>Modifier le profil</h2>
+<div ktDialogContent>
+  <p ktDialogDescription>Mettez à jour vos coordonnées publiques.</p>
+  <!-- Champs de formulaire avec liaisons de données et validation... -->
+  <input #nameInput [value]="data.username" placeholder="Nom d'utilisateur" />
+  <input #emailInput [value]="data.email" placeholder="Adresse e-mail" />
+</div>
 <footer ktDialogActions>
   <!-- Annuler : fermeture SANS valeur (→ undefined) -->
-  <button ktButton mode="text" ktDialogFocusInitial ktDialogClose>Annuler</button>
-  <!-- Confirmer : fermeture AVEC résultat typé via ref.close('confirm') -->
-  <button ktButton color="danger" (click)="confirm()">Supprimer</button>
+  <button ktButton mode="text" ktDialogClose>Annuler</button>
+  <!-- Enregistrer : fermeture AVEC résultat typé via ref.close(...) -->
+  <button ktButton (click)="save(nameInput.value, emailInput.value)">Enregistrer</button>
 </footer>
 
 <!-- En-tête riche + contenu scrollable (autre composant) -->
 <header ktDialogHeader>
-  <h2 ktDialogTitle>Conditions</h2>
+  <h2 ktDialogTitle>Conditions Générales</h2>
   <button ktButton iconOnly icon="close" ariaLabel="Fermer" mode="text" ktDialogClose></button>
 </header>
 <div ktDialogContent>…</div>`;
+
+export const DIALOG_SERVICE_SNIPPET = `import { Component, inject } from '@angular/core';
+import { KtQuickDialog } from '@ktortu/aaa/dialog';
+
+@Component({
+  selector: 'app-mon-composant',
+  template: \`<button (click)="supprimer()">Supprimer</button>\`,
+})
+export class MonComposant {
+  private readonly dialog = inject(KtQuickDialog);
+
+  // 1. Alerte simple ( supporte string ou string[] avec HTML )
+  alerter(): void {
+    this.dialog.alert(
+      'Session expirée',
+      ['Votre session a expiré.', 'Veuillez vous <strong>reconnecter</strong>.']
+    );
+  }
+
+  // 2. Confirmation binaire (Oui/Non) -> renvoie Observable<boolean | undefined>
+  supprimer(): void {
+    this.dialog.confirm({
+      title: 'Supprimer cet élément ?',
+      message: 'Cette action est définitive et détruira toutes les données.',
+      color: 'danger',
+      confirmLabel: 'Supprimer',
+      rejectLabel: 'Conserver',
+    }).subscribe((valide) => {
+      if (valide === true) {
+        // Supprimer
+      }
+    });
+  }
+
+  // 3. Décision ternaire (Oui/Non/Annuler) -> renvoie Observable<'confirm' | 'reject' | 'cancel' | undefined>
+  quitter(): void {
+    this.dialog.decide({
+      title: 'Modifications en cours',
+      message: 'Voulez-vous enregistrer vos modifications avant de quitter ?',
+      confirmLabel: 'Enregistrer',
+      rejectLabel: 'Ignorer',
+      cancelLabel: 'Annuler',
+    }).subscribe((choix) => {
+      // choix: 'confirm' | 'reject' | 'cancel' | undefined (Echap)
+    });
+  }
+}`;

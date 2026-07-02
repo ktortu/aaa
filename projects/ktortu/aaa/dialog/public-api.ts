@@ -34,3 +34,6 @@ export const KtDialogImports = [
   KtDialogFocusInitial,
   KtDialogSheetHandle,
 ] as const;
+
+export * from './dialog-helpers';
+

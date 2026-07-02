@@ -274,3 +274,102 @@ describe('KtDialogContainer — montage réel (CDK Dialog)', () => {
     expect(titleEl!.textContent).toContain('Titre du dialog');
   });
 });
+
+import { KtQuickDialog } from './dialog-helpers';
+import { firstValueFrom } from 'rxjs';
+
+describe('KtQuickDialog', () => {
+  afterEach(() => {
+    document.querySelectorAll('.cdk-overlay-container, .cdk-overlay-container *').forEach((n) => n.remove());
+  });
+
+  it('alert() ouvre une alerte avec le titre et le message simple', () => {
+    TestBed.configureTestingModule({ providers: [provideKtDialogDefaults()] });
+    const service = TestBed.inject(KtQuickDialog);
+
+    const ref = service.alert('Alerte Titre', 'Message important');
+    TestBed.inject(ApplicationRef).tick();
+
+    const container = document.querySelector('.kt-dialog-container') as HTMLElement;
+    expect(container).toBeTruthy();
+    expect(container.querySelector('[ktDialogTitle]')?.textContent?.trim()).toBe('Alerte Titre');
+    expect(container.querySelector('[ktDialogDescription]')?.textContent?.trim()).toBe('Message important');
+
+    ref.close();
+  });
+
+  it('alert() supporte le multi-lignes et le HTML sanitisé', () => {
+    TestBed.configureTestingModule({ providers: [provideKtDialogDefaults()] });
+    const service = TestBed.inject(KtQuickDialog);
+    const ref = service.alert('Alerte Titre', ['Ligne 1 <strong>forte</strong>', 'Ligne 2']);
+
+    TestBed.inject(ApplicationRef).tick();
+
+    const container = document.querySelector('.kt-dialog-container') as HTMLElement;
+    expect(container).toBeTruthy();
+    const desc = container.querySelector('[ktDialogDescription]') as HTMLElement;
+    const paragraphs = desc.querySelectorAll('p');
+    expect(paragraphs.length).toBe(2);
+    expect(paragraphs[0].innerHTML).toBe('Ligne 1 <strong>forte</strong>');
+    expect(paragraphs[1].innerHTML).toBe('Ligne 2');
+
+    ref.close();
+  });
+
+
+  it('confirm() résout true sur validation et false sur rejet', async () => {
+    TestBed.configureTestingModule({ providers: [provideKtDialogDefaults()] });
+    const service = TestBed.inject(KtQuickDialog);
+
+    // Test de validation (Oui)
+    const confirmPromise = firstValueFrom(service.confirm({ title: 'Titre', message: 'Message' }));
+    TestBed.inject(ApplicationRef).tick();
+    let buttons = document.querySelectorAll('button');
+    expect(buttons.length).toBe(2);
+    const yesButton1 = buttons[1];
+    yesButton1.click();
+    TestBed.inject(ApplicationRef).tick();
+    expect(await confirmPromise).toBe(true);
+
+    // Test de rejet (Non)
+    const rejectPromise = firstValueFrom(service.confirm({ title: 'Titre', message: 'Message' }));
+    TestBed.inject(ApplicationRef).tick();
+    buttons = document.querySelectorAll('button');
+    expect(buttons.length).toBe(2);
+
+    const noButton2 = buttons[0];
+    noButton2.click();
+    TestBed.inject(ApplicationRef).tick();
+    expect(await rejectPromise).toBe(false);
+  });
+
+
+  it('decide() supporte le mode ternaire et renvoie cancel sur annulation', async () => {
+    TestBed.configureTestingModule({ providers: [provideKtDialogDefaults()] });
+    const service = TestBed.inject(KtQuickDialog);
+
+    const decidePromise = firstValueFrom(
+      service.decide({
+        title: 'Titre',
+        message: 'Message',
+        cancelLabel: 'Annuler',
+
+        rejectLabel: 'Rejeter',
+        confirmLabel: 'Confirmer',
+      })
+    );
+    TestBed.inject(ApplicationRef).tick();
+
+    const buttons = document.querySelectorAll('button');
+    expect(buttons.length).toBe(3); // Annuler, Rejeter, Confirmer
+    
+    // Le premier bouton est le bouton d'annulation (mode text et focus initial)
+    const cancelButton = buttons[0] as HTMLButtonElement;
+    expect(cancelButton.textContent?.trim()).toBe('Annuler');
+    cancelButton.click();
+    TestBed.inject(ApplicationRef).tick();
+
+    expect(await decidePromise).toBe('cancel');
+  });
+});
+

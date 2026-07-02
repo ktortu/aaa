@@ -27,6 +27,22 @@
       }
     </kt-doc-example>
 
+    <kt-doc-example label="Helpers rapides (KtQuickDialog)">
+      <button ktButton mode="tonal" (click)="showAlert()">Alerte</button>
+      <button ktButton mode="tonal" (click)="showConfirm()">Confirmation (Binaire)</button>
+      <button ktButton mode="tonal" (click)="showDecide()">Décision (Ternaire)</button>
+      @if (serviceResult(); as result) {
+        <p class="page__result">
+          Dernier choix service : <code>{{ result }}</code>
+        </p>
+      }
+      <div style="margin-block-start: 1.5rem;">
+        <kt-doc-code language="ts" [code]="serviceSnippet" />
+      </div>
+    </kt-doc-example>
+
+
+
     <kt-doc-example label="Présentations">
       <button ktButton mode="tonal" (click)="showCentered()">Centré</button>
       <button ktButton mode="tonal" (click)="showFullscreen()">Plein écran</button>
@@ -41,7 +57,7 @@
   </kt-doc-section>
 
   <kt-doc-section
-    title="Utilisation"
+    title="Utilisation (Sur-mesure)"
     subtitle="Définir le contrat typé (defineKtDialog), le composant, l'ouvreur co-localisé, puis l'appeler."
   >
     <div class="page__codes">
@@ -49,6 +65,8 @@
       <kt-doc-code language="html" [code]="htmlSnippet" />
     </div>
   </kt-doc-section>
+
+
 
   <kt-doc-section
     title="Directives structurelles"

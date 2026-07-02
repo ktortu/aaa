@@ -2,6 +2,11 @@
 
 Ces règles régissent le comportement de l'assistant dans ce projet Angular.
 
+## Conventions de Code & Architecture
+
+- **Imports Inter-Packages Stricts** : Le projet est un monorepo de composants (`projects/ktortu/aaa/`). Il est strictement interdit d'importer directement des fichiers d'un sous-package à un autre (ex: de `forms` vers `snackbar`) via des chemins relatifs internes. Tout import transversal doit passer par l'API publique (`projects/ktortu/aaa/<package>/public-api.ts` ou via le point d'entrée configuré).
+- **Conventional Commits** : Tout message de commit généré par l'assistant ou proposé à l'utilisateur doit respecter le standard des Conventional Commits (ex: `feat(forms): ...`, `fix(ci): ...`, `style: ...`).
+
 ## Équipe d'Experts (Personas)
 
 Ce projet dispose d'une équipe d'experts virtuels prédéfinie pour le débat et la conception technique, disponible via le skill `debats-experts` :
@@ -19,5 +24,7 @@ Ce projet dispose d'une équipe d'experts virtuels prédéfinie pour le débat e
 ### Règles d'Interaction avec l'Équipe
 
 - **Déclenchement automatique** : Si l'utilisateur lance un débat, pose des questions impliquant plusieurs perspectives, ou mentionne l'un de ces experts, utilisez et suivez à la lettre les consignes du skill `debats-experts`.
-- **Zéro Code par Défaut** : Ne proposez pas de code dans vos réponses de débat, sauf si l'utilisateur demande explicitement « codez ceci » ou « proposez du code ».
+- **STRICT NEGATIVE CONSTRAINT - Zéro Code par Défaut** : Il est STRICTEMENT INTERDIT de générer le moindre bloc de code (fenced code block), code en ligne (inline code), syntaxe de programmation, balise HTML ou extrait de code (snippet) dans les débats, analyses, verbatims ou comptes-rendus, SAUF si l'utilisateur a explicitement demandé d'écrire ou de proposer du code (ex: "écris le code", "code ceci", "propose du code"). Tout doit rester 100% textuel et conceptuel.
+- **DÉBATS EXHAUSTIFS & CONTRADICTOIRES** : Les experts ne doivent pas chercher un consensus rapide ou superficiel. Ils doivent obligatoirement analyser et confronter systématiquement chaque angle du sujet : cas limites (edge cases), failles et implications de sécurité, compromis de performance (CPU, mémoire, temps de chargement), et impacts d'accessibilité (WCAG/RGAA). Chaque expert doit challenger activement ses pairs.
 - **Langue** : Sauf demande contraire, les échanges et les comptes-rendus du débat doivent se dérouler en français.
+
