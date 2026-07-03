@@ -92,7 +92,7 @@ test.describe('Dialog (desktop)', () => {
 
   test.describe('KtQuickDialog (helpers rapides)', () => {
     test('Alerte : ouvre, montre le titre et se ferme via Fermer', async ({ page }) => {
-      await page.getByRole('button', { name: 'Alerte', exact: true }).click();
+      await page.getByRole('button', { name: 'Alerte (Neutre)', exact: true }).click();
       const container = page.locator('.cdk-dialog-container');
       await expect(container).toBeVisible();
       await expect(container.locator('[ktDialogTitle]')).toHaveText('Attention');
