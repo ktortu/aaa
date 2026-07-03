@@ -74,7 +74,9 @@
   /* Copie visually-hidden du texte d'aide : présente en permanence dans l'arbre d'accessibilité
      (technique clip), contrairement à la bulle du tooltip créée à la volée → aria-describedby du
      contrôle résout toujours sa cible (pas de référence pendante pour les lecteurs d'écran). */
-  .kt-field__help-description {
+  .kt-field__help-description,
+  .kt-field__label--visually-hidden,
+  .kt-field__error--visually-hidden {
     position: absolute;
     inset-block-start: 0;
     inset-inline-start: 0;

@@ -1,6 +1,11 @@
 <div class="kt-field__header">
   @if (label(); as labelText) {
-    <label class="kt-field__label" [id]="labelId()" [for]="baseId()">
+    <label
+      class="kt-field__label"
+      [class.kt-field__label--visually-hidden]="hideLabel()"
+      [id]="labelId()"
+      [for]="baseId()"
+    >
       {{ labelText }}
       @if (required()) {
         <span class="kt-field__required" aria-hidden="true">*</span>
@@ -45,7 +50,7 @@
 }
 
 <!-- Région live toujours présente : les AT annoncent l'erreur dès son apparition. -->
-<p class="kt-field__error" [id]="errorId()" aria-live="polite">
+<p class="kt-field__error" [class.kt-field__error--visually-hidden]="hideErrors()" [id]="errorId()" aria-live="polite">
   @if (hasError()) {
     @for (error of displayedErrors(); track $index) {
       <span class="kt-field__error-message">{{ error.message }}</span>

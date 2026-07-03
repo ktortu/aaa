@@ -48,7 +48,11 @@ import { KtIdGenerator } from '@ktortu/aaa/cdk';
       [class.kt-chip-listbox-field--disabled]="disabled()"
     >
       @if (label(); as labelText) {
-        <span [id]="labelId()" class="kt-chip-listbox__legend">
+        <span
+          [id]="labelId()"
+          class="kt-chip-listbox__legend"
+          [class.kt-chip-listbox__legend--visually-hidden]="hideLabel()"
+        >
           {{ labelText }}
           @if (required()) {
             <span class="kt-chip-listbox__required" aria-hidden="true">*</span>
@@ -74,7 +78,12 @@ import { KtIdGenerator } from '@ktortu/aaa/cdk';
       @if (hint() && !showInvalid()) {
         <p [id]="hintId()" class="kt-chip-listbox__hint">{{ hint() }}</p>
       }
-      <div [id]="errorId()" class="kt-chip-listbox__error" aria-live="polite">
+      <div
+        [id]="errorId()"
+        class="kt-chip-listbox__error"
+        [class.kt-chip-listbox__error--visually-hidden]="hideErrors()"
+        aria-live="polite"
+      >
         @if (showInvalid()) {
           @for (error of displayedErrors(); track $index) {
             <span class="kt-chip-listbox__error-message">{{ error.message }}</span>
@@ -120,6 +129,14 @@ export class KtChipListbox<V> implements FormValueControl<V | V[] | null> {
   readonly hint = input<string>();
   /** Nom accessible (aria-label) quand label est absent. @default undefined */
   readonly ariaLabel = input<string>();
+  /** Masquer visuellement le label. @default KT_FIELD_CONFIG.hideLabel ?? false */
+  readonly hideLabel = input<boolean, unknown>(this.config?.hideLabel ?? false, {
+    transform: booleanAttribute,
+  });
+  /** Masquer visuellement le bloc d'erreur. @default KT_FIELD_CONFIG.hideErrors ?? false */
+  readonly hideErrors = input<boolean, unknown>(this.config?.hideErrors ?? false, {
+    transform: booleanAttribute,
+  });
   /** Stratégie d'affichage des erreurs. @default undefined */
   readonly errorMatcher = input<KtFieldErrorMatcher>();
   /** Afficher toutes les erreurs. @default false */

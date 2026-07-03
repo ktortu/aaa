@@ -140,6 +140,18 @@ export const FORMS_COMMON_PROPS: readonly PropRow[] = [
     default: '',
     description: "Émis au clic sur le bouton d'aide contextuelle.",
   },
+  {
+    name: 'hideLabel',
+    type: 'boolean',
+    default: 'false',
+    description: 'Masque visuellement le label (le garde dans le DOM pour a11y).',
+  },
+  {
+    name: 'hideErrors',
+    type: 'boolean',
+    default: 'false',
+    description: "Masque visuellement le bloc d'erreur (le garde dans le DOM pour a11y).",
+  },
 ];
 
 /** Propriétés spécifiques à `KtTextField` (cf. `text-field.ts`). */

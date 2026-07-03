@@ -82,6 +82,14 @@ export class KtField implements KtFieldParent {
   readonly showAllErrors = input<boolean, unknown>(this.config?.showAllErrors ?? false, {
     transform: booleanAttribute,
   });
+  /** Masquer visuellement le label. @default KT_FIELD_CONFIG.hideLabel ?? false */
+  readonly hideLabel = input<boolean, unknown>(this.config?.hideLabel ?? false, {
+    transform: booleanAttribute,
+  });
+  /** Masquer visuellement le bloc d'erreur. @default KT_FIELD_CONFIG.hideErrors ?? false */
+  readonly hideErrors = input<boolean, unknown>(this.config?.hideErrors ?? false, {
+    transform: booleanAttribute,
+  });
   /** Apparence du chrome : `fill` (label au-dessus) ou `outline` (bordure + label flottant, façon
       Material). Non fournie ⇒ valeur du `KT_FIELD_CONFIG`, sinon `'fill'`. @default undefined */
   readonly appearance = input<KtFieldAppearance>();

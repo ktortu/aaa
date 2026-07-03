@@ -12,6 +12,11 @@ import { KtChipListbox } from './chip-listbox';
       [disabled]="disabled()"
       [readonly]="readonly()"
       [label]="label()"
+      [hideLabel]="hideLabel()"
+      [hideErrors]="hideErrors()"
+      [invalid]="invalid()"
+      [touched]="touched()"
+      [errors]="errors()"
     >
       <kt-chip value="tech">Tech</kt-chip>
       <kt-chip value="design">Design</kt-chip>
@@ -25,6 +30,11 @@ class ListboxHost {
   disabled = signal(false);
   readonly = signal(false);
   label = signal<string | undefined>('Filtres');
+  hideLabel = signal(false);
+  hideErrors = signal(false);
+  invalid = signal(false);
+  touched = signal(false);
+  errors = signal<readonly unknown[]>([]);
 }
 
 describe('ChipListbox', () => {
@@ -113,5 +123,24 @@ describe('ChipListbox', () => {
 
     expect(host.value()).toBe('tech');
     expect(options[1].getAttribute('aria-selected')).toBe('false');
+  });
+
+  it('applique la classe visually hidden au label si hideLabel est vrai', () => {
+    const { fixture, host, el } = setup();
+    host.hideLabel.set(true);
+    fixture.detectChanges();
+    const legendEl = el.querySelector('.kt-chip-listbox__legend')!;
+    expect(legendEl.classList.contains('kt-chip-listbox__legend--visually-hidden')).toBe(true);
+  });
+
+  it('applique la classe visually hidden aux erreurs si hideErrors est vrai', () => {
+    const { fixture, host, el } = setup();
+    host.hideErrors.set(true);
+    host.invalid.set(true);
+    host.touched.set(true);
+    host.errors.set([{ code: 'required', message: 'Requis' }]);
+    fixture.detectChanges();
+    const errorEl = el.querySelector('.kt-chip-listbox__error')!;
+    expect(errorEl.classList.contains('kt-chip-listbox__error--visually-hidden')).toBe(true);
   });
 });

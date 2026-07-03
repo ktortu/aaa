@@ -18,6 +18,8 @@ import { KtFieldHarness } from './field.harness';
       [fieldId]="fieldId()"
       [hideHintWhenInvalid]="hideHintWhenInvalid()"
       [showAllErrors]="showAllErrors()"
+      [hideLabel]="hideLabel()"
+      [hideErrors]="hideErrors()"
       [helpText]="helpText()"
       [helpLabel]="helpLabel()"
       [customDescribedBy]="customDescribedBy()"
@@ -41,6 +43,8 @@ class FieldHost {
   fieldId = signal<string | undefined>(undefined);
   hideHintWhenInvalid = signal(false);
   showAllErrors = signal(false);
+  hideLabel = signal(false);
+  hideErrors = signal(false);
   helpText = signal<string | TemplateRef<unknown> | undefined>(undefined);
   helpLabel = signal<string>('Aide');
   customDescribedBy = signal<string | undefined>(undefined);
@@ -310,6 +314,22 @@ describe('Field', () => {
     host.label.set(undefined);
     fixture.detectChanges();
     expect(el.querySelector('label')).toBeNull();
+  });
+
+  it('applies visually hidden class to the label when hideLabel is true', () => {
+    host.hideLabel.set(true);
+    fixture.detectChanges();
+    const labelEl = el.querySelector('.kt-field__label')!;
+    expect(labelEl.classList.contains('kt-field__label--visually-hidden')).toBe(true);
+  });
+
+  it('applies visually hidden class to the error block when hideErrors is true', () => {
+    host.hideErrors.set(true);
+    host.invalid.set(true);
+    host.errors.set([{ kind: 'required', message: 'Requis' }]);
+    fixture.detectChanges();
+    const errorEl = el.querySelector('.kt-field__error')!;
+    expect(errorEl.classList.contains('kt-field__error--visually-hidden')).toBe(true);
   });
 });
 

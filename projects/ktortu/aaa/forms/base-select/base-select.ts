@@ -144,6 +144,14 @@ export abstract class KtBaseSelect<T, V = T> {
   /** Politique du label flottant en outline (`auto` | `always`) ; non fournie ⇒ `KT_FIELD_CONFIG.floatLabel`
       ?? `'auto'`. @default undefined */
   readonly floatLabel = input<KtFloatLabel>();
+  /** Masquer visuellement le label. @default KT_FIELD_CONFIG.hideLabel ?? false */
+  readonly hideLabel = input<boolean, unknown>(this.fieldConfig?.hideLabel ?? false, {
+    transform: booleanAttribute,
+  });
+  /** Masquer visuellement le bloc d'erreur. @default KT_FIELD_CONFIG.hideErrors ?? false */
+  readonly hideErrors = input<boolean, unknown>(this.fieldConfig?.hideErrors ?? false, {
+    transform: booleanAttribute,
+  });
 
   // --- Filtrage (champ de recherche dans le popup, opt-in) ---
   /** Affiche un champ de recherche en tête du popup (desktop) / de la sheet (téléphone).

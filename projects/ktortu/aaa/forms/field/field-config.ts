@@ -65,6 +65,10 @@ export interface KtFieldConfig {
   appearance: KtFieldAppearance;
   /** Politique du label flottant en `outline` (`auto` | `always`). Défaut : `'auto'`. */
   floatLabel: KtFloatLabel;
+  /** Masquer visuellement le label (tout en le gardant dans le DOM pour l'accessibilité). Défaut : `false`. */
+  hideLabel: boolean;
+  /** Masquer visuellement le bloc d'erreur (tout en le gardant dans le DOM pour l'accessibilité). Défaut : `false`. */
+  hideErrors: boolean;
 }
 
 export const KT_FIELD_CONFIG = new InjectionToken<Partial<KtFieldConfig>>('KT_FIELD_CONFIG');

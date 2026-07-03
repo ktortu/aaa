@@ -105,6 +105,14 @@ export abstract class KtBaseInputField<T> {
   /** Politique du label flottant en outline (`auto` | `always`) ; non fournie ⇒ `KT_FIELD_CONFIG.floatLabel`
       ?? `'auto'`. En `always`, le label reste en haut même vide et le placeholder s'affiche. @default undefined */
   readonly floatLabel = input<KtFloatLabel>();
+  /** Masquer visuellement le label. @default KT_FIELD_CONFIG.hideLabel ?? false */
+  readonly hideLabel = input<boolean, unknown>(this.config?.hideLabel ?? false, {
+    transform: booleanAttribute,
+  });
+  /** Masquer visuellement le bloc d'erreur. @default KT_FIELD_CONFIG.hideErrors ?? false */
+  readonly hideErrors = input<boolean, unknown>(this.config?.hideErrors ?? false, {
+    transform: booleanAttribute,
+  });
 
   protected readonly inputRef = viewChild<ElementRef<HTMLInputElement | HTMLTextAreaElement>>('input');
 

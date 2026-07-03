@@ -74,6 +74,8 @@ export class ChipsDemo {
   protected readonly selectedCategory = signal<string | null>('tech');
   /** Technologies sélectionnées (sélection multiple). */
   protected readonly selectedTechs = signal<string[]>(['angular', 'rxjs']);
+  /** Filtre rapide (sélection simple masquée visuellement). */
+  protected readonly selectedQuickFilter = signal<string | null>('active');
 
   protected removeTag(event: { item: string; index: number }): void {
     this.tags.update((list) => list.filter((_, i) => i !== event.index));
@@ -98,8 +100,10 @@ export class ChipsDemo {
       { id: 3, name: 'Vue' },
       { id: 4, name: 'Svelte' },
       { id: 5, name: 'Solid' },
+      { id: 6, name: 'Qwik' },
     ]);
     this.selectedCategory.set('tech');
     this.selectedTechs.set(['angular', 'rxjs']);
+    this.selectedQuickFilter.set('active');
   }
 }

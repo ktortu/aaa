@@ -78,6 +78,19 @@
         </p>
       </div>
     </kt-doc-example>
+
+    <kt-doc-example label="Sélection épurée sans libellé visible (kt-chip-listbox)">
+      <div style="display: flex; flex-direction: column; gap: var(--spacing-sm)">
+        <kt-chip-listbox label="Filtres rapides" [(value)]="selectedQuickFilter" [hideLabel]="true" [hideErrors]="true">
+          <kt-chip value="active">Actif</kt-chip>
+          <kt-chip value="pending">En attente</kt-chip>
+          <kt-chip value="closed">Fermé</kt-chip>
+        </kt-chip-listbox>
+        <p style="font-size: var(--font-size-sm); color: var(--color-text-muted)">
+          Sélection : <strong>{{ selectedQuickFilter() ?? 'Aucune' }}</strong>
+        </p>
+      </div>
+    </kt-doc-example>
   </kt-doc-section>
 
   <kt-doc-section title="Utilisation" subtitle="Pattern contrôlé : la liste émet, le parent met à jour les items.">

@@ -76,6 +76,17 @@
       <kt-text-field label="Pseudo" [value]="'ktortu'" [clearable]="true" hint="Échap ou la croix pour effacer." />
     </kt-doc-example>
 
+    <kt-doc-example label="Masquage visuel (ex. recherche sans libellé ni bloc d'erreur)">
+      <kt-text-field
+        type="search"
+        icon="search"
+        placeholder="Rechercher…"
+        label="Recherche sur le site"
+        [hideLabel]="true"
+        [hideErrors]="true"
+      />
+    </kt-doc-example>
+
     <kt-doc-example label="Aide contextuelle">
       <kt-text-field label="Code IBAN" helpText="27 caractères, sans espaces, commençant par FR." />
     </kt-doc-example>
