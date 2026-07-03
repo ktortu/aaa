@@ -1,0 +1,41 @@
+@layer kt-aaa.components {
+  .kt-chip-listbox-field {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  .kt-chip-listbox__legend {
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: var(--field-label-color, currentColor);
+  }
+
+  .kt-chip-listbox__required {
+    color: var(--kt-danger);
+    margin-inline-start: 0.125rem;
+  }
+
+  .kt-chip-listbox__options {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    outline: none;
+  }
+
+  .kt-chip-listbox__hint {
+    font-size: 0.75rem;
+    color: var(--field-hint-color);
+    margin: 0;
+  }
+
+  .kt-chip-listbox__error {
+    font-size: 0.75rem;
+    color: var(--field-error-color);
+    min-block-size: 1.25rem;
+  }
+
+  .kt-chip-listbox__error-message {
+    display: block;
+  }
+}

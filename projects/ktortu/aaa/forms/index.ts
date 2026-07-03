@@ -59,6 +59,7 @@ export {
 // --- Chips (pilule individuelle + liste révocable) ---
 export { KtChip } from './chips/chip';
 export { KtChipList } from './chips/chip-list';
+export { KtChipListbox } from './chips/chip-listbox';
 export { KtChipItemDef, type KtChipItemContext } from './chips/chip-item-def';
 export { KT_CHIPS_CONFIG, type KtChipsConfig } from './chips/chips-config';
 

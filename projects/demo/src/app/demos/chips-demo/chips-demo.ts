@@ -1,7 +1,7 @@
 import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
 
 import { KtButton } from '@ktortu/aaa/button';
-import { KtChip, KtChipList, KtChipItemDef } from '@ktortu/aaa/forms';
+import { KtChip, KtChipList, KtChipItemDef, KtChipListbox } from '@ktortu/aaa/forms';
 import { CodeBlock } from '../../shared/code-block/code-block';
 import { DocExample } from '../../shared/example/example';
 import { DocSection } from '../../shared/doc-section/doc-section';
@@ -27,7 +27,18 @@ interface Framework {
 @Component({
   selector: 'kt-chips-demo',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [KtButton, KtChip, KtChipList, KtChipItemDef, DocSection, DocExample, CodeBlock, PropsTable, TokensTable],
+  imports: [
+    KtButton,
+    KtChip,
+    KtChipList,
+    KtChipItemDef,
+    KtChipListbox,
+    DocSection,
+    DocExample,
+    CodeBlock,
+    PropsTable,
+    TokensTable,
+  ],
   templateUrl: './chips-demo.html',
   styleUrl: './chips-demo.css',
 })
@@ -58,6 +69,12 @@ export class ChipsDemo {
   /** Liste figée pour les états disabled / readonly. */
   protected readonly states = signal(['Lecture seule', 'Désactivé']);
 
+  // --- Sélection de puces (KtChipListbox) ---
+  /** Catégorie sélectionnée (sélection simple). */
+  protected readonly selectedCategory = signal<string | null>('tech');
+  /** Technologies sélectionnées (sélection multiple). */
+  protected readonly selectedTechs = signal<string[]>(['angular', 'rxjs']);
+
   protected removeTag(event: { item: string; index: number }): void {
     this.tags.update((list) => list.filter((_, i) => i !== event.index));
   }
@@ -82,5 +99,7 @@ export class ChipsDemo {
       { id: 4, name: 'Svelte' },
       { id: 5, name: 'Solid' },
     ]);
+    this.selectedCategory.set('tech');
+    this.selectedTechs.set(['angular', 'rxjs']);
   }
 }

@@ -14,6 +14,11 @@
     --chip-bg-hover: color-mix(in srgb, var(--kt-primary) 18%, transparent);
     --chip-border: color-mix(in srgb, var(--kt-primary) 20%, transparent);
 
+    /* État sélectionné */
+    --chip-selected-bg: color-mix(in srgb, var(--kt-primary) 15%, transparent);
+    --chip-selected-border: var(--kt-primary);
+    --chip-selected-color: var(--kt-primary);
+
     /* Texte et icônes */
     --chip-color: var(--field-color);
     --chip-remove-color: var(--field-icon-color);

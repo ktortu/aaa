@@ -1,3 +1,6 @@
+@if (selected()) {
+  <span class="kt-chip__selected-icon" aria-hidden="true">check</span>
+}
 <span class="kt-chip__label"><ng-content /></span>
 @if (removable()) {
   <button

@@ -11,7 +11,7 @@
     </p>
   </header>
 
-  <kt-doc-section title="Exemples" subtitle="Les retraits sont réels (pattern contrôlé) — réinitialisez pour rejouer.">
+  <kt-doc-section title="Exemples" subtitle="Les retraits et sélections sont réels — réinitialisez pour rejouer.">
     <kt-doc-example label="Tags statiques (kt-chip)">
       <kt-chip>Angular</kt-chip>
       <kt-chip>TypeScript</kt-chip>
@@ -47,6 +47,35 @@
       <div class="chips-states">
         <kt-chip-list [items]="states()" readonly listLabel="Liste en lecture seule" />
         <kt-chip-list [items]="states()" disabled listLabel="Liste désactivée" />
+      </div>
+    </kt-doc-example>
+
+    <kt-doc-example label="Sélection simple (kt-chip-listbox)">
+      <div style="display: flex; flex-direction: column; gap: var(--spacing-sm)">
+        <kt-chip-listbox label="Catégorie de filtre" [(value)]="selectedCategory">
+          <kt-chip value="all">Tous</kt-chip>
+          <kt-chip value="tech">Tech</kt-chip>
+          <kt-chip value="design">Design</kt-chip>
+          <kt-chip value="data">Data</kt-chip>
+        </kt-chip-listbox>
+        <p style="font-size: var(--font-size-sm); color: var(--color-text-muted)">
+          Sélection : <strong>{{ selectedCategory() ?? 'Aucune' }}</strong>
+        </p>
+      </div>
+    </kt-doc-example>
+
+    <kt-doc-example label="Sélection multiple (kt-chip-listbox multiple)">
+      <div style="display: flex; flex-direction: column; gap: var(--spacing-sm)">
+        <kt-chip-listbox label="Technologies préférées" [(value)]="selectedTechs" multiple>
+          <kt-chip value="angular">Angular</kt-chip>
+          <kt-chip value="react">React</kt-chip>
+          <kt-chip value="vue">Vue</kt-chip>
+          <kt-chip value="svelte">Svelte</kt-chip>
+          <kt-chip value="rxjs">RxJS</kt-chip>
+        </kt-chip-listbox>
+        <p style="font-size: var(--font-size-sm); color: var(--color-text-muted)">
+          Sélection : <strong>{{ selectedTechs().join(', ') || 'Aucune' }}</strong>
+        </p>
       </div>
     </kt-doc-example>
   </kt-doc-section>
