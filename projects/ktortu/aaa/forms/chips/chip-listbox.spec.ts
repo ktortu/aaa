@@ -1,5 +1,6 @@
 import { Component, signal } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
+import type { ValidationError, WithOptionalFieldTree } from '@angular/forms/signals';
 import { KtChip } from './chip';
 import { KtChipListbox } from './chip-listbox';
 
@@ -34,7 +35,7 @@ class ListboxHost {
   hideErrors = signal(false);
   invalid = signal(false);
   touched = signal(false);
-  errors = signal<readonly unknown[]>([]);
+  errors = signal<readonly WithOptionalFieldTree<ValidationError>[]>([]);
 }
 
 describe('ChipListbox', () => {
