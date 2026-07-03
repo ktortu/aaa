@@ -65,6 +65,9 @@ jobs:
       - name: Install
         run: npm ci
 
+      - name: Build lib
+        run: npm run build:lib
+
       # webkit volontairement exclu : la démo plante au boot sur WebKit (Temporal non polyfillé,
       # cf. tâche de suivi). À réintégrer une fois corrigé.
       - name: Install Playwright browsers
