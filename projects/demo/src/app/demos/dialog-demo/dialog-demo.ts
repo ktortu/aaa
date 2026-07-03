@@ -56,6 +56,22 @@ export class DialogDemo {
     this.dialog.alert('Attention', 'Votre session va bientôt expirer.');
   }
 
+  protected showAlertVariant(variant: 'info' | 'success' | 'warning' | 'error'): void {
+    const titles = {
+      info: 'Information',
+      success: 'Opération réussie',
+      warning: 'Avertissement',
+      error: 'Une erreur est survenue',
+    };
+    const messages = {
+      info: 'Voici une alerte d’information importante concernant votre compte.',
+      success: 'Votre fichier a été sauvegardé avec succès sur nos serveurs sécurisés.',
+      warning: 'Cette action peut ralentir votre connexion temporairement.',
+      error: 'Impossible de se connecter au serveur. Veuillez réessayer plus tard.',
+    };
+    this.dialog.alert(titles[variant], messages[variant], { variant });
+  }
+
   protected showConfirm(): void {
     this.dialog
       .confirm({

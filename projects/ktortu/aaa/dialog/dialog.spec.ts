@@ -369,4 +369,46 @@ describe('KtQuickDialog', () => {
 
     expect(await decidePromise).toBe('cancel');
   });
+
+  it('alert() applique la variante neutral par défaut', () => {
+    TestBed.configureTestingModule({ providers: [provideKtDialogDefaults()] });
+    const service = TestBed.inject(KtQuickDialog);
+
+    const ref = service.alert('Alerte', 'Message', 'Fermer');
+    TestBed.inject(ApplicationRef).tick();
+
+    const container = document.querySelector('.kt-dialog-container') as HTMLElement;
+    expect(container).toBeTruthy();
+
+    const alertDialogEl = container.querySelector('kt-alert-dialog');
+    expect(alertDialogEl).toBeTruthy();
+    expect(alertDialogEl!.getAttribute('data-variant')).toBe('neutral');
+    expect(alertDialogEl!.querySelector('.kt-alert-dialog__icon')).toBeNull();
+
+    ref.close();
+  });
+
+  it('alert() supporte un objet d options avec libellé et variante', () => {
+    TestBed.configureTestingModule({ providers: [provideKtDialogDefaults()] });
+    const service = TestBed.inject(KtQuickDialog);
+
+    const ref = service.alert('Succès', 'Opération réussie', { closeLabel: 'Terminer', variant: 'success' });
+    TestBed.inject(ApplicationRef).tick();
+
+    const container = document.querySelector('.kt-dialog-container') as HTMLElement;
+    expect(container).toBeTruthy();
+
+    const alertDialogEl = container.querySelector('kt-alert-dialog');
+    expect(alertDialogEl).toBeTruthy();
+    expect(alertDialogEl!.getAttribute('data-variant')).toBe('success');
+
+    const icon = alertDialogEl!.querySelector('.kt-alert-dialog__icon');
+    expect(icon).toBeTruthy();
+    expect(icon!.getAttribute('aria-hidden')).toBe('true');
+
+    const closeButton = alertDialogEl!.querySelector('footer button') as HTMLButtonElement;
+    expect(closeButton.textContent?.trim()).toBe('Terminer');
+
+    ref.close();
+  });
 });

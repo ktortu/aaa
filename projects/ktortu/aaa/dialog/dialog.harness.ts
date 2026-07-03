@@ -50,4 +50,10 @@ export class KtDialogHarness extends ComponentHarness {
     }
     await button.click();
   }
+
+  /** Variante de l'alerte ('success', 'error', 'warning', 'info' ou 'neutral' ; null si absent). */
+  async getVariant(): Promise<string | null> {
+    const el = await this.locatorForOptional('kt-alert-dialog')();
+    return el ? el.getAttribute('data-variant') : null;
+  }
 }

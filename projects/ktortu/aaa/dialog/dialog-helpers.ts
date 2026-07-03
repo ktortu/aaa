@@ -6,6 +6,19 @@ import { KtButton, KtButtonColor } from '@ktortu/aaa/button';
 
 import { KtDialogImports, defineKtDialog } from './public-api';
 
+/** Option de variante visuelle pour le dialogue d'alerte. */
+export type KtAlertDialogVariant = 'neutral' | 'info' | 'success' | 'warning' | 'error';
+
+/**
+ * Options pour l'ouverture d'une boîte de dialogue d'alerte.
+ */
+export interface KtAlertOptions {
+  /** Libellé du bouton de fermeture. Par défaut: 'Fermer'. */
+  closeLabel?: string;
+  /** Variante sémantique (apparence : icône + accent). Par défaut: 'neutral'. */
+  variant?: KtAlertDialogVariant;
+}
+
 /**
  * Configuration pour l'ouverture d'une boîte de dialogue d'alerte simple.
  */
@@ -20,6 +33,8 @@ export interface KtAlertData {
   message: string | string[];
   /** Libellé du bouton de fermeture. Par défaut: 'Fermer'. */
   closeLabel?: string;
+  /** Variante sémantique (apparence : icône + accent). Par défaut: 'neutral'. */
+  variant?: KtAlertDialogVariant;
 }
 
 const alertDialog = defineKtDialog<KtAlertData, void>();
@@ -32,8 +47,17 @@ const alertDialog = defineKtDialog<KtAlertData, void>();
   selector: 'kt-alert-dialog',
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [KtButton, KtDialogImports],
+  host: {
+    class: 'kt-alert-dialog',
+    '[attr.data-variant]': "data.variant || 'neutral'",
+  },
   template: `
-    <h2 ktDialogTitle>{{ data.title }}</h2>
+    <h2 ktDialogTitle>
+      @if (data.variant && data.variant !== 'neutral') {
+        <span class="kt-alert-dialog__icon" aria-hidden="true"></span>
+      }
+      <span>{{ data.title }}</span>
+    </h2>
     <div ktDialogDescription>
       @if (isMessageArray()) {
         @for (line of messageArray(); track line) {
@@ -206,8 +230,31 @@ export class KtQuickDialog {
    * @param closeLabel Libellé du bouton de fermeture.
    * @returns La référence DialogRef de la modale ouverte.
    */
-  alert(title: string, message: string | string[], closeLabel?: string): DialogRef<void, KtAlertDialog> {
-    return this.openAlert({ title, message, closeLabel });
+  alert(title: string, message: string | string[], closeLabel?: string): DialogRef<void, KtAlertDialog>;
+  /**
+   * Ouvre une boîte de dialogue d'alerte simple.
+   *
+   * @param title Titre de l'alerte.
+   * @param message Message d'explication (string simple ou tableau de strings pour du multi-lignes HTML).
+   * @param options Options d'ouverture de l'alerte (libellé de fermeture, variante).
+   * @returns La référence DialogRef de la modale ouverte.
+   */
+  alert(title: string, message: string | string[], options?: KtAlertOptions): DialogRef<void, KtAlertDialog>;
+  alert(
+    title: string,
+    message: string | string[],
+    closeLabelOrOptions?: string | KtAlertOptions,
+  ): DialogRef<void, KtAlertDialog> {
+    const data: KtAlertData = { title, message };
+
+    if (typeof closeLabelOrOptions === 'string') {
+      data.closeLabel = closeLabelOrOptions;
+    } else if (closeLabelOrOptions) {
+      data.closeLabel = closeLabelOrOptions.closeLabel;
+      data.variant = closeLabelOrOptions.variant;
+    }
+
+    return this.openAlert(data);
   }
 
   /**

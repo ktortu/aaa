@@ -85,9 +85,9 @@ export const DIALOG_API_PROPS: readonly PropRow[] = [
   },
   {
     name: 'KtQuickDialog.alert()',
-    type: '(title, message, closeLabel?) => DialogRef',
+    type: '(title, message, closeLabelOrOptions?) => DialogRef',
     default: '—',
-    description: 'Service d’aide global. Ouvre une boîte d’alerte générique pré-configurée avec un seul bouton.',
+    description: 'Service d’aide global. Ouvre une boîte d’alerte générique pré-configurée. Accepte un libellé de fermeture ou un objet d’options contenant la variante (neutral, success, error, warning, info).',
   },
   {
     name: 'KtQuickDialog.confirm()',
@@ -255,11 +255,12 @@ import { KtQuickDialog } from '@ktortu/aaa/dialog';
 export class MonComposant {
   private readonly dialog = inject(KtQuickDialog);
 
-  // 1. Alerte simple ( supporte string ou string[] avec HTML )
+  // 1. Alerte simple ( supporte string ou string[] avec HTML, et option de variante )
   alerter(): void {
     this.dialog.alert(
-      'Session expirée',
-      ['Votre session a expiré.', 'Veuillez vous <strong>reconnecter</strong>.']
+      'Une erreur est survenue',
+      ['Impossible de se connecter.', 'Veuillez réessayer plus tard.'],
+      { closeLabel: 'Fermer', variant: 'error' }
     );
   }
 
