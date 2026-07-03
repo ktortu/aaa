@@ -37,14 +37,7 @@ import { KtIdGenerator } from '@ktortu/aaa/cdk';
   changeDetection: ChangeDetectionStrategy.OnPush,
   styleUrl: './chip-listbox.css',
   host: {
-    role: 'listbox',
-    '[attr.aria-multiselectable]': 'multiple() ? "true" : null',
-    '[attr.aria-labelledby]': 'label() ? labelId() : null',
-    '[attr.aria-label]': '!label() ? resolvedAriaLabel() : null',
-    '[attr.aria-describedby]': 'describedBy()',
-    '[attr.aria-required]': 'required() ? "true" : null',
-    '[attr.aria-invalid]': 'showInvalid() ? "true" : null',
-    '[attr.aria-disabled]': 'disabled() ? "true" : null',
+    class: 'kt-chip-listbox-container',
     '(keydown)': 'onKeydown($event)',
     '(focusin)': 'onFocusin($event)',
   },
@@ -63,7 +56,18 @@ import { KtIdGenerator } from '@ktortu/aaa/cdk';
         </span>
       }
 
-      <div class="kt-chip-listbox__options">
+      <div
+        class="kt-chip-listbox__options"
+        role="listbox"
+        [id]="baseId()"
+        [attr.aria-multiselectable]="multiple() ? 'true' : null"
+        [attr.aria-labelledby]="label() ? labelId() : null"
+        [attr.aria-label]="!label() ? resolvedAriaLabel() : null"
+        [attr.aria-describedby]="describedBy()"
+        [attr.aria-required]="required() ? 'true' : null"
+        [attr.aria-invalid]="showInvalid() ? 'true' : null"
+        [attr.aria-disabled]="disabled() ? 'true' : null"
+      >
         <ng-content />
       </div>
 
