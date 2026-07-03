@@ -139,7 +139,7 @@ describe('ChipListbox', () => {
     host.hideErrors.set(true);
     host.invalid.set(true);
     host.touched.set(true);
-    host.errors.set([{ code: 'required', message: 'Requis' }]);
+    host.errors.set([{ kind: 'required', message: 'Requis' }]);
     fixture.detectChanges();
     const errorEl = el.querySelector('.kt-chip-listbox__error')!;
     expect(errorEl.classList.contains('kt-chip-listbox__error--visually-hidden')).toBe(true);
