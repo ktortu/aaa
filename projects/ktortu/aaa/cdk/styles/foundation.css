@@ -10,19 +10,28 @@
     /* Palette des contrôles natifs (scrollbars, pickers date/time…). Seule déclaration non-token
      du socle : un thème sombre DOIT redéclarer `color-scheme: dark` pour que le popup scrollable
      du select et les pickers natifs suivent. */
-    color-scheme: light;
+    color-scheme: light dark;
 
     /* ============ Couleurs sémantiques (seeds) ============ */
-    --kt-primary: #0842a0; /* bleu profond (7.5:1 contre blanc) */
-    --kt-danger: #8c1d18; /* rouge carmin (7.1:1 contre blanc) */
-    --kt-neutral: #2e3133;
+    --kt-primary: light-dark(#0842a0, #a8c7fa);
+    --kt-danger: light-dark(#8c1d18, #f2b8b5);
+    --kt-neutral: light-dark(#2e3133, #e3e3e3);
 
     /* ============ Surfaces & texte ============ */
-    --kt-surface: #ffffff;
-    --kt-on-surface: #1f1f1f; /* texte principal */
-    --kt-muted: #474747; /* texte secondaire / hint / icônes (7.6:1 contre blanc) */
-    --kt-outline: #c4c7c5; /* bordure au repos */
-    --kt-outline-strong: #5f6368; /* bordure hover */
+    --kt-surface: light-dark(#ffffff, #1a1a1a);
+    --kt-surface-container-lowest: var(--kt-surface);
+    --kt-surface-container-low: var(--kt-surface);
+    --kt-surface-container: var(--kt-surface);
+    --kt-surface-container-high: var(--kt-surface);
+    --kt-surface-container-highest: var(--kt-surface);
+
+    --kt-on-surface: light-dark(#1f1f1f, #e3e3e3);
+    --kt-muted: light-dark(#474747, #a0a0a0);
+    --kt-outline: light-dark(#c4c7c5, #444746);
+    --kt-outline-strong: light-dark(#5f6368, #8e918f);
+
+    /* ============ Matériaux / Effets (ex. Fluent Mica) ============ */
+    --kt-backdrop-filter: none;
 
     /* ============ Géométrie de contrôle partagée (md) ============ */
     --kt-control-height: 44px; /* field-box ET bouton md — cible tactile AAA */
@@ -63,7 +72,7 @@
      mobile du Select et le mode `sheet` du Dialog. Un thème thématise « la feuille » une fois ;
      les deux composants suivent. (Le Dialog dérive aussi --dialog-radius/--dialog-scrim d'ici.) */
     --kt-sheet-radius: 16px; /* rayon des coins HAUTS de la feuille */
-    --kt-sheet-shadow: 0 -4px 16px rgb(0 0 0 / 12%);
+    --kt-sheet-shadow: light-dark(0 -4px 16px rgb(0 0 0 / 12%), 0 -1px 0 rgba(255, 255, 255, 0.1));
     --kt-sheet-scrim: rgb(0 0 0 / 40%); /* voile du fond */
     --kt-sheet-anim-duration: 120ms; /* glissement + fondu du scrim (entrée) */
     --kt-sheet-exit-duration: 90ms; /* glissement + fondu du scrim (sortie) */

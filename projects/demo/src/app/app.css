@@ -151,8 +151,19 @@
   color: var(--kt-on-surface);
 }
 
-.shell__theme {
-  inline-size: 13rem;
+.shell__theme-controls {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  padding: 1rem 1.5rem;
+  margin-top: auto;
+  border-block-start: 1px solid var(--kt-outline);
+  background: color-mix(in oklab, var(--kt-on-surface) 4%, var(--kt-surface));
+}
+
+.shell__theme,
+.shell__theme-mode {
+  inline-size: 100%;
 }
 
 @keyframes shell-fade-in {
@@ -178,7 +189,6 @@
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  margin-block-start: 14px;
 }
 
 .shell__seed-picker:focus-visible {

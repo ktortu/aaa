@@ -4,14 +4,14 @@
    → on prend les crans -7 de leurs palettes (blue-7 #0958d9, red-7 #cf1322), AA des deux côtés. */
 [data-theme='ant'] {
   /* ============ Socle ============ */
-  --kt-primary: #0958d9; /* blue-7 — blanc 6.2:1 */
-  --kt-danger: #cf1322; /* red-7 — blanc 5.6:1 */
-  --kt-neutral: #434343;
-  --kt-surface: #ffffff;
-  --kt-on-surface: #1f1f1f; /* ≈ rgba(0,0,0,.88) Ant */
-  --kt-muted: #595959; /* ≈ rgba(0,0,0,.65) */
-  --kt-outline: #d9d9d9;
-  --kt-outline-strong: #8c8c8c;
+  --kt-primary: light-dark(#0d4aa6, #368ef0); /* blue-7 — blanc 6.2:1 */
+  --kt-danger: light-dark(#b32d2f, #f56c70); /* red-7 — blanc 5.6:1 */
+  --kt-neutral: light-dark(#434343, #d9d9d9);
+  --kt-surface: light-dark(#ffffff, #000000);
+  --kt-on-surface: light-dark(#1f1f1f, rgba(255, 255, 255, 0.85)); /* ≈ rgba(0,0,0,.88) Ant */
+  --kt-muted: light-dark(#595959, rgba(255, 255, 255, 0.65)); /* ≈ rgba(0,0,0,.65) */
+  --kt-outline: light-dark(#d9d9d9, #424242);
+  --kt-outline-strong: light-dark(#8c8c8c, #636363);
   --kt-font: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
 
   /* ============ Géométrie ============ */
@@ -24,14 +24,14 @@
 
   /* ============ Boutons ============ */
   --btn-tonal-weight: 12%; /* containers discrets façon Ant (color-bg variants) */
-  --btn-on-primary-container: #003eb3;
-  --btn-on-danger-container: #820014;
-  --btn-on-neutral-container: #1f1f1f;
+  --btn-on-primary-container: light-dark(#003eb3, #69b1ff);
+  --btn-on-danger-container: light-dark(#820014, #ff7875);
+  --btn-on-neutral-container: light-dark(#1f1f1f, rgba(255, 255, 255, 0.85));
 
   /* ============ Select / tooltip ============ */
-  --select-popup-shadow: 0 6px 16px rgb(0 0 0 / 8%), 0 3px 6px rgb(0 0 0 / 12%);
-  --tooltip-bg: #1f1f1f; /* ≈ rgba(0,0,0,.85) */
-  --tooltip-fg: #ffffff;
+  --select-popup-shadow: light-dark(0 6px 16px rgb(0 0 0 / 8%), 0 3px 6px rgb(0 0 0 / 12%), 0 0 0 1px #424242);
+  --tooltip-bg: light-dark(#1f1f1f, rgba(255, 255, 255, 0.85)); /* ≈ rgba(0,0,0,.85) */
+  --tooltip-fg: light-dark(#ffffff, #1f1f1f);
 
   /* ============ Dialog (Ant Design : rayon 8, sans bord) ============ */
   --dialog-radius: 8px;
@@ -39,6 +39,11 @@
 
   /* ============ Card (Ant : rayon 8, boxShadowCard discret) ============ */
   --card-radius: 8px;
-  --card-filled-bg: #fafafa; /* colorFillAlter */
-  --card-shadow: 0 1px 2px rgb(0 0 0 / 3%), 0 1px 6px -1px rgb(0 0 0 / 2%), 0 2px 4px rgb(0 0 0 / 2%);
+  --card-filled-bg: light-dark(#fafafa, #1f1f1f); /* colorFillAlter */
+  --card-shadow: light-dark(
+    0 1px 2px rgb(0 0 0 / 3%),
+    0 1px 6px -1px rgb(0 0 0 / 2%),
+    0 2px 4px rgb(0 0 0 / 2%),
+    0 0 0 1px #424242
+  );
 }

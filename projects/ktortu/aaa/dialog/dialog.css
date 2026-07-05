@@ -7,7 +7,7 @@
 
   :root {
     /* ============ Surface ============ */
-    --dialog-bg: var(--kt-surface, #ffffff);
+    --dialog-bg: var(--kt-surface-container-high, var(--kt-surface, #ffffff));
     --dialog-fg: var(--kt-on-surface, #1f1f1f);
     --dialog-muted: var(--kt-muted, #474747);
     --dialog-border-color: var(--kt-outline, #c4c7c5);
@@ -41,6 +41,9 @@
     /* Bascules NON déclarées exprès (défauts entre parenthèses) :
      --dialog-backdrop-filter (none)        : flou de la surface (thèmes verre).
      --dialog-scrim-backdrop-filter (none)  : flou du backdrop.
+    */
+    --dialog-backdrop-filter: var(--kt-backdrop-filter, none);
+    /*
      --dialog-anim-duration (160ms)         : durée de l'animation d'entrée.
      --dialog-anim-easing (ease)            : courbe de l'animation d'entrée.
      --dialog-anim-from-transform (translateY(8px) scale(.97)) : état initial de l'entrée.

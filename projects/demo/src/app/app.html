@@ -39,6 +39,38 @@
         }
       }
     </nav>
+    <div class="shell__theme-controls">
+      @if (theme.current() === 'material-you') {
+        <label class="shell__seed-picker">
+          <input
+            type="color"
+            #picker
+            style="opacity: 0; height: 44px; width: 44px; cursor: pointer"
+            aria-label="Couleur de seed Material You"
+            [value]="theme.seedColor()"
+            (input)="onSeedColorChange($event)"
+          />
+        </label>
+      }
+      <kt-select
+        class="shell__theme-mode"
+        label="Mode"
+        [options]="modes"
+        optionLabel="label"
+        optionValue="id"
+        [value]="theme.mode()"
+        (valueChange)="onModeChange($event)"
+      />
+      <kt-select
+        class="shell__theme"
+        label="Thème"
+        [options]="themes"
+        optionLabel="label"
+        optionValue="id"
+        [value]="theme.current()"
+        (valueChange)="onThemeChange($event)"
+      />
+    </div>
   </aside>
 
   <div class="shell__main">
@@ -55,29 +87,7 @@
         (click)="toggleDrawer()"
       ></button>
       <h1 class="shell__page-title">{{ pageTitle() }}</h1>
-      <div class="shell__header__right">
-        @if (theme.current() === 'material-you') {
-          <label class="shell__seed-picker">
-            <input
-              type="color"
-              #picker
-              style="opacity: 0; height: 44px; width: 44px; cursor: pointer"
-              aria-label="Couleur de seed Material You"
-              [value]="theme.seedColor()"
-              (input)="onSeedColorChange($event)"
-            />
-          </label>
-        }
-        <kt-select
-          class="shell__theme"
-          label="Thème"
-          [options]="themes"
-          optionLabel="label"
-          optionValue="id"
-          [value]="theme.current()"
-          (valueChange)="onThemeChange($event)"
-        />
-      </div>
+      <div class="shell__header__right"></div>
     </header>
 
     <main class="shell__content">

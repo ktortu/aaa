@@ -5,15 +5,15 @@
    les 32px de Primer — exigence d'accessibilité du projet. */
 [data-theme='primer'] {
   /* ============ Socle ============ */
-  --kt-primary: #0969da; /* accent.fg — blanc ~5.2:1 */
-  --kt-danger: #cf222e; /* danger.fg */
-  --kt-neutral: #57606a; /* fg.muted historique — blanc ~6.3:1 */
-  --kt-surface: #ffffff;
-  --kt-on-surface: #1f2328; /* fg.default */
-  --kt-muted: #59636e; /* fg.muted, ~5.7:1 */
-  --kt-outline: #d0d7de; /* border.default */
-  --kt-outline-strong: #818b98;
-  --kt-focus-ring-color: #0969da;
+  --kt-primary: light-dark(#185929, #3fb558); /* accent.fg — blanc ~5.2:1 */
+  --kt-danger: light-dark(#8f141d, #ff5754); /* danger.fg */
+  --kt-neutral: light-dark(#57606a, #8b949e); /* fg.muted historique — blanc ~6.3:1 */
+  --kt-surface: light-dark(#ffffff, #0d1117);
+  --kt-on-surface: light-dark(#1f2328, #e6edf3); /* fg.default */
+  --kt-muted: light-dark(#59636e, #7d8590); /* fg.muted, ~5.7:1 */
+  --kt-outline: light-dark(#d0d7de, #30363d); /* border.default */
+  --kt-outline-strong: light-dark(#818b98, #8b949e);
+  --kt-focus-ring-color: light-dark(#0969da, #58a6ff);
   /* Stack système GitHub authentique (le produit n'embarque pas de webfont). */
   --kt-font: -apple-system, 'Segoe UI', 'Noto Sans', Helvetica, Arial, sans-serif;
 
@@ -26,21 +26,27 @@
   --btn-font-weight: 500; /* les boutons GitHub sont en medium (rétrofit lot 6) */
 
   /* ============ Ombres ============ */
-  --field-shadow: inset 0 1px 0 rgb(31 35 40 / 4%); /* inner shadow subtile des inputs Primer */
-  --btn-shadow: 0 1px 0 rgb(31 35 40 / 4%); /* hérite vers hover/focus via le fallback chaîné */
-  --select-popup-shadow: 0 8px 24px rgb(140 149 159 / 20%); /* shadow.medium */
+  --field-shadow: light-dark(
+    inset 0 1px 0 rgb(31 35 40 / 4%),
+    inset 0 1px 0 rgb(255 255 255 / 4%)
+  ); /* inner shadow subtile des inputs Primer */
+  --btn-shadow: light-dark(
+    0 1px 0 rgb(31 35 40 / 4%),
+    0 1px 0 rgb(255 255 255 / 4%)
+  ); /* hérite vers hover/focus via le fallback chaîné */
+  --select-popup-shadow: light-dark(0 8px 24px rgb(140 149 159 / 20%), 0 0 0 1px #30363d); /* shadow.medium */
 
   /* ============ Tooltip ============ */
-  --tooltip-bg: #25292e;
-  --tooltip-fg: #ffffff;
+  --tooltip-bg: light-dark(#25292e, #e6edf3);
+  --tooltip-fg: light-dark(#ffffff, #0d1117);
 
   /* ============ Dialog (GitHub : rayon 12, bord net) ============ */
   --dialog-radius: 12px;
-  --dialog-border-color: #d0d7de;
+  --dialog-border-color: light-dark(#d0d7de, #30363d);
 
   /* ============ Card (GitHub Box : rayon 6, filet + ombre discrète) ============ */
   --card-radius: 6px;
-  --card-border-color: #d0d7de;
-  --card-filled-bg: #f6f8fa; /* canvas.subtle */
-  --card-shadow: 0 1px 0 rgb(31 35 40 / 4%), 0 1px 3px rgb(31 35 40 / 6%);
+  --card-border-color: light-dark(#d0d7de, #30363d);
+  --card-filled-bg: light-dark(#f6f8fa, #161b22); /* canvas.subtle */
+  --card-shadow: light-dark(0 1px 0 rgb(31 35 40 / 4%), 0 1px 3px rgb(31 35 40 / 6%), 0 0 0 1px #30363d);
 }

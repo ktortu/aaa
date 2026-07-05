@@ -7,18 +7,18 @@
      haut/bas, tirets sur les côtés, comme le cadre d'un cartouche de plan.
    Bleu de Prusse, traits cyan crayon, sanguine en danger, Architects Daughter. */
 [data-theme='architecte'] {
-  color-scheme: dark;
+  /* color-scheme handled by foundation */
 
   /* ============ Socle ============ */
-  --kt-surface: #16344f; /* bleu de Prusse (blueprint) */
-  --kt-on-surface: #e8f1f8; /* 11.2:1 */
-  --kt-muted: #9dbdd4; /* 6.5:1 */
-  --kt-outline: #6f9dbd; /* trait de plan (4.4:1 non-texte) */
-  --kt-outline-strong: #a8cce4;
-  --kt-primary: #7fc8f0; /* crayon cyan, 7.0:1 en texte */
-  --kt-danger: #f0907c; /* sanguine, 5.5:1 */
-  --kt-neutral: #3e5c75;
-  --kt-focus-ring-color: #7fc8f0;
+  --kt-surface: light-dark(#fdfdfd, #16344f); /* bleu de Prusse (blueprint) */
+  --kt-on-surface: light-dark(#16344f, #e8f1f8); /* 11.2:1 */
+  --kt-muted: light-dark(#4b6b85, #9dbdd4); /* 6.5:1 */
+  --kt-outline: light-dark(#a8cce4, #6f9dbd); /* trait de plan (4.4:1 non-texte) */
+  --kt-outline-strong: light-dark(#6f9dbd, #a8cce4);
+  --kt-primary: light-dark(#0d5680, #7fc8f0); /* encre bleue plus foncée pour AAA avec texte blanc */
+  --kt-danger: light-dark(#8f3626, #f0907c); /* sanguine plus foncée pour AAA */
+  --kt-neutral: light-dark(#d5e5f0, #3e5c75);
+  --kt-focus-ring-color: light-dark(#1c7fb3, #7fc8f0);
   --kt-font: 'Architects Daughter', 'Segoe Print', cursive;
 
   /* Gouttière = trait de plan : thumb bleu crayon (outline) sur le lavis des champs. */
@@ -35,7 +35,7 @@
 
   /* ============ Champs : ligne de cote (underline par côté) ============ */
   --field-border-width: 0 0 2px 0; /* SEULE la ligne du bas existe */
-  --field-bg: #1b3c5a; /* lavis léger au-dessus de la ligne */
+  --field-bg: light-dark(#f2f8fc, #1b3c5a); /* lavis léger au-dessus de la ligne */
   --field-focus-ring: color-mix(in srgb, #7fc8f0 55%, transparent);
   --field-focus-ring-style: dashed; /* trait de construction (rétrofit lot 6) */
   /* Menu flottant du select : bordure complète et fine, lui. */
@@ -43,41 +43,41 @@
   /* Lettrage technique des cartouches (rétrofit lot 6). */
   --field-label-transform: uppercase;
   --field-label-letter-spacing: 0.06em;
-  --field-caret-color: #7fc8f0;
-  --kt-selection-bg: #7fc8f0;
-  --kt-selection-fg: #0d2438;
+  --field-caret-color: light-dark(#1c7fb3, #7fc8f0);
+  --kt-selection-bg: light-dark(#b3def5, #7fc8f0);
+  --kt-selection-fg: light-dark(#0d2438, #0d2438);
 
   /* ============ Boutons : cartouche (style par côté) ============ */
   --btn-border-style: solid dashed; /* haut/bas pleins, côtés en tirets */
   --btn-border-width: 1.5px;
   --btn-text-transform: uppercase; /* lettrage de plan (rétrofit lot 6) */
   --btn-letter-spacing: 0.08em;
-  --btn-on-primary: #0d2438; /* 8.6:1 sur cyan */
-  --btn-on-danger: #381208; /* 7.1:1 sur sanguine */
-  --btn-on-neutral: #ffffff; /* 7.0:1 */
-  --btn-on-primary-container: #c9e6f8;
-  --btn-on-neutral-container: #d4e2ee;
-  --btn-on-danger-container: #f8cfc4;
+  --btn-on-primary: light-dark(#ffffff, #0d2438); /* 8.6:1 sur cyan */
+  --btn-on-danger: light-dark(#ffffff, #381208); /* 7.1:1 sur sanguine */
+  --btn-on-neutral: light-dark(#16344f, #ffffff); /* 7.0:1 */
+  --btn-on-primary-container: light-dark(#09324a, #c9e6f8);
+  --btn-on-neutral-container: light-dark(#16344f, #d4e2ee);
+  --btn-on-danger-container: light-dark(#4a150c, #f8cfc4);
   --btn-fg-weight: 100%;
-  --btn-neutral-fg: #a9c4da;
+  --btn-neutral-fg: light-dark(#3a5b78, #a9c4da);
   --btn-tonal-weight: 24%;
 
   /* ============ Select / tooltip ============ */
-  --select-popup-bg: #1b3c5a;
+  --select-popup-bg: light-dark(#f2f8fc, #1b3c5a);
   --select-popup-shadow: 0 8px 24px rgb(4 14 24 / 55%);
   --kt-sheet-shadow: 0 -8px 24px rgb(4 14 24 / 55%);
   --kt-sheet-scrim: rgb(4 14 24 / 60%);
-  --tooltip-bg: #0f2438;
-  --tooltip-fg: #dceaf5;
+  --tooltip-bg: light-dark(#e1edf5, #0f2438);
+  --tooltip-fg: light-dark(#16344f, #dceaf5);
 
   /* ============ Dialog (blueprint : cartouche cyan) ============ */
   --dialog-radius: 8px;
-  --dialog-border-color: #6f9dbd;
+  --dialog-border-color: light-dark(#a8cce4, #6f9dbd);
 
   /* ============ Card : cartouche blueprint (lavis + trait cyan via l'ombre) ============ */
-  --card-bg: #1b3c5a;
-  --card-filled-bg: #214a6e;
+  --card-bg: light-dark(#fdfdfd, #1b3c5a);
+  --card-filled-bg: light-dark(#f2f8fc, #214a6e);
   --card-radius: 8px;
-  --card-border-color: #6f9dbd;
+  --card-border-color: light-dark(#a8cce4, #6f9dbd);
   --card-shadow: 0 0 0 1px rgb(111 157 189 / 30%), 0 8px 24px rgb(4 14 24 / 45%);
 }

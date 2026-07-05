@@ -5,7 +5,7 @@ import { filter, map } from 'rxjs';
 
 import { KtButton } from '@ktortu/aaa/button';
 import { KtSelect } from '@ktortu/aaa/forms';
-import { KT_THEMES, KtTheme, KtThemeId } from './theme/theme';
+import { KT_THEMES, KT_THEME_MODES, KtTheme, KtThemeId, KtThemeMode } from './theme/theme';
 import { NAV_ITEMS } from './shared/nav';
 
 /** Shell de l'app : sidebar de navigation (drawer sur mobile) + header (titre + thème) + zone routée. */
@@ -19,6 +19,7 @@ import { NAV_ITEMS } from './shared/nav';
 export class App {
   protected readonly theme = inject(KtTheme);
   protected readonly themes = KT_THEMES;
+  protected readonly modes = KT_THEME_MODES;
 
   private readonly router = inject(Router);
 
@@ -48,6 +49,11 @@ export class App {
   protected onThemeChange(id: KtThemeId | null): void {
     if (!id) return;
     this.theme.current.set(id);
+  }
+
+  protected onModeChange(mode: KtThemeMode | null): void {
+    if (!mode) return;
+    this.theme.mode.set(mode);
   }
 
   protected onSeedColorChange(event: Event): void {

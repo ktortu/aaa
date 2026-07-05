@@ -4,18 +4,18 @@
    Surfaces claires + texte navy => AA sans compromis (les halos sont décoratifs, jamais porteurs
    d'information ni de contraste de texte). Inter, rondeurs douces. */
 [data-theme='aurora'] {
-  color-scheme: light;
+  /* color-scheme handled by foundation */
 
   /* ============ Socle ============ */
-  --kt-primary: #4f46e5; /* indigo — blanc ~6.6:1 */
-  --kt-danger: #be185d; /* rose profond — blanc ~6.2:1 */
-  --kt-neutral: #475569;
-  --kt-surface: #f7f9fc;
-  --kt-on-surface: #16203a; /* ~13:1 */
-  --kt-muted: #4a5878; /* ~6:1 */
-  --kt-outline: #cdd6e8;
-  --kt-outline-strong: #8493b3;
-  --kt-focus-ring-color: #4f46e5;
+  --kt-primary: light-dark(#4f46e5, #818cf8); /* indigo — blanc ~6.6:1 */
+  --kt-danger: light-dark(#be185d, #f472b6); /* rose profond — blanc ~6.2:1 */
+  --kt-neutral: light-dark(#475569, #94a3b8);
+  --kt-surface: light-dark(#f7f9fc, #0f172a);
+  --kt-on-surface: light-dark(#16203a, #f8fafc); /* ~13:1 */
+  --kt-muted: light-dark(#4a5878, #cbd5e1); /* ~6:1 */
+  --kt-outline: light-dark(#cdd6e8, #334155);
+  --kt-outline-strong: light-dark(#8493b3, #64748b);
+  --kt-focus-ring-color: light-dark(#4f46e5, #818cf8);
   --kt-font: 'Inter', system-ui, sans-serif;
 
   /* Gouttière indigo douce. */
@@ -27,9 +27,9 @@
   --kt-sheet-scrim: rgb(22 32 58 / 35%);
 
   /* Caret + sélection. */
-  --field-caret-color: #4f46e5;
-  --kt-selection-bg: #ddd6fe;
-  --kt-selection-fg: #2e1065;
+  --field-caret-color: light-dark(#4f46e5, #818cf8);
+  --kt-selection-bg: light-dark(#ddd6fe, #4c1d95);
+  --kt-selection-fg: light-dark(#2e1065, #ede9fe);
 
   /* ============ Géométrie douce ============ */
   --kt-control-radius: 12px;
@@ -37,7 +37,7 @@
   --chip-radius: 999px;
 
   /* ============ Champs : halo indigo au survol/focus ============ */
-  --field-bg: #ffffff;
+  --field-bg: light-dark(#ffffff, #1e293b);
   --field-focus-ring: color-mix(in srgb, #4f46e5 50%, transparent);
   --field-transition: border-color 180ms ease, box-shadow 180ms ease;
   --field-shadow: 0 2px 8px rgb(22 32 58 / 6%);
@@ -46,9 +46,9 @@
 
   /* ============ Boutons : élévation colorée, lève au survol ============ */
   --btn-tonal-weight: 16%;
-  --btn-on-primary-container: #2e1065;
-  --btn-on-danger-container: #6b0f3a;
-  --btn-on-neutral-container: #16203a;
+  --btn-on-primary-container: light-dark(#2e1065, #c7d2fe);
+  --btn-on-danger-container: light-dark(#6b0f3a, #fbcfe8);
+  --btn-on-neutral-container: light-dark(#16203a, #f1f5f9);
   --btn-transition: transform 180ms ease, box-shadow 180ms ease;
   --btn-transform-hover: translateY(-2px);
   --btn-transform-active: translateY(0) scale(0.98);
@@ -58,20 +58,20 @@
   --chip-shadow-hover: 0 4px 14px rgb(79 70 229 / 20%);
 
   /* ============ Select / tooltip : panneaux à halo ============ */
-  --select-popup-bg: #ffffff;
+  --select-popup-bg: light-dark(#ffffff, #1e293b);
   --select-popup-shadow: 0 16px 48px rgb(79 70 229 / 18%), 0 4px 16px rgb(190 24 93 / 10%);
-  --tooltip-bg: #16203a;
-  --tooltip-fg: #f7f9fc;
+  --tooltip-bg: light-dark(#16203a, #f1f5f9);
+  --tooltip-fg: light-dark(#f7f9fc, #0f172a);
 
   /* ============ Dialog : halo aurora ample ============ */
-  --dialog-bg: #ffffff;
+  --dialog-bg: light-dark(#ffffff, #1e293b);
   --dialog-radius: 20px;
   --dialog-border-width: 0;
   --dialog-shadow: 0 24px 64px rgb(79 70 229 / 22%), 0 8px 24px rgb(190 24 93 / 12%);
 
   /* ============ Card : LA vitrine — double halo coloré, lève au survol ============ */
-  --card-bg: #ffffff;
-  --card-filled-bg: #f1f0fe; /* teinte indigo très pâle */
+  --card-bg: light-dark(#ffffff, #1e293b);
+  --card-filled-bg: light-dark(#f1f0fe, #272740); /* teinte indigo très pâle */
   --card-radius: 16px;
   --card-shadow: 0 6px 24px rgb(79 70 229 / 14%), 0 2px 8px rgb(190 24 93 / 8%);
   --card-shadow-hover: 0 14px 40px rgb(79 70 229 / 22%), 0 6px 18px rgb(190 24 93 / 12%);

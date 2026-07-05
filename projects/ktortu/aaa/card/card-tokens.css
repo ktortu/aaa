@@ -9,7 +9,7 @@
 @layer kt-aaa.tokens {
   :root {
     /* ============ Surface ============ */
-    --card-bg: var(--kt-surface, #ffffff);
+    --card-bg: var(--kt-surface-container-low, var(--kt-surface, #ffffff));
     --card-fg: var(--kt-on-surface, #1f1f1f);
 
     /* Fond de la variante `filled` : surface légèrement teintée (DÉRIVÉ, suit chaque thème). */
@@ -45,5 +45,6 @@
        --card-transform-hover (= --card-transform) : transform au survol (ex. translateY(-2px)).
        --card-fill-image      (none)           : dégradé/motif empilé SOUS le voile d'état.
        --card-backdrop-filter (none)           : flou de la surface (thèmes verre). */
+    --card-backdrop-filter: var(--kt-backdrop-filter, none);
   }
 }

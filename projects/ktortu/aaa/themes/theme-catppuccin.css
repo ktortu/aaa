@@ -8,59 +8,59 @@
    --btn-danger-fg / --field-error-color / --field-required-color. Inutile ici : le red
    Mocha #f38ba8 est assez clair pour servir tel quel (texte 6.9:1, label sombre 8.1:1). */
 [data-theme='catppuccin'] {
-  color-scheme: dark;
+  /* color-scheme handled by foundation */
 
   /* ============ Socle ============ */
-  --kt-surface: #1e1e2e; /* base */
-  --kt-on-surface: #cdd6f4; /* text, ~12:1 */
-  --kt-muted: #a6adc8; /* subtext0, ~7.4:1 */
-  --kt-outline: #6c7086; /* overlay0 */
-  --kt-outline-strong: #9399b2; /* overlay2 */
-  --kt-primary: #cba6f7; /* mauve, ~8.5:1 en texte */
-  --kt-danger: #f38ba8; /* red, ~6.9:1 */
-  --kt-neutral: #585b70; /* surface2 */
-  --kt-focus-ring-color: #cba6f7;
+  --kt-surface: light-dark(#eff1f5, #1e1e2e); /* base */
+  --kt-on-surface: light-dark(#4c4f69, #cdd6f4); /* text, ~12:1 */
+  --kt-muted: light-dark(#6c6f85, #a6adc8); /* subtext0, ~7.4:1 */
+  --kt-outline: light-dark(#bcc0cc, #6c7086); /* overlay0 */
+  --kt-outline-strong: light-dark(#9ca0b0, #9399b2); /* overlay2 */
+  --kt-primary: light-dark(#4a0e94, #cba6f7); /* mauve assombri pour AAA */
+  --kt-danger: light-dark(#78041d, #f38ba8); /* red assombri pour AAA */
+  --kt-neutral: light-dark(#ccd0da, #585b70); /* surface2 */
+  --kt-focus-ring-color: light-dark(#8839ef, #cba6f7);
   --kt-font: 'JetBrains Mono', ui-monospace, monospace; /* thème d'éditeur => mono assumée */
 
   /* Gouttière façon éditeur : thumb surface2 (overlay) sur le mantle, comme la scrollbar Mocha. */
   --kt-scrollbar-color: #585b70 #181825;
 
   /* ============ Champs ============ */
-  --field-bg: #313244; /* surface0 */
+  --field-bg: light-dark(#e6e9ef, #313244); /* surface0 */
   --field-focus-ring: color-mix(in srgb, #cba6f7 60%, transparent);
 
   /* ============ Boutons : inversions dark ============ */
-  --btn-on-primary: #11111b; /* crust sur mauve, 9.2:1 */
-  --btn-on-danger: #11111b; /* 8.1:1 */
-  --btn-on-neutral: #ffffff; /* 6.7:1 sur surface2 */
-  --btn-on-primary-container: #e2d5fb;
-  --btn-on-neutral-container: #cdd6f4;
-  --btn-on-danger-container: #f8c8d4;
+  --btn-on-primary: light-dark(#ffffff, #11111b); /* crust sur mauve, 9.2:1 */
+  --btn-on-danger: light-dark(#ffffff, #11111b); /* 8.1:1 */
+  --btn-on-neutral: light-dark(#000000, #ffffff); /* 6.7:1 sur surface2 */
+  --btn-on-primary-container: light-dark(#000000, #e2d5fb);
+  --btn-on-neutral-container: light-dark(#000000, #cdd6f4);
+  --btn-on-danger-container: light-dark(#000000, #f8c8d4);
   --btn-fg-weight: 100%;
-  --btn-neutral-fg: #bac2de; /* subtext1 */
+  --btn-neutral-fg: light-dark(#000000, #bac2de); /* subtext1 */
   --btn-tonal-weight: 24%;
 
   /* ============ Caret + sélection (rétrofit lot 6 — l'identité d'un thème d'éditeur) ============ */
-  --field-caret-color: #f5e0dc; /* rosewater, LE curseur Catppuccin officiel */
-  --kt-selection-bg: #585b70; /* surface2 */
-  --kt-selection-fg: #cdd6f4;
+  --field-caret-color: light-dark(#dc8a78, #f5e0dc); /* rosewater, LE curseur Catppuccin officiel */
+  --kt-selection-bg: light-dark(#ccd0da, #585b70); /* surface2 */
+  --kt-selection-fg: light-dark(#4c4f69, #cdd6f4);
 
   /* ============ Select / tooltip ============ */
-  --select-popup-bg: #313244;
+  --select-popup-bg: light-dark(#e6e9ef, #313244);
   --select-popup-shadow: 0 8px 24px rgb(17 17 27 / 60%);
   --kt-sheet-shadow: 0 -8px 24px rgb(17 17 27 / 60%);
   --kt-sheet-scrim: rgb(17 17 27 / 60%);
-  --tooltip-bg: #313244;
-  --tooltip-fg: #cdd6f4;
+  --tooltip-bg: light-dark(#ccd0da, #313244);
+  --tooltip-fg: light-dark(#4c4f69, #cdd6f4);
 
   /* ============ Dialog (Mocha dark) ============ */
-  --dialog-bg: #181825; /* mantle, légèrement sous la base */
+  --dialog-bg: light-dark(#eff1f5, #181825); /* mantle, légèrement sous la base */
   --dialog-radius: 12px;
   --dialog-border-color: #313244;
 
   /* ============ Card (Mocha : surface élevée surface0/1) ============ */
-  --card-bg: #313244; /* surface0, au-dessus de la base */
-  --card-filled-bg: #45475a; /* surface1 */
+  --card-bg: light-dark(#e6e9ef, #313244); /* surface0, au-dessus de la base */
+  --card-filled-bg: light-dark(#ccd0da, #45475a); /* surface1 */
   --card-radius: 12px;
   --card-shadow: 0 4px 12px rgb(17 17 27 / 45%);
 }

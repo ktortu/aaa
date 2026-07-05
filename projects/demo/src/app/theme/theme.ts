@@ -30,6 +30,18 @@ function isThemeId(value: string | null): value is KtThemeId {
   return value !== null && KT_THEMES.some((t) => t.id === value);
 }
 
+export const KT_THEME_MODES = [
+  { id: 'system', label: 'Système' },
+  { id: 'light', label: 'Clair' },
+  { id: 'dark', label: 'Sombre' },
+] as const;
+
+export type KtThemeMode = (typeof KT_THEME_MODES)[number]['id'];
+
+function isThemeMode(value: string | null): value is KtThemeMode {
+  return value !== null && KT_THEME_MODES.some((m) => m.id === value);
+}
+
 /** Thème courant de la démo, persisté en localStorage. Garde au boot : un id persisté qui
     n'existe plus (thème supprimé) retombe sur `default`.
     Reflète le signal sur l'attribut `data-theme` de <html> : les feuilles importées dans
@@ -45,6 +57,13 @@ export class KtTheme {
     })(),
   );
 
+  readonly mode = signal<KtThemeMode>(
+    (() => {
+      const stored = typeof localStorage !== 'undefined' ? localStorage.getItem('kt-theme-mode') : null;
+      return isThemeMode(stored) ? stored : 'system';
+    })(),
+  );
+
   readonly seedColor = signal<string>(
     (() => {
       const stored = typeof localStorage !== 'undefined' ? localStorage.getItem('kt-theme-seed') : null;
@@ -55,16 +74,24 @@ export class KtTheme {
   constructor() {
     effect(() => {
       const theme = this.current();
+      const mode = this.mode();
       const root = this.doc.documentElement;
 
       if (typeof localStorage !== 'undefined') {
         localStorage.setItem('kt-theme', theme);
+        localStorage.setItem('kt-theme-mode', mode);
       }
 
       if (theme === 'default') {
         root.removeAttribute('data-theme');
       } else {
         root.setAttribute('data-theme', theme);
+      }
+
+      if (mode === 'dark' || mode === 'light') {
+        root.style.colorScheme = mode;
+      } else {
+        root.style.colorScheme = 'light dark';
       }
 
       if (theme === 'material-you') {

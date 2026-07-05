@@ -3,14 +3,14 @@
    champs gris #f4f4f4, bleu interactif #0f62fe, IBM Plex Sans (stack avec repli système). */
 [data-theme='carbon'] {
   /* ============ Socle ============ */
-  --kt-primary: #0043ce; /* interactive — blanc 7.6:1 (AAA) */
-  --kt-danger: #750e13; /* support-error — blanc 9.0:1 (AAA) */
-  --kt-neutral: #393939; /* button-secondary Carbon */
-  --kt-surface: #ffffff;
-  --kt-on-surface: #161616; /* text-primary */
-  --kt-muted: #525252; /* text-secondary, ~7.4:1 */
-  --kt-outline: #8d8d8d; /* border-strong (les inputs Carbon ont une bordure marquée) */
-  --kt-outline-strong: #161616;
+  --kt-primary: light-dark(#093894, #6ba1ff); /* interactive — blanc 7.6:1 (AAA) */
+  --kt-danger: light-dark(#9e141c, #ff7b82); /* support-error — blanc 9.0:1 (AAA) */
+  --kt-neutral: light-dark(#393939, #c6c6c6); /* button-secondary Carbon */
+  --kt-surface: light-dark(#ffffff, #161616);
+  --kt-on-surface: light-dark(#161616, #f4f4f4); /* text-primary */
+  --kt-muted: light-dark(#525252, #a8a8a8); /* text-secondary, ~7.4:1 */
+  --kt-outline: light-dark(#8d8d8d, #525252); /* border-strong (les inputs Carbon ont une bordure marquée) */
+  --kt-outline-strong: light-dark(#161616, #f4f4f4);
   --kt-font: 'IBM Plex Sans', system-ui, sans-serif;
 
   /* ============ Géométrie : coins carrés ============ */
@@ -20,7 +20,7 @@
   --chip-radius: 0;
 
   /* ============ Champs ============ */
-  --field-bg: #f4f4f4; /* field-01 sur fond blanc */
+  --field-bg: light-dark(#f4f4f4, #262626); /* field-01 sur fond blanc */
   /* L'input Carbon authentique : fill gris + UNIQUEMENT la bordure du bas
      (rétrofit lot 5, bordures par côté) ; le menu du select garde sa bordure complète. */
   --field-border-width: 0 0 1px 0;
@@ -28,22 +28,22 @@
 
   /* ============ Boutons ============ */
   --btn-letter-spacing: 0.01em; /* body-compact Carbon, +0.16px (rétrofit lot 6) */
-  --btn-on-primary-container: #002c9b; /* sur container dérivé bleu pâle, >7:1 (AAA) */
-  --btn-on-danger-container: #750e13;
-  --btn-on-neutral-container: #161616;
+  --btn-on-primary-container: light-dark(#002c9b, #a6c8ff); /* sur container dérivé bleu pâle, >7:1 (AAA) */
+  --btn-on-danger-container: light-dark(#750e13, #ff8389);
+  --btn-on-neutral-container: light-dark(#161616, #f4f4f4);
 
   /* ============ Tooltip ============ */
-  --tooltip-bg: #393939;
-  --tooltip-fg: #ffffff;
+  --tooltip-bg: light-dark(#393939, #f4f4f4);
+  --tooltip-fg: light-dark(#ffffff, #161616);
 
   /* ============ Dialog (IBM Carbon : angles vifs, sans bord) ============ */
   --dialog-radius: 0;
   --dialog-border-width: 0;
-  --dialog-shadow: 0 2px 6px rgb(0 0 0 / 20%);
-  --kt-sheet-shadow: 0 -2px 6px rgb(0 0 0 / 30%); /* ombre minimale et nette (Carbon) */
+  --dialog-shadow: light-dark(0 2px 6px rgb(0 0 0 / 20%), 0 0 0 1px #525252);
+  --kt-sheet-shadow: light-dark(0 -2px 6px rgb(0 0 0 / 30%), 0 -1px 0 #525252); /* ombre minimale et nette (Carbon) */
 
   /* ============ Card (IBM Carbon : tuile carrée, layer-01) ============ */
   --card-radius: 0;
-  --card-filled-bg: #f4f4f4; /* layer-01 */
-  --card-shadow: 0 2px 6px rgb(0 0 0 / 20%); /* élévation nette, sans flou diffus */
+  --card-filled-bg: light-dark(#f4f4f4, #262626); /* layer-01 */
+  --card-shadow: light-dark(0 2px 6px rgb(0 0 0 / 20%), 0 0 0 1px #525252); /* élévation nette, sans flou diffus */
 }

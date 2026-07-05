@@ -23,6 +23,7 @@
     border-radius: var(--tooltip-radius);
     background: var(--tooltip-bg);
     color: var(--tooltip-fg);
+    backdrop-filter: var(--kt-backdrop-filter, none);
     font-size: 0.85rem;
     line-height: 1.35;
     white-space: pre-line; /* Interprète les \n et les sauts de ligne dans les chaînes de texte */

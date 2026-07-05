@@ -4,14 +4,14 @@
    → on prend leurs variantes hover (#0b5ed7, #bb2d3b), quasi indiscernables et AA. */
 [data-theme='bootstrap'] {
   /* ============ Socle ============ */
-  --kt-primary: #0b5ed7; /* btn-primary hover — blanc 5.8:1 */
-  --kt-danger: #bb2d3b; /* btn-danger hover — blanc 5.9:1 */
-  --kt-neutral: #6c757d; /* secondary — blanc 4.7:1 */
-  --kt-surface: #ffffff;
-  --kt-on-surface: #212529; /* body-color */
-  --kt-muted: #6c757d; /* secondary-color */
-  --kt-outline: #ced4da; /* border des inputs (authentique, < 3:1 — fidélité > 1.4.11 ici) */
-  --kt-outline-strong: #adb5bd;
+  --kt-primary: light-dark(#063a8a, #3b8bff); /* btn-primary hover — blanc 5.8:1 */
+  --kt-danger: light-dark(#921925, #ea6c78); /* btn-danger hover — blanc 5.9:1 */
+  --kt-neutral: light-dark(#6c757d, #adb5bd); /* secondary — blanc 4.7:1 */
+  --kt-surface: light-dark(#ffffff, #212529);
+  --kt-on-surface: light-dark(#212529, #f8f9fa); /* body-color */
+  --kt-muted: light-dark(#6c757d, #adb5bd); /* secondary-color */
+  --kt-outline: light-dark(#ced4da, #495057); /* border des inputs (authentique, < 3:1 — fidélité > 1.4.11 ici) */
+  --kt-outline-strong: light-dark(#adb5bd, #6c757d);
   --kt-font: system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
 
   /* ============ Géométrie ============ */
@@ -20,27 +20,27 @@
 
   /* ============ Champs : le fameux ring translucide large de Bootstrap ============ */
   --field-focus-ring-width: 4px; /* .25rem */
-  --field-focus-ring: rgb(13 110 253 / 25%);
+  --field-focus-ring: light-dark(rgb(13 110 253 / 25%), rgb(13 110 253 / 50%));
   /* LA transition des .form-control Bootstrap (rétrofit lot 3). */
   --field-transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
 
   /* ============ Boutons ============ */
-  --btn-on-primary-container: #052c65; /* ≈ text-emphasis sur -subtle */
-  --btn-on-danger-container: #58151c;
-  --btn-on-neutral-container: #212529;
+  --btn-on-primary-container: light-dark(#052c65, #9ec5fe); /* ≈ text-emphasis sur -subtle */
+  --btn-on-danger-container: light-dark(#58151c, #f1aeb5);
+  --btn-on-neutral-container: light-dark(#212529, #f8f9fa);
 
   /* ============ Tooltip ============ */
-  --tooltip-bg: #212529;
-  --tooltip-fg: #ffffff;
+  --tooltip-bg: light-dark(#212529, #f8f9fa);
+  --tooltip-fg: light-dark(#ffffff, #212529);
 
   /* ============ Dialog (Bootstrap 5 : rayon .5rem, ombre modale) ============ */
   --dialog-radius: 0.5rem;
-  --dialog-border-color: rgb(0 0 0 / 17.5%);
-  --dialog-shadow: 0 0.5rem 1rem rgb(0 0 0 / 15%);
+  --dialog-border-color: light-dark(rgb(0 0 0 / 17.5%), rgb(255 255 255 / 15%));
+  --dialog-shadow: light-dark(0 0.5rem 1rem rgb(0 0 0 / 15%), 0 0 0 1px rgba(255, 255, 255, 0.1));
 
   /* ============ Card (Bootstrap : rayon .5rem, bord + ombre-sm) ============ */
   --card-radius: 0.5rem;
-  --card-border-color: rgb(0 0 0 / 17.5%);
-  --card-filled-bg: #f8f9fa; /* bg-body-tertiary */
-  --card-shadow: 0 0.125rem 0.25rem rgb(0 0 0 / 7.5%); /* shadow-sm */
+  --card-border-color: light-dark(rgb(0 0 0 / 17.5%), rgb(255 255 255 / 15%));
+  --card-filled-bg: light-dark(#f8f9fa, #2b3035); /* bg-body-tertiary */
+  --card-shadow: light-dark(0 0.125rem 0.25rem rgb(0 0 0 / 7.5%), 0 0 0 1px rgba(255, 255, 255, 0.15)); /* shadow-sm */
 }

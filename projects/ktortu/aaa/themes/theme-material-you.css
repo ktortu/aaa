@@ -18,15 +18,33 @@
   --myou-seed: #0b6e63; /* teal — essayez #7c4dff, #b3261e, #386a20… */
 
   /* ============ Socle (tons M3 figés, teinte du seed) ============ */
-  --kt-surface: oklch(from var(--myou-seed) 0.985 0.008 h); /* tone ~98, teinté */
-  --kt-on-surface: oklch(from var(--myou-seed) 0.22 0.02 h); /* tone ~10 */
-  --kt-muted: oklch(from var(--myou-seed) 0.42 0.03 h); /* neutral-variant ~30 */
-  --kt-outline: oklch(from var(--myou-seed) 0.55 0.03 h); /* tone ~50 (3:1 non-texte) */
-  --kt-outline-strong: oklch(from var(--myou-seed) 0.45 0.04 h);
-  --kt-primary: oklch(from var(--myou-seed) 0.46 0.09 h); /* tone ~40 : blanc ≥ 6:1 */
-  --kt-danger: #b3261e; /* erreur M3 statique (non dérivée — fidèle à You) */
-  --kt-neutral: oklch(from var(--myou-seed) 0.4 0.02 h); /* neutre teinté, blanc ≥ 7:1 */
-  --kt-focus-ring-color: oklch(from var(--myou-seed) 0.46 0.09 h);
+  --kt-surface: light-dark(
+    oklch(from var(--myou-seed) 0.985 0.008 h),
+    oklch(from var(--myou-seed) 0.1 0.008 h)
+  ); /* tone ~98, teinté */
+  --kt-on-surface: light-dark(
+    oklch(from var(--myou-seed) 0.22 0.02 h),
+    oklch(from var(--myou-seed) 0.9 0.02 h)
+  ); /* tone ~10 */
+  --kt-muted: light-dark(
+    oklch(from var(--myou-seed) 0.42 0.03 h),
+    oklch(from var(--myou-seed) 0.7 0.03 h)
+  ); /* neutral-variant ~30 */
+  --kt-outline: light-dark(
+    oklch(from var(--myou-seed) 0.55 0.03 h),
+    oklch(from var(--myou-seed) 0.45 0.03 h)
+  ); /* tone ~50 (3:1 non-texte) */
+  --kt-outline-strong: light-dark(oklch(from var(--myou-seed) 0.45 0.04 h), oklch(from var(--myou-seed) 0.65 0.04 h));
+  --kt-primary: light-dark(
+    oklch(from var(--myou-seed) 0.46 0.09 h),
+    oklch(from var(--myou-seed) 0.8 0.09 h)
+  ); /* tone ~40 : blanc ≥ 6:1 */
+  --kt-danger: light-dark(#b3261e, #f2b8b5); /* erreur M3 statique (non dérivée — fidèle à You) */
+  --kt-neutral: light-dark(
+    oklch(from var(--myou-seed) 0.4 0.02 h),
+    oklch(from var(--myou-seed) 0.8 0.02 h)
+  ); /* neutre teinté, blanc ≥ 7:1 */
+  --kt-focus-ring-color: light-dark(oklch(from var(--myou-seed) 0.46 0.09 h), oklch(from var(--myou-seed) 0.8 0.09 h));
   --kt-font: 'Roboto', system-ui, sans-serif;
 
   /* ============ Géométrie : rondeurs expressives ============ */
@@ -35,40 +53,73 @@
   --kt-sheet-radius: 28px;
 
   /* ============ Champs : surface-container teintée (la signature You) ============ */
-  --field-bg: oklch(from var(--myou-seed) 0.94 0.02 h); /* tone ~94 */
-  --field-focus-ring: color-mix(in srgb, oklch(from var(--myou-seed) 0.46 0.09 h) 55%, transparent);
+  --field-bg: light-dark(
+    oklch(from var(--myou-seed) 0.94 0.02 h),
+    oklch(from var(--myou-seed) 0.15 0.02 h)
+  ); /* tone ~94 */
+  --field-focus-ring: light-dark(
+    color-mix(in srgb, oklch(from var(--myou-seed) 0.46 0.09 h) 55%, transparent),
+    color-mix(in srgb, oklch(from var(--myou-seed) 0.8 0.09 h) 55%, transparent)
+  );
   --field-transition: border-color 150ms ease;
 
   /* ============ Boutons : containers/fg dérivés par la lib depuis les 3 bases ============ */
   --btn-tonal-weight: 18%; /* containers un peu plus présents que le défaut */
   /* on-containers teintés par le seed (tone ~25 sur container ~90 : ≥ 8:1 par construction) —
      les défauts statiques de la lib resteraient AA mais d'une teinte étrangère au seed. */
-  --btn-on-primary-container: oklch(from var(--myou-seed) 0.25 0.06 h);
-  --btn-on-neutral-container: oklch(from var(--myou-seed) 0.25 0.02 h);
+  --btn-on-primary-container: light-dark(
+    oklch(from var(--myou-seed) 0.25 0.06 h),
+    oklch(from var(--myou-seed) 0.9 0.06 h)
+  );
+  --btn-on-neutral-container: light-dark(
+    oklch(from var(--myou-seed) 0.25 0.02 h),
+    oklch(from var(--myou-seed) 0.9 0.02 h)
+  );
 
   /* ============ Caret + sélection ============ */
-  --field-caret-color: oklch(from var(--myou-seed) 0.46 0.09 h);
-  --kt-selection-bg: oklch(from var(--myou-seed) 0.88 0.05 h); /* container ~tone 90 */
-  --kt-selection-fg: oklch(from var(--myou-seed) 0.25 0.05 h);
+  --field-caret-color: light-dark(oklch(from var(--myou-seed) 0.46 0.09 h), oklch(from var(--myou-seed) 0.8 0.09 h));
+  --kt-selection-bg: light-dark(
+    oklch(from var(--myou-seed) 0.88 0.05 h),
+    oklch(from var(--myou-seed) 0.3 0.05 h)
+  ); /* container ~tone 90 */
+  --kt-selection-fg: light-dark(oklch(from var(--myou-seed) 0.25 0.05 h), oklch(from var(--myou-seed) 0.9 0.05 h));
 
   /* ============ Select / tooltip ============ */
-  --select-popup-bg: oklch(from var(--myou-seed) 0.97 0.01 h);
-  --select-popup-shadow: 0 4px 16px oklch(from var(--myou-seed) 0.3 0.04 h / 25%);
-  --kt-sheet-scrim: oklch(from var(--myou-seed) 0.2 0.03 h / 50%);
-  --kt-sheet-shadow: 0 -4px 16px oklch(from var(--myou-seed) 0.3 0.04 h / 22%); /* élévation M3 teintée */
-  --tooltip-bg: oklch(from var(--myou-seed) 0.27 0.03 h);
-  --tooltip-fg: oklch(from var(--myou-seed) 0.96 0.01 h);
+  --select-popup-bg: light-dark(oklch(from var(--myou-seed) 0.97 0.01 h), oklch(from var(--myou-seed) 0.12 0.01 h));
+  --select-popup-shadow: light-dark(
+    0 4px 16px oklch(from var(--myou-seed) 0.3 0.04 h / 25%),
+    0 0 0 1px rgba(255, 255, 255, 0.1)
+  );
+  --kt-sheet-scrim: light-dark(
+    oklch(from var(--myou-seed) 0.2 0.03 h / 50%),
+    oklch(from var(--myou-seed) 0.1 0.03 h / 60%)
+  );
+  --kt-sheet-shadow: light-dark(
+    0 -4px 16px oklch(from var(--myou-seed) 0.3 0.04 h / 22%),
+    0 -1px 0 rgba(255, 255, 255, 0.1)
+  ); /* élévation M3 teintée */
+  --tooltip-bg: light-dark(oklch(from var(--myou-seed) 0.27 0.03 h), oklch(from var(--myou-seed) 0.9 0.03 h));
+  --tooltip-fg: light-dark(oklch(from var(--myou-seed) 0.96 0.01 h), oklch(from var(--myou-seed) 0.1 0.01 h));
 
   /* ============ Dialog (M3 expressive : rayon hérité de la feuille, sans bord) ============ */
-  --dialog-bg: oklch(from var(--myou-seed) 0.97 0.01 h); /* surface-container teinté */
+  --dialog-bg: light-dark(
+    oklch(from var(--myou-seed) 0.97 0.01 h),
+    oklch(from var(--myou-seed) 0.15 0.01 h)
+  ); /* surface-container teinté */
   --dialog-radius: 28px;
   --dialog-border-width: 0;
 
   /* ============ Card (M3 expressive : surfaces teintées du seed, rayon 16) ============ */
   --card-radius: 16px;
-  --card-bg: oklch(from var(--myou-seed) 0.97 0.01 h);
-  --card-filled-bg: oklch(from var(--myou-seed) 0.94 0.02 h);
-  --card-shadow: 0 1px 3px oklch(from var(--myou-seed) 0.3 0.04 h / 20%);
-  --card-shadow-hover: 0 2px 8px oklch(from var(--myou-seed) 0.3 0.04 h / 26%);
+  --card-bg: light-dark(oklch(from var(--myou-seed) 0.97 0.01 h), oklch(from var(--myou-seed) 0.12 0.01 h));
+  --card-filled-bg: light-dark(oklch(from var(--myou-seed) 0.94 0.02 h), oklch(from var(--myou-seed) 0.18 0.02 h));
+  --card-shadow: light-dark(
+    0 1px 3px oklch(from var(--myou-seed) 0.3 0.04 h / 20%),
+    0 0 0 1px rgba(255, 255, 255, 0.1)
+  );
+  --card-shadow-hover: light-dark(
+    0 2px 8px oklch(from var(--myou-seed) 0.3 0.04 h / 26%),
+    0 0 0 1px rgba(255, 255, 255, 0.2)
+  );
   --card-transition: box-shadow 150ms ease;
 }

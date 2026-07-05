@@ -42,18 +42,18 @@
 }
 
 [data-theme='cyberpunk'] {
-  color-scheme: dark;
+  /* color-scheme handled by foundation */
 
   /* ============ Socle (cyan/magenta sur quasi-noir) ============ */
-  --kt-surface: #0b0f1a;
-  --kt-on-surface: #e6f6ff; /* ~15:1 */
-  --kt-muted: #94b2c8; /* ~7:1 */
-  --kt-outline: #2f5a73; /* 3:1 non-texte */
-  --kt-outline-strong: #5fb6da;
-  --kt-primary: #28d6ef; /* cyan, texte ~10:1 */
-  --kt-danger: #ff3d8b; /* magenta, texte ~6:1 */
-  --kt-neutral: #2b3950;
-  --kt-focus-ring-color: #28d6ef;
+  --kt-surface: light-dark(#f0f8ff, #0b0f1a);
+  --kt-on-surface: light-dark(#04141a, #e6f6ff); /* ~15:1 */
+  --kt-muted: light-dark(#5a7a91, #94b2c8); /* ~7:1 */
+  --kt-outline: light-dark(#9ec3d9, #2f5a73); /* 3:1 non-texte */
+  --kt-outline-strong: light-dark(#5fb6da, #5fb6da);
+  --kt-primary: light-dark(#003847, #28d6ef); /* cyan, texte ~10:1 */
+  --kt-danger: light-dark(#660029, #ff3d8b); /* magenta, texte ~6:1 */
+  --kt-neutral: light-dark(#c9e2f2, #2b3950);
+  --kt-focus-ring-color: light-dark(#008ba3, #28d6ef);
   --kt-font: 'Oxanium', system-ui, sans-serif;
 
   /* Gouttière néon cyan sur la nuit. */
@@ -64,9 +64,9 @@
   --kt-sheet-scrim: rgb(4 8 18 / 70%);
 
   /* Caret + sélection. */
-  --field-caret-color: #28d6ef;
-  --kt-selection-bg: #28d6ef;
-  --kt-selection-fg: #04141a;
+  --field-caret-color: light-dark(#008ba3, #28d6ef);
+  --kt-selection-bg: light-dark(#008ba3, #28d6ef);
+  --kt-selection-fg: light-dark(#ffffff, #04141a);
 
   /* ============ Géométrie HUD : coins chanfreinés ============ */
   --kt-control-radius: 4px;
@@ -76,7 +76,7 @@
   --chip-radius: 4px;
 
   /* ============ Champs : lavis sombre + halo bicolore qui ORBITE au focus ============ */
-  --field-bg: #10182a;
+  --field-bg: light-dark(#e0f2fe, #10182a);
   --field-focus-ring: color-mix(in srgb, #28d6ef 60%, transparent);
   --field-transition: border-color 200ms ease;
   --field-shadow-hover: 0 0 calc(7px + var(--cyber-breathe)) rgb(40 214 239 / 30%);
@@ -86,14 +86,14 @@
     0 0 calc(8px + var(--cyber-breathe)) rgb(40 214 239 / 30%);
 
   /* ============ Boutons : inversions dark + pulsation au clic ============ */
-  --btn-on-primary: #04141a; /* sur cyan, AAA */
-  --btn-on-danger: #2a0312; /* sur magenta */
-  --btn-on-neutral: #ffffff;
-  --btn-on-primary-container: #b6f4ff;
-  --btn-on-neutral-container: #d4e2ee;
-  --btn-on-danger-container: #ffd0e2;
+  --btn-on-primary: light-dark(#ffffff, #04141a); /* sur cyan, AAA */
+  --btn-on-danger: light-dark(#ffffff, #2a0312); /* sur magenta */
+  --btn-on-neutral: light-dark(#000000, #ffffff);
+  --btn-on-primary-container: light-dark(#000000, #b6f4ff);
+  --btn-on-neutral-container: light-dark(#000000, #d4e2ee);
+  --btn-on-danger-container: light-dark(#000000, #ffd0e2);
   --btn-fg-weight: 100%;
-  --btn-neutral-fg: #a9c4da;
+  --btn-neutral-fg: light-dark(#000000, #a9c4da);
   --btn-tonal-weight: 24%;
   --btn-font-weight: 600;
   --btn-letter-spacing: 0.03em;
@@ -106,20 +106,20 @@
   --chip-shadow-hover: 0 0 14px rgb(40 214 239 / 45%);
 
   /* ============ Select / tooltip ============ */
-  --select-popup-bg: #10182a;
+  --select-popup-bg: light-dark(#e0f2fe, #10182a);
   --select-popup-shadow: 0 0 0 1px rgb(40 214 239 / 25%), 0 12px 40px rgb(0 0 0 / 65%);
-  --tooltip-bg: #10182a;
-  --tooltip-fg: #e6f6ff;
+  --tooltip-bg: light-dark(#cce8fa, #10182a);
+  --tooltip-fg: light-dark(#04141a, #e6f6ff);
 
   /* ============ Dialog : panneau HUD ============ */
-  --dialog-bg: #10182a;
+  --dialog-bg: light-dark(#e0f2fe, #10182a);
   --dialog-border-color: rgb(40 214 239 / 35%);
   --dialog-radius: 8px;
   --dialog-anim-from-transform: scale(0.96);
 
   /* ============ Card : panneau néon, ombre qui orbite (+ laser en bord haut, cf. ::before) ============ */
-  --card-bg: #10182a;
-  --card-filled-bg: #16203a;
+  --card-bg: light-dark(#ffffff, #10182a);
+  --card-filled-bg: light-dark(#e0f2fe, #16203a);
   --card-radius: 6px;
   --card-shadow:
     calc(cos(var(--cyber-angle)) * 8px) calc(sin(var(--cyber-angle)) * 8px) 22px -8px rgb(40 214 239 / 40%),
@@ -140,7 +140,7 @@
   --tab-margin: 0 4px 0 0;
 
   /* ============ Progress Bar ============ */
-  --kt-progress-bar-track-color: #10182a;
+  --kt-progress-bar-track-color: light-dark(#cce8fa, #10182a);
   --kt-progress-bar-indicator-color: transparent;
 }
 

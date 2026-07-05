@@ -3,14 +3,19 @@
    (bascule --btn-radius prévue par le contrat), surfaces teintées M3. */
 [data-theme='material'] {
   /* ============ Socle (rôles M3 baseline) ============ */
-  --kt-primary: #6750a4; /* primary — on-primary blanc ~5.6:1 */
-  --kt-neutral: #625b71; /* secondary — blanc ~6.9:1 */
-  --kt-danger: #b3261e; /* error (= défaut lib, explicite) */
-  --kt-surface: #fef7ff;
-  --kt-on-surface: #1d1b20;
-  --kt-muted: #49454f; /* on-surface-variant, ~9:1 */
-  --kt-outline: #79747e;
-  --kt-outline-strong: #49454f;
+  --kt-primary: light-dark(#463673, #d7c4fc); /* primary — on-primary blanc ~5.6:1 */
+  --kt-neutral: light-dark(#625b71, #ccc2dc); /* secondary — blanc ~6.9:1 */
+  --kt-danger: light-dark(#8c1d17, #f7c8c6); /* error (= défaut lib, explicite) */
+  --kt-surface: light-dark(#fef7ff, #141218);
+  --kt-surface-container-lowest: light-dark(#ffffff, #0f0d13);
+  --kt-surface-container-low: light-dark(#f7f2fa, #1d1b20);
+  --kt-surface-container: light-dark(#f3edf7, #211f26);
+  --kt-surface-container-high: light-dark(#ece6f0, #2b2930);
+  --kt-surface-container-highest: light-dark(#e6e0e9, #36343b);
+  --kt-on-surface: light-dark(#1d1b20, #e6e0e9);
+  --kt-muted: light-dark(#49454f, #cac4d0); /* on-surface-variant, ~9:1 */
+  --kt-outline: light-dark(#79747e, #938f99);
+  --kt-outline-strong: light-dark(#49454f, #cac4d0);
   --kt-font: 'Roboto', system-ui, sans-serif;
 
   /* ============ Géométrie ============ */
@@ -21,28 +26,32 @@
   /* ============ Boutons ============ */
   --btn-font-weight: 500; /* label-large M3 (rétrofit lot 6) */
   /* on-containers M3 sur les containers dérivés (≈ primary/secondary-container). */
-  --btn-on-primary-container: #21005d;
-  --btn-on-neutral-container: #1d192b;
+  --btn-on-primary-container: light-dark(#21005d, #eaddff);
+  --btn-on-neutral-container: light-dark(#1d192b, #e8def8);
 
   /* ============ Champs ============ */
   --field-transition: border-color 150ms ease; /* state transitions M3 (rétrofit lot 3) */
 
   /* ============ Select / tooltip ============ */
-  --select-popup-bg: #f3edf7; /* surface-container */
-  --tooltip-bg: #322f35; /* inverse-surface */
-  --tooltip-fg: #f5eff7; /* inverse-on-surface */
+  --select-popup-bg: light-dark(#f3edf7, #211f26); /* surface-container */
+  --tooltip-bg: light-dark(#322f35, #e6e0e9); /* inverse-surface */
+  --tooltip-fg: light-dark(#f5eff7, #322f35); /* inverse-on-surface */
 
   /* ============ Dialog (M3 : grand rayon, élévation, sans bord) ============ */
-  --dialog-bg: #f3edf7; /* surface-container-high */
+  --dialog-bg: light-dark(#f3edf7, #2b2930); /* surface-container-high */
   --dialog-radius: 28px;
   --dialog-border-width: 0;
-  --dialog-shadow: 0 8px 24px rgb(29 27 32 / 22%);
+  --dialog-shadow: light-dark(0 8px 24px rgb(29 27 32 / 22%), 0 0 0 1px rgba(255, 255, 255, 0.1));
 
   /* ============ Card (M3 : surface-container, rayon 12, élévation douce) ============ */
   --card-radius: 12px;
-  --card-bg: #f3edf7; /* surface-container */
-  --card-filled-bg: #ece6f0; /* surface-container-high */
-  --card-shadow: 0 1px 3px rgb(29 27 32 / 16%), 0 1px 2px rgb(29 27 32 / 12%);
-  --card-shadow-hover: 0 2px 6px rgb(29 27 32 / 22%);
+  --card-bg: light-dark(#f3edf7, #211f26); /* surface-container */
+  --card-filled-bg: light-dark(#ece6f0, #2b2930); /* surface-container-high */
+  --card-shadow: light-dark(
+    0 1px 3px rgb(29 27 32 / 16%),
+    0 1px 2px rgb(29 27 32 / 12%),
+    0 0 0 1px rgba(255, 255, 255, 0.1)
+  );
+  --card-shadow-hover: light-dark(0 2px 6px rgb(29 27 32 / 22%), 0 0 0 1px rgba(255, 255, 255, 0.2));
   --card-transition: box-shadow 150ms ease;
 }
