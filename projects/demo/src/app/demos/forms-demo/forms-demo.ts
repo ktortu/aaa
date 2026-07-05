@@ -1,6 +1,6 @@
-import { ChangeDetectionStrategy, Component, computed, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component } from '@angular/core';
 
-import { KtNumberField, KtPasswordField, KtSwitch, KtTextArea, KtTextField } from '@ktortu/aaa/forms';
+import { KtNumberField, KtPasswordField, KtTextArea, KtTextField } from '@ktortu/aaa/forms';
 import { CodeBlock } from '../../shared/code-block/code-block';
 import { DocExample } from '../../shared/example/example';
 import { DocSection } from '../../shared/doc-section/doc-section';
@@ -25,7 +25,6 @@ import {
     KtPasswordField,
     KtTextArea,
     KtNumberField,
-    KtSwitch,
     DocSection,
     DocExample,
     CodeBlock,
@@ -49,22 +48,4 @@ export class FormsDemo {
 
   /** Suggestions de démo (datalist) pour le champ texte. */
   protected readonly fruits = ['Pomme', 'Banane', 'Cerise', 'Datte'];
-
-  // --- Apparence outline (label flottant façon Material) ---
-  protected readonly outlineEmpty = signal('');
-  protected readonly outlineFilled = signal('Ada Lovelace');
-  /** Bascule interactive fill/outline pour le champ piloté. */
-  protected readonly outlineMode = signal(true);
-  protected readonly appr = computed<'fill' | 'outline'>(() => (this.outlineMode() ? 'outline' : 'fill'));
-
-  /** Snippet de migration : tout passer en outline globalement (façon Material). */
-  protected readonly migrationSnippet = `// Transition globale vers l'apparence outline (façon Angular Material) :
-import { provideKtField } from '@ktortu/aaa/forms';
-
-providers: [
-  provideKtField({ appearance: 'outline' }), // tous les kt-field passent en outline
-];
-
-// + (optionnel) couleurs Material :  @import '@ktortu/aaa/themes/theme-material.css';
-// Surcharge par champ :  <kt-text-field appearance="fill" ... />`;
 }

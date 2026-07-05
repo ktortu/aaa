@@ -12,44 +12,6 @@
     </p>
   </header>
 
-  <kt-doc-section
-    title="Apparence — outline (POC, transition Material)"
-    subtitle="Bordure + label flottant qui se loge dans la bordure. Opt-in via [appearance]='outline' (ou KT_FIELD_CONFIG.appearance) ; le défaut « fill » est inchangé."
-  >
-    <kt-doc-example label="Outline — vide / rempli / erreur / aide">
-      <kt-text-field appearance="outline" label="Nom complet" [(value)]="outlineEmpty" />
-      <kt-text-field appearance="outline" label="Nom complet" [(value)]="outlineFilled" />
-      <kt-text-field
-        appearance="outline"
-        label="E-mail"
-        type="email"
-        [value]="'invalide'"
-        [invalid]="true"
-        [touched]="true"
-        [errors]="demoErrors"
-      />
-      <kt-text-field appearance="outline" label="Avec aide" helpText="Le label se loge dans la bordure haute." />
-    </kt-doc-example>
-
-    <kt-doc-example label="Outline — number & text-area">
-      <kt-number-field appearance="outline" label="Quantité" [min]="0" [step]="1" />
-      <kt-text-area appearance="outline" label="Bio" [rows]="3" />
-      <kt-text-field appearance="outline" label="Recherche" type="search" />
-    </kt-doc-example>
-
-    <kt-doc-example label="Comparaison fill (défaut) vs outline">
-      <kt-text-field label="fill (défaut)" placeholder="Votre nom" />
-      <kt-text-field appearance="outline" label="outline" />
-    </kt-doc-example>
-
-    <kt-doc-example label="Bascule interactive (appearance lié à un signal)">
-      <kt-switch label="Apparence outline" [(value)]="outlineMode" style="width: 100%" />
-      <kt-text-field [appearance]="appr()" label="Champ piloté" [(value)]="outlineEmpty" />
-    </kt-doc-example>
-
-    <kt-doc-code language="ts" [code]="migrationSnippet" />
-  </kt-doc-section>
-
   <kt-doc-section title="Exemples" subtitle="Variantes des trois champs : types, décorations, états et numérique.">
     <kt-doc-example label="Champ texte — types">
       <kt-text-field label="Texte" type="text" placeholder="Votre nom" />
@@ -62,7 +24,7 @@
     <kt-doc-example label="Champ mot de passe (kt-password-field)">
       <kt-password-field label="Mot de passe (bouton œil intégré)" placeholder="Saisissez votre mot de passe" />
       <kt-password-field label="Nouveau mot de passe" autocomplete="new-password" placeholder="Créer un mot de passe" />
-      <kt-password-field label="Mot de passe outline" appearance="outline" />
+
       <kt-password-field label="Désactivé" [value]="'secret123'" [disabled]="true" />
     </kt-doc-example>
 
