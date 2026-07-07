@@ -1,0 +1,140 @@
+/* ktortu/aaa/styles/layout.css */
+:root {
+  --kt-sidenav-width: 280px;
+  --kt-sidenav-rail-width: 72px;
+  --kt-layout-transition: 200ms cubic-bezier(0.25, 0.8, 0.25, 1);
+  --kt-toolbar-height: 64px;
+}
+
+.kt-layout-container {
+  display: flex;
+  height: 100dvh;
+  width: 100%;
+  overflow: hidden;
+  position: relative;
+  background: var(--kt-surface, #f8f9fa);
+  color: var(--kt-on-surface, #1f1f1f);
+}
+
+.kt-sidenav {
+  width: var(--kt-sidenav-width);
+  background: var(--kt-surface, #ffffff);
+  border-right: 1px solid var(--kt-outline, #e0e0e0);
+  flex-shrink: 0;
+  transition:
+    width var(--kt-layout-transition),
+    transform var(--kt-layout-transition);
+  display: flex;
+  flex-direction: column;
+  overflow-x: hidden;
+  overflow-y: auto;
+  z-index: 10;
+}
+
+.kt-sidenav.is-rail {
+  width: var(--kt-sidenav-rail-width);
+}
+
+@media (min-width: 601px) {
+  .kt-sidenav.is-hidden {
+    width: 0;
+    border-right-color: transparent;
+  }
+}
+
+.kt-layout-main-wrapper {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  overflow: hidden;
+}
+
+.kt-toolbar {
+  height: var(--kt-toolbar-height);
+  background: var(--kt-surface, #ffffff);
+  border-bottom: 1px solid var(--kt-outline, #e0e0e0);
+  display: flex;
+  align-items: center;
+  padding: 0 16px;
+  flex-shrink: 0;
+  z-index: 5;
+}
+
+.kt-layout-main {
+  flex: 1;
+  overflow-y: auto;
+  padding: 24px;
+}
+
+.kt-layout-backdrop {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.32);
+  z-index: 99;
+  opacity: 0;
+  transition: opacity var(--kt-layout-transition);
+}
+
+/* Nav Item styling for truncation */
+.kt-nav-item {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  width: 100%;
+  cursor: pointer;
+  white-space: nowrap;
+  overflow: hidden;
+}
+
+.kt-nav-item-icon {
+  width: 24px;
+  height: 24px;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.kt-nav-item-label {
+  flex: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  opacity: 1;
+  transition: opacity 100ms;
+}
+
+.kt-sidenav.is-rail .kt-nav-item-label {
+  opacity: 0;
+}
+
+/* 
+  Mobile Breakpoint - 600px par défaut 
+  (A copier/éjecter si modification nécessaire)
+*/
+@media (max-width: 600px) {
+  .kt-sidenav {
+    position: fixed;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    z-index: 100;
+    transform: translateX(-100%);
+    width: 280px; /* On force la largeur étendue sur mobile */
+  }
+
+  .kt-sidenav.is-mobile-open {
+    transform: translateX(0);
+  }
+
+  .kt-layout-backdrop {
+    display: block;
+    pointer-events: none;
+  }
+
+  .kt-layout-backdrop.is-visible {
+    opacity: 1;
+    pointer-events: auto;
+  }
+}

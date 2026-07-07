@@ -4,6 +4,17 @@
   display: block;
 }
 
+@media (min-width: 601px) {
+  .hide-on-desktop {
+    display: none !important;
+  }
+}
+@media (max-width: 600px) {
+  .hide-on-mobile {
+    display: none !important;
+  }
+}
+
 .shell {
   display: grid;
   grid-template-columns: 16rem 1fr;
@@ -12,14 +23,12 @@
 }
 
 /* ---------- Sidebar (theme-aware : surface légèrement teintée pour séparer du contenu) ---------- */
-.shell__sidebar {
-  display: flex;
-  flex-direction: column;
-  background: color-mix(in oklab, var(--kt-on-surface) 4%, var(--kt-surface));
-  color: var(--kt-on-surface);
-  border-inline-end: 1px solid var(--kt-outline);
-  overflow-y: auto;
-  z-index: 30;
+kt-sidenav {
+  background: color-mix(in oklab, var(--kt-on-surface) 4%, var(--kt-surface)) !important;
+}
+
+kt-toolbar {
+  background: color-mix(in oklab, var(--kt-on-surface) 4%, var(--kt-surface)) !important;
 }
 
 .shell__brand {
@@ -55,9 +64,13 @@
   flex-direction: column;
   gap: 0.15rem;
   padding: 1rem 0.85rem;
+  flex: 1;
+  overflow-y: auto;
 }
 
 .shell__link {
+  display: flex;
+  align-items: center;
   padding: 0.55rem 0.75rem;
   border-radius: 7px;
   /* Muted renforcé vers on-surface : reste discret mais ≥AA dans tous les thèmes

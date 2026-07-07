@@ -1,0 +1,14 @@
+.selecteur-couleur-bloc {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-block-start: 1rem;
+
+  label {
+    flex-grow: 1;
+  }
+}
+
+kt-select {
+  --field-width: 100%;
+}

@@ -19,12 +19,12 @@ const termsDialog = defineKtDialog<void, 'accept'>();
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [KtButton, KtDialogImports],
   template: `
+    <div ktDialogSheetHandle></div>
     <header ktDialogHeader>
       <h2 ktDialogTitle>Conditions d'utilisation</h2>
       <button ktButton iconOnly icon="close" mode="text" ariaLabel="Fermer" ktDialogClose></button>
     </header>
     <div ktDialogContent>
-      <div ktDialogSheetHandle></div>
       <p>
         En poursuivant, vous acceptez les présentes conditions. Faites défiler pour lire l'intégralité du texte avant de
         donner votre accord.

@@ -1,18 +1,9 @@
-<div class="shell" [attr.data-drawer]="drawerOpen() ? '' : null">
-  <!-- Overlay (mobile) : ferme le drawer au tap. `inert` quand le drawer est fermé → hors
-       tabulation et hors arbre d'accessibilité (le scrim n'existe visuellement qu'ouvert). -->
-  <button
-    type="button"
-    class="shell__scrim"
-    aria-label="Fermer le menu"
-    [attr.inert]="drawerOpen() ? null : ''"
-    (click)="closeDrawer()"
-  ></button>
-
-  <aside id="shell-sidebar" class="shell__sidebar" [class.shell__sidebar--open]="drawerOpen()">
-    <a class="shell__brand" routerLink="/" (click)="closeDrawer()">
+<kt-layout desktopCloseBehavior="rail">
+  <kt-sidenav>
+    <a class="shell__brand" routerLink="/">
       <span class="shell__brand-mark">aaa</span>
-      <span class="shell__brand-name">&#64;ktortu/aaa</span>
+      <!-- Hide text in rail mode -->
+      <span class="shell__brand-name" [style.display]="layout.isRail() ? 'none' : 'block'">&#64;ktortu/aaa</span>
     </a>
     <nav class="shell__nav" aria-label="Composants">
       @for (item of nav; track item.link) {
@@ -21,77 +12,58 @@
           [routerLink]="item.link"
           [routerLinkActiveOptions]="{ exact: item.path === '' }"
           routerLinkActive="shell__link--active"
-          (click)="closeDrawer()"
-          >{{ item.label }}</a
         >
-        @if (item.children) {
-          <div class="shell__sub-nav">
-            @for (sub of item.children; track sub.label) {
-              <a
-                class="shell__sub-link"
-                [routerLink]="sub.link"
-                routerLinkActive="shell__sub-link--active"
-                (click)="closeDrawer()"
-                >{{ sub.label }}</a
-              >
-            }
-          </div>
-        }
+          <kt-nav-item [label]="item.label">
+            <span
+              kt-icon
+              aria-hidden="true"
+              style="
+                font-family: var(--kt-icon-font, 'Material Symbols Outlined');
+                font-size: 24px;
+                width: 24px;
+                height: 24px;
+                display: inline-flex;
+                justify-content: center;
+                align-items: center;
+                font-variation-settings:
+                  'FILL' 0,
+                  'wght' 300;
+              "
+            >
+              {{ item.icon }}
+            </span>
+          </kt-nav-item>
+        </a>
       }
     </nav>
-    <div class="shell__theme-controls">
-      @if (theme.current() === 'material-you') {
-        <label class="shell__seed-picker">
-          <input
-            type="color"
-            #picker
-            style="opacity: 0; height: 44px; width: 44px; cursor: pointer"
-            aria-label="Couleur de seed Material You"
-            [value]="theme.seedColor()"
-            (input)="onSeedColorChange($event)"
-          />
-        </label>
-      }
-      <kt-select
-        class="shell__theme-mode"
-        label="Mode"
-        [options]="modes"
-        optionLabel="label"
-        optionValue="id"
-        [value]="theme.mode()"
-        (valueChange)="onModeChange($event)"
-      />
-      <kt-select
-        class="shell__theme"
-        label="Thème"
-        [options]="themes"
-        optionLabel="label"
-        optionValue="id"
-        [value]="theme.current()"
-        (valueChange)="onThemeChange($event)"
-      />
-    </div>
-  </aside>
 
-  <div class="shell__main">
-    <header class="shell__header">
+    <div
+      class="hide-on-mobile"
+      style="
+        margin-top: auto;
+        border-top: 1px solid var(--kt-outline);
+        padding: 0.5rem;
+        display: flex;
+        justify-content: center;
+      "
+    >
       <button
         ktButton
         iconOnly
-        icon="menu"
-        ariaLabel="Menu"
+        ktSidenavToggle
+        #btn="ktSidenavToggle"
+        [icon]="btn.isRail() ? 'keyboard_double_arrow_right' : 'keyboard_double_arrow_left'"
+        [ariaLabel]="btn.isRail() ? 'Agrandir le menu' : 'Réduire le menu'"
         mode="text"
-        class="shell__burger"
-        aria-controls="shell-sidebar"
-        [attr.aria-expanded]="drawerOpen()"
-        (click)="toggleDrawer()"
       ></button>
-      <h1 class="shell__page-title">{{ pageTitle() }}</h1>
-      <div class="shell__header__right"></div>
-    </header>
+    </div>
+  </kt-sidenav>
 
-    <main class="shell__content">
-      <router-outlet />
-    </main>
-  </div>
-</div>
+  <kt-toolbar>
+    <button class="hide-on-desktop" ktButton iconOnly icon="menu" ariaLabel="Menu" mode="text" ktSidenavToggle></button>
+    <h1 class="shell__page-title" style="margin-left: 16px; flex: 1">{{ pageTitle() }}</h1>
+    <button ktButton mode="text" iconOnly icon="palette" ariaLabel="Apparence" (click)="openThemeDialog()"></button>
+  </kt-toolbar>
+
+  <router-outlet />
+</kt-layout>

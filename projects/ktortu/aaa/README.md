@@ -39,13 +39,36 @@ export class Exemple {
 }
 ```
 
-Points d'entrée TypeScript : `@ktortu/aaa/button`, `/card`, `/dialog`, `/menu`, `/snackbar`, `/tabs`,
+Points d'entrée TypeScript : `@ktortu/aaa/button`, `/card`, `/dialog`, `/layout`, `/menu`, `/snackbar`, `/tabs`,
 `/tooltip`, `/forms`, `/cdk` (breakpoints, viewport, sheet-drag, id-generator) et `/i18n`
 (traductions). La racine `@ktortu/aaa` ré-exporte tout par commodité, mais importer depuis le
 point d'entrée précis préserve le tree-shaking. Les thèmes sont des fichiers CSS (cf. §Styles),
 pas un point d'entrée TypeScript.
 Familles agrégées prêtes pour `imports:` : `KtCardImports`, `KtMenuImports`, `KtDialogImports`
 (ex. `imports: [...KtCardImports]`).
+
+### Layout & Sidenav (Shell)
+
+Le module de layout (point d'entrée `@ktortu/aaa/layout`) fournit la structure principale de l'application.
+**Note :** Le composant nécessite le service `KtLayoutService`. Pour garantir l'isolation (si vous avez plusieurs layouts indépendants), ce service n'est **pas** fourni à la racine. Vous devez le déclarer dans le tableau `providers` de votre composant (`providers: [KtLayoutService]`).
+
+```html
+<kt-layout desktopCloseBehavior="rail">
+  <kt-sidenav>
+    <!-- Contenu du menu -->
+    <button ktSidenavToggle #btn="ktSidenavToggle">{{ btn.isRail() ? 'Agrandir' : 'Réduire' }}</button>
+  </kt-sidenav>
+  <kt-toolbar>
+    <button ktSidenavToggle class="hide-on-desktop">Menu</button>
+  </kt-toolbar>
+
+  <main>Contenu principal de la page</main>
+</kt-layout>
+```
+
+- **`desktopCloseBehavior`** : Configurable sur `kt-layout` (`'hidden'` par défaut, ou `'rail'` pour ne garder que les icônes).
+- **`ktSidenavToggle`** : Directive qui expose son état dynamiquement (`isRail`, `isHidden`, `isExpanded`, etc.) si elle est assignée à une variable locale (`#btn="ktSidenavToggle"`).
+- **Responsive** : Sur mobile, la `kt-sidenav` devient automatiquement un tiroir (drawer) et masque le contenu derrière un overlay.
 
 ### Formulaires & Signal Forms
 
@@ -137,6 +160,7 @@ Bundles disponibles :
 | Import                       | Contenu                                                      |
 | ---------------------------- | ------------------------------------------------------------ |
 | `@ktortu/aaa/foundation.css` | **socle de tokens `--kt-*`** (requis, à importer en premier) |
+| `@ktortu/aaa/layout.css`     | layout global (`kt-layout`, `kt-sidenav`, `kt-toolbar`)      |
 | `@ktortu/aaa/button.css`     | bouton (`ktButton`)                                          |
 | `@ktortu/aaa/card.css`       | carte (`ktCard` + marqueurs)                                 |
 | `@ktortu/aaa/menu.css`       | menu (`ktMenu`, `ktMenuItem`, …)                             |

@@ -1,0 +1,36 @@
+<div ktDialogHeader>
+  <h2 ktDialogTitle>Apparence</h2>
+</div>
+<div ktDialogContent>
+  <kt-select
+    label="Thème"
+    [options]="themes"
+    optionLabel="label"
+    optionValue="id"
+    [value]="theme.current()"
+    (valueChange)="onThemeChange($event)"
+  />
+  <kt-select
+    label="Mode"
+    [options]="modes"
+    optionLabel="label"
+    optionValue="id"
+    [value]="theme.mode()"
+    (valueChange)="onModeChange($event)"
+  />
+  @if (theme.current() === 'material-you') {
+    <div class="selecteur-couleur-bloc">
+      <label for="seed-color-selector">Couleur de base </label>
+      <input
+        type="color"
+        id="seed-color-selector"
+        aria-label="Couleur de seed Material You"
+        [value]="theme.seedColor()"
+        (input)="onSeedColorChange($event)"
+      />
+    </div>
+  }
+</div>
+<footer ktDialogActions>
+  <button ktButton ktDialogClose mode="text">Fermer</button>
+</footer>

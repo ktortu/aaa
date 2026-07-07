@@ -12,7 +12,8 @@ export const routes: Routes = [
   {
     path: 'foundations',
     pathMatch: 'full',
-    redirectTo: 'foundations/tokens',
+    title: 'Fondations — Design system',
+    loadComponent: () => import('./demos/foundations-demo/foundations-index').then((m) => m.FoundationsIndex),
   },
   {
     path: 'foundations/tokens',
@@ -113,6 +114,11 @@ export const routes: Routes = [
     path: 'progress-bar',
     title: 'Progress Bar — Design system',
     loadComponent: () => import('./demos/progress-bar-demo/progress-bar-demo').then((m) => m.ProgressBarDemo),
+  },
+  {
+    path: 'layout',
+    title: 'Layout & Shell — Design system',
+    loadComponent: () => import('./demos/layout-demo/layout-demo').then((m) => m.LayoutDemo),
   },
   { path: '**', redirectTo: '' },
 ];
