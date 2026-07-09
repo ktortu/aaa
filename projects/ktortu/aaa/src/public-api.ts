@@ -13,3 +13,4 @@ export * from '@ktortu/aaa/snackbar';
 export * from '@ktortu/aaa/tabs';
 export * from '@ktortu/aaa/tooltip';
 export * from '@ktortu/aaa/progress-bar';
+export * from '@ktortu/aaa/layout';
