@@ -66,7 +66,7 @@ export type KtDialogPresentation = 'centered' | 'fullscreen' | 'sheet' | 'center
 function concreteDialogPanelClass(p: 'centered' | 'fullscreen' | 'sheet'): string[] {
   if (p === 'fullscreen') return ['kt-dialog', 'kt-dialog--fullscreen'];
   if (p === 'sheet') return ['kt-dialog', 'kt-dialog--sheet'];
-  return ['kt-dialog'];
+  return ['kt-dialog', 'kt-dialog--centered'];
 }
 
 /**

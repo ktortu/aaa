@@ -105,7 +105,11 @@ describe('injectKtDialogOpener', () => {
     expect(component).toBe(FakeDialogComponent);
     // `kt-dialog` vient de la présentation par défaut ET est repassé en `panelClass` ci-dessus :
     // le résultat est dédoublonné en une seule occurrence.
-    expect(config).toMatchObject({ data: { x: 1 }, panelClass: ['kt-dialog'], disableClose: true });
+    expect(config).toMatchObject({
+      data: { x: 1 },
+      panelClass: ['kt-dialog', 'kt-dialog--centered'],
+      disableClose: true,
+    });
     // Plancher a11y garanti par l'opener, indépendamment de provideKtDialogDefaults().
     expect(config).toMatchObject({ ariaModal: true, role: 'dialog', restoreFocus: true });
   });
@@ -164,12 +168,12 @@ describe('defineKtDialog', () => {
 
 describe('resolveKtDialogPanelClass (fonction pure)', () => {
   it('résout les présentations concrètes et les variantes responsive selon compact', () => {
-    expect(resolveKtDialogPanelClass('centered')).toEqual(['kt-dialog']);
+    expect(resolveKtDialogPanelClass('centered')).toEqual(['kt-dialog', 'kt-dialog--centered']);
     expect(resolveKtDialogPanelClass('fullscreen')).toEqual(['kt-dialog', 'kt-dialog--fullscreen']);
     expect(resolveKtDialogPanelClass('sheet')).toEqual(['kt-dialog', 'kt-dialog--sheet']);
-    expect(resolveKtDialogPanelClass('centered-fullscreen', false)).toEqual(['kt-dialog']);
+    expect(resolveKtDialogPanelClass('centered-fullscreen', false)).toEqual(['kt-dialog', 'kt-dialog--centered']);
     expect(resolveKtDialogPanelClass('centered-fullscreen', true)).toEqual(['kt-dialog', 'kt-dialog--fullscreen']);
-    expect(resolveKtDialogPanelClass('centered-sheet', false)).toEqual(['kt-dialog']);
+    expect(resolveKtDialogPanelClass('centered-sheet', false)).toEqual(['kt-dialog', 'kt-dialog--centered']);
     expect(resolveKtDialogPanelClass('centered-sheet', true)).toEqual(['kt-dialog', 'kt-dialog--sheet']);
   });
 });
