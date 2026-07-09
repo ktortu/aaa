@@ -278,9 +278,9 @@
   [ktButton][aria-disabled='true'] {
     --btn-overlay: transparent;
     cursor: not-allowed;
-    color: color-mix(in srgb, var(--btn-fg) 40%, transparent);
-    background-color: color-mix(in srgb, var(--btn-fill) 40%, var(--btn-surface, #ffffff));
-    border-color: color-mix(in srgb, var(--btn-border) 40%, transparent);
+    color: var(--btn-disabled-fg, color-mix(in srgb, var(--btn-fg) 40%, transparent));
+    background-color: var(--btn-disabled-fill, color-mix(in srgb, var(--btn-fill) 40%, var(--btn-surface, #ffffff)));
+    border-color: var(--btn-disabled-border, color-mix(in srgb, var(--btn-border) 40%, transparent));
     box-shadow: none; /* un bouton inerte ne « rayonne » pas, quel que soit le thème */
     transform: none; /* ni ne bouge */
     background-image: none; /* ni ne garde son dégradé (--btn-fill-image) */

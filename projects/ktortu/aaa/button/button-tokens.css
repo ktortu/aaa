@@ -95,7 +95,9 @@
        le poser sur un sélecteur d'ÉLÉMENT (substitution au point de déclaration).
      - Focus ring : --btn-focus-ring-style (solid).
      - Typo d'emphase : --btn-text-transform (none), --btn-letter-spacing (normal),
-       --btn-font-weight (inherit). */
+       --btn-font-weight (inherit).
+     - État désactivé : --btn-disabled-fill, --btn-disabled-fg, --btn-disabled-border.
+       Par défaut, l'état inactif applique un color-mix à 40% sur les couleurs résolues. */
 
     /* State layer (voile d'état, opacités Material 3) */
     --btn-state-hover-opacity: 0.08;
