@@ -4,7 +4,8 @@ import { map } from 'rxjs/operators';
 import { DialogRef } from '@angular/cdk/dialog';
 import { KtButton, KtButtonColor } from '@ktortu/aaa/button';
 
-import { KtDialogImports, defineKtDialog } from './public-api';
+import { defineKtDialog } from './dialog-opener';
+import { KtDialogImports } from './dialog-imports';
 
 /** Option de variante visuelle pour le dialogue d'alerte. */
 export type KtAlertDialogVariant = 'neutral' | 'info' | 'success' | 'warning' | 'error';

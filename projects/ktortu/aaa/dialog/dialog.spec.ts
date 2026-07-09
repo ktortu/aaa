@@ -279,8 +279,17 @@ describe('KtDialogContainer — montage réel (CDK Dialog)', () => {
   });
 });
 
-import { KtQuickDialog } from './dialog-helpers';
+import { KtQuickDialog, KtAlertDialog, KtConfirmDialog } from './dialog-helpers';
 import { firstValueFrom } from 'rxjs';
+
+describe('TDZ Regression', () => {
+  it('charge les composants dialog sans ReferenceError (TDZ) sur KtDialogImports', () => {
+    // Le simple fait d'accéder aux classes prouve que l'évaluation du module
+    // n'a pas planté en amont à cause d'une Temporal Dead Zone.
+    expect(KtAlertDialog).toBeTruthy();
+    expect(KtConfirmDialog).toBeTruthy();
+  });
+});
 
 describe('KtQuickDialog', () => {
   afterEach(() => {
