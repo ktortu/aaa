@@ -159,7 +159,12 @@ export const DIALOG_TOKENS: readonly TokenGroup[] = [
       },
       { name: '--dialog-pad', default: '1.5rem', description: 'Rembourrage.' },
       { name: '--dialog-gap', default: '1rem', description: 'Écart vertical.' },
-      { name: '--dialog-max-width', default: '32rem', description: 'Largeur maximale.' },
+      { name: '--dialog-max-width', default: 'min(80dvw, 40rem)', description: 'Largeur maximale.' },
+      {
+        name: '--dialog-max-height',
+        default: '80dvh',
+        description: 'Hauteur maximale (au-delà, seul le contenu défile).',
+      },
     ],
   },
   {
