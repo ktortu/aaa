@@ -7,7 +7,7 @@ import { pathToFileURL } from 'node:url';
  * Banc d'essai du spike scroll-snap (ADR-0005, piste B) — HORS e2e:ci.
  * Chaque test référence le critère de sortie de l'ADR qu'il instruit (C1…C7).
  * Les gestes tactiles RÉELS ne sont synthétisables qu'en Chromium (CDP
- * Input.synthesizeScrollGesture) : c'est en soi un résultat du spike (C6).
+ * Input.dispatchTouchEvent horodaté) : c'est en soi un résultat du spike (C6).
  */
 
 const PROTOTYPE_URL = pathToFileURL(path.join(__dirname, 'prototype.html')).href;

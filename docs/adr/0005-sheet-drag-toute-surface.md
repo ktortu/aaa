@@ -1,6 +1,6 @@
 # ADR-0005 — Drag-to-dismiss des sheets : saisie sur toute la surface, handle décoratif
 
-- **Statut** : proposé (moteur de geste à trancher par spike GO/NO-GO)
+- **Statut** : accepté (2026-07-16 — spike GO, piste B retenue)
 - **Date** : 2026-07-16
 - **Portée** : `cdk/sheet` (primitive de geste), `dialog` (présentations sheet), `forms/select`
   et `forms/multi-select` (mode compact)
@@ -72,8 +72,31 @@ Chrome 114+ / Firefox 109+ / **Safari 26.2+ seulement**, ~87 %.
 6. testabilité Playwright déterministe (aucun sleep arbitraire) ;
 7. coût pipeline e2e dans le budget des shards existants.
 
-NO-GO sur un seul critère → piste A, déjà spécifiée, sans regret. Le verdict sera consigné ici
-au passage du statut à « accepté ».
+NO-GO sur un seul critère → piste A, déjà spécifiée, sans regret.
+
+### Verdict du spike (2026-07-16) : GO piste B — 7/7 critères verts
+
+Banc : `spikes/scroll-snap-sheet/` (prototype + config + spec dédiés, hors e2e:ci) —
+42 tests verts / 0 échec en ~39 s sur chromium, firefox, webkit et mobile tactile.
+Tableau détaillé dans `spikes/scroll-snap-sheet/NOTES.md`. Découvertes structurantes :
+
+- le **latching natif fait tout l'arbitrage**, y compris l'anti-inertie (un fling de la
+  listbox atteignant le haut ne se transfère pas à la sheet) — le timeout ~100 ms de la
+  piste A devient sans objet ;
+- le **headless shell** de Playwright ne déclenche jamais le snap au relâchement tactile :
+  le projet mobile devra passer en **nouveau headless** (`channel: 'chromium'`) ;
+- les gestes se synthétisent via `Input.dispatchTouchEvent` **horodaté** (pause immobile =
+  vélocité nulle = snap au plus proche ; pas rapides = flick) — `synthesizeScrollGesture`
+  source touch est inopérant ;
+- la détection de fermeture par **position de scroll** suffit sur les trois moteurs
+  (ni `scrollsnapchange` ni `scrollend` nécessaires) ;
+- JS résiduel ≈ 40 lignes (garde molette non-passive, détection du repos, fermetures
+  programmatiques par scrollTo) contre ~200 pour la machine à états de la piste A.
+
+La **piste A reste documentée ci-dessus comme plan de repli**. La **passe manuelle iOS
+réelle est EN ATTENTE** (aucun appareil disponible au 2026-07-16) : elle reste **bloquante
+avant merge**, pas pour le développement (options : iPhone d'un collègue via le serveur LAN
+`spikes/scroll-snap-sheet/serve.mjs`, URL publique Firebase Hosting, ou cloud de devices).
 
 ## Alternatives écartées
 
