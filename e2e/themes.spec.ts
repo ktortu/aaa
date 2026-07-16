@@ -2,10 +2,16 @@ import AxeBuilder from '@axe-core/playwright';
 import type { Page } from '@playwright/test';
 import { expect, test } from './fixtures';
 
-/** Change le thème via le switcher du shell (un kt-select de la lib — dogfooding). */
+/** Change le thème via le dialog « Apparence » du shell (bouton palette → kt-select + KtDialog
+ de la lib — dogfooding). Referme le dialog après sélection : les assertions et analyses AXE
+ des tests portent sur la PAGE, pas sur le dialog. */
 async function switchTheme(page: Page, label: string): Promise<void> {
-  await page.locator('kt-select').filter({ hasText: 'Thème' }).locator('.kt-select__trigger').click();
+  await page.getByRole('button', { name: 'Apparence' }).click();
+  const dialog = page.locator('.cdk-dialog-container');
+  await dialog.locator('kt-select').filter({ hasText: 'Thème' }).locator('.kt-select__trigger').click();
   await page.locator('.kt-select__popup').getByText(label, { exact: true }).click();
+  await dialog.getByRole('button', { name: 'Fermer' }).click();
+  await expect(dialog).toBeHidden();
 }
 
 /**
