@@ -300,9 +300,11 @@
     padding-block-end: max(var(--dialog-pad), env(safe-area-inset-bottom, 0px));
   }
 
-  /* ===================== BOTTOM-SHEET (kt-dialog--sheet) =====================
-   Feuille glissant du bas, tokens --kt-sheet-* (partagés avec le Select). On positionne+translate
-   le CONTENEUR ; la directive [ktDialogSheetHandle] le drag via .cdk-dialog-container. */
+  /* ===================== BOTTOM-SHEET (kt-dialog--sheet) — ADR-0005 =====================
+   Le CONTENEUR est un scroller plein écran à snap : le spacer (un écran) porte le snap « fermé »,
+   la carte (.kt-dialog-container__layout) le snap « ouvert ». Le drag-to-dismiss s'attrape
+   PARTOUT au toucher (scroll natif, arbitrage par latching avec [ktDialogContent]) ;
+   entrée/sortie = scrolls programmatiques (KtDialogContainer). Tokens --kt-sheet-* partagés. */
   .cdk-overlay-pane.kt-dialog--sheet {
     /* Retune le token lu par le style inline du pane (config `maxWidth`) : pleine largeur.
        (Le conteneur est en position:fixed — seul le token du pane doit suivre.) */
@@ -310,48 +312,80 @@
   }
   .cdk-overlay-pane.kt-dialog--sheet .cdk-dialog-container {
     position: fixed;
-    inset: auto 0 0 0;
+    inset: 0;
+    display: block;
     inline-size: 100%;
     max-inline-size: 100%;
+    max-block-size: none;
+    overflow-y: auto;
+    scroll-snap-type: y mandatory;
+    /* Pas de scroll chaining vers la page (l'overlay CDK bloque déjà — ceinture et bretelles). */
+    overscroll-behavior: contain;
+    /* Le scroller EST le geste : pas de barre de défilement visible sur l'overlay. */
+    scrollbar-width: none;
+    background: transparent;
+    border: 0;
+    border-radius: 0;
+    box-shadow: none;
+    backdrop-filter: none;
+    transform: none;
+    animation: none;
+    transition: none;
+    /* Transparent aux CLICS : au-dessus de la carte, ils atteignent le VRAI backdrop CDK
+     (fermeture + backdropClick natifs, disableClose respecté). Réactivé sur la carte. */
+    pointer-events: none;
+  }
+
+  /* Spacer de dismiss : un écran entier au-dessus de la carte (snap « fermé »). */
+  .cdk-overlay-pane.kt-dialog--sheet .kt-dialog-container__spacer {
+    block-size: 100%;
+    scroll-snap-align: start;
+    scroll-snap-stop: always;
+  }
+
+  /* La carte : reprend la surface du dialog (déplacée du conteneur, devenu scroller). */
+  .cdk-overlay-pane.kt-dialog--sheet .kt-dialog-container__layout {
+    pointer-events: auto;
+    scroll-snap-align: end;
+    scroll-snap-stop: always;
+    display: flex;
+    flex-direction: column;
+    box-sizing: border-box;
+    inline-size: 100%;
     max-block-size: var(--kt-sheet-max-block-size, 85svh);
+    overflow: hidden;
+    color: var(--dialog-fg);
+    background: var(--dialog-bg);
+    border: var(--dialog-border-width) solid var(--dialog-border-color);
     border-block-end: 0;
     border-start-start-radius: var(--kt-sheet-radius, 16px);
     border-start-end-radius: var(--kt-sheet-radius, 16px);
     border-end-start-radius: 0;
     border-end-end-radius: 0;
     box-shadow: var(--kt-sheet-shadow, 0 -4px 16px rgb(0 0 0 / 12%));
-    transform: none;
-    translate: 0 0;
-    /* Entrée : glissement du bas (keyframe PARTAGÉE kt-sheet-in, cf. foundation.css). */
-    animation: kt-sheet-in var(--kt-sheet-anim-duration, 120ms) ease;
-    transition: translate var(--kt-sheet-anim-duration, 120ms) ease;
-  }
-  .cdk-overlay-pane.kt-dialog--sheet .cdk-dialog-container.kt-dialog-sheet--dragging,
-  .cdk-overlay-pane.kt-dialog--sheet .cdk-dialog-container.kt-dialog-container--dragging {
-    transition: none;
-  }
-  .cdk-overlay-pane.kt-dialog--sheet .cdk-dialog-container.kt-dialog-container--closing {
-    translate: 0 100%;
-    transition: translate var(--kt-sheet-exit-duration, 90ms) cubic-bezier(0.4, 0, 0.2, 1);
+    backdrop-filter: var(--dialog-backdrop-filter, none);
   }
 
-  /* Poignée de préhension ([ktDialogSheetHandle] ou .kt-dialog-container__sheet-handle) — visible dès que le dialog est en mode sheet.
-   Hors mode sheet, l'élément reste un div vide de hauteur nulle (aucune règle ne s'applique). */
-  .cdk-overlay-pane.kt-dialog--sheet [ktDialogSheetHandle],
+  /* Relais flex vers l'hôte projeté : la carte remplace le conteneur comme colonne
+   (header/actions fixes, [ktDialogContent] seul scrollable). */
+  .cdk-overlay-pane.kt-dialog--sheet .kt-dialog-container__layout > * {
+    display: flex;
+    flex-direction: column;
+    flex: 1 1 auto;
+    min-block-size: 0;
+  }
+
+  /* Poignée DÉCORATIVE auto-rendue par le conteneur (ADR-0005) : simple affordance « ceci se
+   tire » — la sheet s'attrape partout. Ni cursor grab (mensonger : pas de drag souris), ni
+   touch-action (le geste EST le scroll), ni cible 44px (ce n'est plus un contrôle).
+   Opt-out : panelClass additionnel `kt-dialog--no-handle` à l'ouverture. */
   .cdk-overlay-pane.kt-dialog--sheet .kt-dialog-container__sheet-handle {
     display: flex;
     align-items: center;
     justify-content: center;
     flex: none;
-    block-size: 44px; /* Cible tactile minimale WCAG 2.5.5 AAA (44px) */
-    cursor: grab;
-    touch-action: none; /* le geste ne déclenche pas le scroll de la page */
+    block-size: 28px;
   }
-  .cdk-overlay-pane.kt-dialog--sheet [ktDialogSheetHandle]:active,
-  .cdk-overlay-pane.kt-dialog--sheet .kt-dialog-container__sheet-handle:active {
-    cursor: grabbing;
-  }
-  .cdk-overlay-pane.kt-dialog--sheet [ktDialogSheetHandle]::before,
   .cdk-overlay-pane.kt-dialog--sheet .kt-dialog-container__sheet-handle::before {
     content: '';
     inline-size: 2.25rem;
@@ -360,9 +394,8 @@
     background: var(--kt-sheet-grab-color, var(--kt-outline, #c4c7c5));
   }
 
-  /* Mouvement réduit : pas de glissement ni de fondu (WCAG 2.3.3). */
+  /* Mouvement réduit : pas de fondu (WCAG 2.3.3). La sheet gère le sien en JS (scroll instantané). */
   @media (prefers-reduced-motion: reduce) {
-    .cdk-overlay-pane.kt-dialog--sheet .cdk-dialog-container,
     .cdk-overlay-pane.kt-dialog--fullscreen .cdk-dialog-container {
       transition: none;
       translate: 0 0;

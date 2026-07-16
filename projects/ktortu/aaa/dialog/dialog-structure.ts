@@ -1,7 +1,4 @@
-import { DestroyRef, Directive, ElementRef, inject } from '@angular/core';
-import { DialogRef } from '@angular/cdk/dialog';
-
-import { createKtSheetDrag } from '@ktortu/aaa/cdk';
+import { Directive, isDevMode } from '@angular/core';
 
 /**
  * En-tête RICHE et OPTIONNEL du dialog : rangée flex pour composer une icône, le titre et/ou un
@@ -65,51 +62,26 @@ export class KtDialogActions {}
 export class KtDialogFocusInitial {}
 
 /**
- * Poignée de préhension d'un dialog en mode `sheet` (bottom-sheet) : drag-to-dismiss vers le bas,
- * FACTORISÉ avec le Select via `createKtSheetDrag` (@ktortu/aaa). Geste DOUBLÉ par Échap + bouton
- * Fermer + clic sur le scrim (WCAG 2.5.1) — décoratif (`aria-hidden`).
- *
- * À poser sur la barre de préhension, premier enfant du contenu d'un dialog ouvert avec une
- * présentation `sheet` / `centered-sheet`. Le drag n'est actif que si le dialog est EFFECTIVEMENT
- * en mode sheet (la pane porte `kt-dialog--sheet`) — pas de dépendance au viewport : un `sheet`
- * toujours-bottom-sheet se drague aussi à la souris.
- *
- * @example
- * ```html
- * <div ktDialogContent>
- *   <div ktDialogSheetHandle></div>
- *   …
- * </div>
- * ```
+ * @deprecated ADR-0005 — la poignée est désormais RENDUE AUTOMATIQUEMENT par `KtDialogContainer`
+ * en présentation `sheet` (opt-out : panelClass additionnel `kt-dialog--no-handle`), et le
+ * drag-to-dismiss s'attrape sur TOUTE la surface de la sheet (scroll-snap natif). Cette
+ * directive est INERTE et son hôte est masqué (évite une double poignée) : retirez-la de vos
+ * templates. Sera supprimée dans une prochaine version majeure.
  */
 @Directive({
   selector: '[ktDialogSheetHandle]',
   host: {
-    '(pointerdown)': 'onStart($event)',
-    '(mousedown)': '$event.preventDefault()',
     'aria-hidden': 'true',
+    style: 'display: none',
   },
 })
 export class KtDialogSheetHandle {
-  private readonly dialogRef = inject<DialogRef<unknown>>(DialogRef, { optional: true });
-  private readonly host = inject<ElementRef<HTMLElement>>(ElementRef).nativeElement;
-  private readonly destroyRef = inject(DestroyRef);
-
-  // La feuille translatée = le conteneur CDK (position:fixed en mode sheet), trouvé en remontant.
-  private readonly drag = createKtSheetDrag({
-    pane: () => this.host.closest<HTMLElement>('.cdk-dialog-container'),
-    onDismiss: () => this.dialogRef?.close(),
-    draggingClass: 'kt-dialog-sheet--dragging',
-  });
-
   constructor() {
-    this.destroyRef.onDestroy(() => this.drag.destroy());
-  }
-
-  protected onStart(event: PointerEvent): void {
-    // Actif seulement quand la PRÉSENTATION choisie par le dev est `sheet` (classe sur la pane).
-    const pane = this.host.closest('.cdk-overlay-pane');
-    if (!pane?.classList.contains('kt-dialog--sheet')) return;
-    this.drag.start(event);
+    if (isDevMode()) {
+      console.warn(
+        '[ktDialogSheetHandle] déprécié (ADR-0005) : la poignée est rendue automatiquement en ' +
+          'présentation sheet et le drag s’attrape partout — retirez la directive de votre template.',
+      );
+    }
   }
 }
