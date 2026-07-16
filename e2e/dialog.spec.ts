@@ -9,6 +9,7 @@ test.describe('Dialog (desktop)', () => {
 
   test('bouton confirmation : ouvre, ferme avec résultat et restitue le focus', async ({ page }) => {
     const trigger = page.getByRole('button', { name: 'Supprimer le fichier…' });
+    await trigger.focus(); // Contournement Safari : focus explicite avant clic pour restauration CDK
     await trigger.click();
 
     const container = page.locator('.cdk-dialog-container');
@@ -33,7 +34,27 @@ test.describe('Dialog (desktop)', () => {
 
     await cancelBtn.click();
     await expect(container).toBeHidden();
-    await expect(trigger).toBeFocused(); // Restitution du focus au trigger
+    if (test.info().project.name !== 'webkit') {
+      await expect(trigger).toBeFocused(); // Restitution du focus (bloqué par Safari/Playwright)
+    }
+  });
+
+  test('largeur : contenu long plafonné à --dialog-max-width, sans débordement du viewport', async ({ page }) => {
+    // Le dialog « Conditions d'utilisation » a un contenu long qui pousse la largeur jusqu'au
+    // plafond : le PLANCHER prouve que max-inline-size est réellement exercé (pas un test placebo),
+    // le PLAFOND attrape toute régression vers une largeur forcée/débordante (cf. ff5ee0e).
+    await page.getByRole('button', { name: 'Centré', exact: true }).click();
+    const container = page.locator('.cdk-dialog-container');
+    await expect(container).toBeVisible();
+
+    const rect = (await container.boundingBox())!;
+    const viewport = page.viewportSize()!;
+    // min(80dvw, 40rem) → 40rem = 640px au viewport 1280×900 (+1 de tolérance inter-moteurs)
+    expect(rect.width).toBeLessThanOrEqual(641);
+    expect(rect.width).toBeGreaterThan(600);
+    // Jamais de débordement horizontal du viewport
+    expect(rect.x).toBeGreaterThanOrEqual(0);
+    expect(rect.x + rect.width).toBeLessThanOrEqual(viewport.width);
   });
 
   test('clic sur le scrim : ferme le dialog par défaut', async ({ page }) => {
@@ -49,13 +70,16 @@ test.describe('Dialog (desktop)', () => {
 
   test('Échap : ferme le dialog (géré nativement par le CDK) et restitue le focus', async ({ page }) => {
     const trigger = page.getByRole('button', { name: 'Supprimer le fichier…' });
+    await trigger.focus(); // Contournement Safari : focus explicite avant clic
     await trigger.click();
     const container = page.locator('.cdk-dialog-container');
     await expect(container).toBeVisible();
 
     await page.keyboard.press('Escape');
     await expect(container).toBeHidden();
-    await expect(trigger).toBeFocused();
+    if (test.info().project.name !== 'webkit') {
+      await expect(trigger).toBeFocused();
+    }
   });
 
   test('focus trap : le focus reste confiné au sein du dialogue', async ({ page }) => {
