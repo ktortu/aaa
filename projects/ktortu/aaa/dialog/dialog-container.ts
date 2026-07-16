@@ -1,6 +1,7 @@
 import {
   ChangeDetectionStrategy,
   Component,
+  DestroyRef,
   ElementRef,
   afterNextRender,
   isDevMode,
@@ -29,7 +30,17 @@ import { PortalModule } from '@angular/cdk/portal';
     '[class.kt-dialog-container--closing]': 'isClosing()',
   },
   template: `
+    <!-- Sheet scroll-snap (ADR-0005) : le conteneur est le SCROLLER, le spacer porte le snap
+         « fermé » (un écran) et la carte (layout) le snap « ouvert ». -->
+    @if (isSheet()) {
+      <div class="kt-dialog-container__spacer" aria-hidden="true"></div>
+    }
     <div class="kt-dialog-container__layout">
+      @if (isSheet() && showSheetHandle()) {
+        <!-- Poignée DÉCORATIVE auto-rendue : la sheet s'attrape partout (opt-out :
+             panelClass additionnel 'kt-dialog--no-handle' à l'ouverture). -->
+        <div class="kt-dialog-container__sheet-handle" aria-hidden="true"></div>
+      }
       <ng-template cdkPortalOutlet></ng-template>
     </div>
   `,
@@ -39,8 +50,16 @@ export class KtDialogContainer extends CdkDialogContainer {
   private readonly elementRef = inject(ElementRef);
   private readonly host = this.elementRef.nativeElement as HTMLElement;
   private readonly platformId = inject(PLATFORM_ID);
+  private readonly destroyRef = inject(DestroyRef);
 
   protected readonly isClosing = signal(false);
+
+  // --- Sheet scroll-snap (ADR-0005) : détection du snap « fermé » + fermeture différée ---
+  /** Armé quand l'ouverture a dépassé 50px : un repos à ~0 est alors forcément le snap « fermé ». */
+  private sheetArmed = false;
+  /** Fermeture réelle en attente du repos au snap « fermé » (sortie programmatique animée). */
+  private pendingSheetClose: (() => void) | null = null;
+  private sheetCloseTimer: ReturnType<typeof setTimeout> | undefined;
 
   /** Premier id de la file `aria-labelledby` exposée par `CdkDialogContainer`. Le membre
       `_ariaLabelledByQueue` est interne au CDK (préfixe `_`) : on l'encapsule ICI, gardé, pour que
@@ -67,6 +86,8 @@ export class KtDialogContainer extends CdkDialogContainer {
     //  - aria-describedby orphelin → on RETIRE l'attribut (pas de description fournie) ;
     //  - aucun nom accessible (ni titre ni aria-label) → warn dev (WCAG 4.1.2).
     afterNextRender(() => {
+      if (this.isSheet()) this.initSheetGesture();
+
       const doc = this.host.ownerDocument;
 
       const describedBy = this.host.getAttribute('aria-describedby');
@@ -89,12 +110,94 @@ export class KtDialogContainer extends CdkDialogContainer {
     return this._config.panelClass?.includes('kt-dialog--sheet') ?? false;
   }
 
+  /** Poignée décorative auto-rendue en présentation sheet. Opt-out : panelClass `kt-dialog--no-handle`. */
+  protected showSheetHandle(): boolean {
+    return !this._config.panelClass?.includes('kt-dialog--no-handle');
+  }
+
+  /** Sheet scroll-snap : écouteurs (détection du repos + garde molette) et scroll d'ENTRÉE
+      programmatique vers le snap « ouvert ». Appelé au premier rendu, en présentation sheet. */
+  private initSheetGesture(): void {
+    const host = this.host;
+    host.addEventListener('scroll', this.onSheetScroll);
+    host.addEventListener('wheel', this.onSheetWheel, { passive: false });
+    this.destroyRef.onDestroy(() => {
+      clearTimeout(this.sheetCloseTimer);
+      host.removeEventListener('scroll', this.onSheetScroll);
+      host.removeEventListener('wheel', this.onSheetWheel);
+    });
+    host.scrollTop = 0;
+    requestAnimationFrame(() => {
+      host.scrollTo?.({
+        top: host.scrollHeight - host.clientHeight,
+        behavior: this.prefersReducedMotion() ? 'auto' : 'smooth',
+      });
+    });
+  }
+
+  private prefersReducedMotion(): boolean {
+    return this.host.ownerDocument.defaultView?.matchMedia?.('(prefers-reduced-motion: reduce)').matches ?? false;
+  }
+
+  /** Détection du snap « fermé » par position de scroll (ni scrollsnapchange ni scrollend — cf.
+      ADR-0005). Un repos à ~0 finalise la fermeture en attente, ou EST une fermeture par geste. */
+  private readonly onSheetScroll = (): void => {
+    const top = this.host.scrollTop;
+    if (top > 50) this.sheetArmed = true;
+    if (!this.sheetArmed || top > 1) return;
+    const pending = this.pendingSheetClose;
+    if (pending) {
+      this.pendingSheetClose = null;
+      clearTimeout(this.sheetCloseTimer);
+      pending();
+      return;
+    }
+    // Dismissal par geste : transite par le close intercepté (animation déjà « jouée » par le doigt).
+    if (!this.isClosing()) this.dialogRef.close();
+  };
+
+  /** La molette ne ferme JAMAIS la sheet (pas de geste souris — ADR-0005) : seuls les scrollers
+      INTERNES peuvent consommer, dans leurs bornes (générique : un dialog peut imbriquer
+      plusieurs zones scrollables). */
+  private readonly onSheetWheel = (event: WheelEvent): void => {
+    let el = event.target as HTMLElement | null;
+    while (el && el !== this.host) {
+      if (el.scrollHeight > el.clientHeight + 1) {
+        const canScrollDown = el.scrollTop + el.clientHeight < el.scrollHeight - 1;
+        const canScrollUp = el.scrollTop > 0;
+        if ((event.deltaY > 0 && canScrollDown) || (event.deltaY < 0 && canScrollUp)) return;
+      }
+      el = el.parentElement;
+    }
+    event.preventDefault();
+  };
+
   private animateAndClose(result: unknown, originalCloseFn: (r?: unknown) => void): void {
     if (this.isClosing()) return;
     this.isClosing.set(true);
 
     if (!isPlatformBrowser(this.platformId)) {
       originalCloseFn(result);
+      return;
+    }
+
+    // Sheet scroll-snap : la sortie est un scroll programmatique vers le snap « fermé » ;
+    // onSheetScroll finalise au repos. Déjà en bas (geste abouti, jsdom, reduced-motion) :
+    // fermeture immédiate. Fallback : timeout (scroll lisse interrompu).
+    if (this.isSheet()) {
+      if (this.host.scrollTop <= 1) {
+        originalCloseFn(result);
+        return;
+      }
+      this.sheetArmed = true;
+      this.pendingSheetClose = () => originalCloseFn(result);
+      this.host.scrollTo?.({ top: 0, behavior: this.prefersReducedMotion() ? 'auto' : 'smooth' });
+      clearTimeout(this.sheetCloseTimer);
+      this.sheetCloseTimer = setTimeout(() => {
+        const pending = this.pendingSheetClose;
+        this.pendingSheetClose = null;
+        pending?.();
+      }, 400);
       return;
     }
 

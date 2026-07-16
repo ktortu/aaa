@@ -26,6 +26,11 @@ export interface KtSheetDragOptions {
  * gère que le glissement. Le gating « écran compact uniquement » reste à l'appelant (signal `isCompact`
  * de `KtViewport`) — la primitive est volontairement agnostique.
  *
+ * @deprecated ADR-0005 — les sheets de la lib (Select compact, Dialog `sheet`) sont désormais des
+ * scrollers à snap : le drag-to-dismiss « attrapable partout » et l'arbitrage avec le scroll
+ * interne sont NATIFS ; cette primitive « poignée + translate » n'a plus de consommateur interne.
+ * Sera supprimée dans une prochaine version majeure.
+ *
  * @param opts Élément à translater, callback de fermeture, classe de drag et seuil optionnel.
  * @returns Un contrôleur {@link KtSheetDrag} (`start` à brancher sur `pointerdown`, `destroy` au teardown).
  * @example

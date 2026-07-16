@@ -10,8 +10,8 @@ const termsDialog = defineKtDialog<void, 'accept'>();
  * Dialog de contenu long, utilisé pour illustrer TOUTES les présentations (centré, plein écran,
  * bottom-sheet, et variantes responsive) — seule la config de l'ouvreur change, jamais ce composant.
  * - en-tête riche `[ktDialogHeader]` : titre + bouton de fermeture ancré en haut à droite ;
- * - poignée `[ktDialogSheetHandle]` : invisible hors mode sheet (la CSS ne la stylé que sous
- *   `.kt-dialog--sheet`), donc présente sans condition ;
+ * - en présentation sheet, la poignée décorative est AUTO-RENDUE par le conteneur (ADR-0005) et
+ *   la sheet s'attrape partout — rien à poser dans ce template ;
  * - `[ktDialogContent]` déborde volontairement pour montrer le défilement et les voiles d'ombre.
  */
 @Component({
@@ -19,7 +19,6 @@ const termsDialog = defineKtDialog<void, 'accept'>();
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [KtButton, KtDialogImports],
   template: `
-    <div ktDialogSheetHandle></div>
     <header ktDialogHeader>
       <h2 ktDialogTitle>Conditions d'utilisation</h2>
       <button ktButton iconOnly icon="close" mode="text" ariaLabel="Fermer" ktDialogClose></button>

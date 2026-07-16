@@ -54,9 +54,10 @@ export const DIALOG_DIRECTIVE_PROPS: readonly PropRow[] = [
   },
   {
     name: '[ktDialogSheetHandle]',
-    type: 'Directive',
+    type: 'Directive (dépréciée)',
     default: '—',
-    description: 'Poignée de préhension (drag-to-dismiss) active uniquement en présentation `sheet`. Décorative.',
+    description:
+      'DÉPRÉCIÉE (ADR-0005) : la poignée décorative est auto-rendue par le conteneur en présentation `sheet` (opt-out : panelClass `kt-dialog--no-handle`) et la sheet s’attrape partout. Directive inerte, à retirer.',
   },
 ];
 
