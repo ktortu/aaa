@@ -49,3 +49,6 @@ Thumbs.db
 /reports/
 /.stryker-tmp/
 
+
+# Outillage Claude local (config de session, non partagé)
+/.claude/
