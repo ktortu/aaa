@@ -225,7 +225,10 @@
   /* ===== ÉCRAN COMPACT : bottom-sheet (même Popover, restylé) =====
    Pilotée par la CLASSE `kt-select__popup--sheet` posée en JS par le composant (signal
    `KtViewport.isCompact()`) — et NON par un `@media` : le seuil est configurable par appli
-   (`provideKtBreakpoints`), source unique JS qui pilote aussi ce style. */
+   (`provideKtBreakpoints`), source unique JS qui pilote aussi ce style.
+   ADR-0005 : le popup est un SCROLLER à snap — spacer (un écran, snap « fermé ») puis carte
+   (snap « ouvert » en bas). Le drag-to-dismiss « attrapable partout » et l'arbitrage avec la
+   listbox interne sont NATIFS (latching) ; l'entrée/sortie = scrolls programmatiques (JS). */
   .kt-select__popup--sheet {
     position: fixed !important;
     inset: 0 !important;
@@ -241,10 +244,22 @@
     background: transparent !important;
     box-shadow: none !important;
     border-radius: 0 !important;
-    overflow: visible !important;
-    display: flex;
-    flex-direction: column !important;
-    justify-content: flex-end !important;
+    display: block;
+    overflow-y: auto !important;
+    scroll-snap-type: y mandatory;
+    /* Pas de scroll chaining vers le fond (le body est déjà verrouillé — ceinture et bretelles). */
+    overscroll-behavior: contain;
+    /* Le scroller EST le geste : pas de barre de défilement visible sur l'overlay. */
+    scrollbar-width: none;
+  }
+
+  /* Spacer de dismiss : un écran entier au-dessus de la carte. Sous le scrim (z-index 1) :
+   les clics l'atteignent (fermeture), les gestes tactiles remontent au scroller (drag depuis
+   le scrim, façon Instagram). */
+  .kt-select__popup--sheet .kt-select__sheet-spacer {
+    block-size: 100%;
+    scroll-snap-align: start;
+    scroll-snap-stop: always;
   }
 
   .kt-select__popup--sheet .kt-select__sheet-card {
@@ -258,11 +273,10 @@
     max-block-size: var(--kt-sheet-max-block-size, 85svh);
     width: 100%;
     overflow: hidden;
-    /* Position de repos. L'entrée (glissement du bas) est jouée par la keyframe PARTAGÉE kt-sheet-in
-     sur :popover-open (cf. plus bas), comme le mode `sheet` du Dialog. La transition translate ne
-     sert qu'au snap-back du drag-to-dismiss. */
-    translate: 0 0;
-    transition: translate var(--kt-sheet-anim-duration, 120ms) ease;
+    /* Snap « ouvert » : bord bas de la carte aligné au bas du viewport. L'entrée (glissement
+     du bas) est le scroll programmatique d'ouverture — plus de keyframe kt-sheet-in ici. */
+    scroll-snap-align: end;
+    scroll-snap-stop: always;
   }
 
   /* Sheet FILTRABLE : hauteur STABLE (et non « au contenu plafonné »). Sans ça, filtrer raccourcit
@@ -271,24 +285,6 @@
   .kt-select__popup--sheet .kt-select__sheet-card:has(.kt-select__filter) {
     block-size: var(--kt-sheet-max-block-size, 85svh);
     max-block-size: var(--kt-sheet-max-block-size, 85svh);
-  }
-
-  .kt-select__popup--sheet:popover-open .kt-select__sheet-card {
-    translate: 0 0;
-    /* Entrée : glissement du bas (keyframe PARTAGÉE kt-sheet-in). */
-    animation: var(--select-sheet-enter-animation, kt-sheet-in var(--kt-sheet-anim-duration, 120ms) ease);
-  }
-
-  /* Pendant le drag : la feuille suit le doigt (translate posé en inline), sans transition. */
-  .kt-select__popup--sheet .kt-select__sheet-card.kt-select__popup--dragging {
-    transition: none;
-  }
-
-  /* Pendant la fermeture déclenchée par JS */
-  .kt-select__popup--sheet.kt-select__popup--closing .kt-select__sheet-card,
-  .kt-select__popup--sheet:popover-open.kt-select__popup--closing .kt-select__sheet-card {
-    translate: 0 100%;
-    transition: translate var(--kt-sheet-exit-duration, 90ms) cubic-bezier(0.4, 0, 0.2, 1);
   }
 
   /* Masquer le backdrop popover natif car pointer-events: none y est forcé par le navigateur */
@@ -344,27 +340,20 @@
   }
 
   @media (prefers-reduced-motion: reduce) {
-    .kt-select__popup--sheet .kt-select__sheet-card,
     .kt-select__popup--sheet .kt-select__sheet-scrim {
       transition: none;
-      translate: 0 0;
     }
   }
 
-  /* Poignée de drag (téléphone) : barre centrée, zone de préhension confortable. `touch-action: none`
-   pour que le geste de glissement ne déclenche pas le scroll de la page. aria-hidden (décoratif). */
+  /* Poignée DÉCORATIVE (ADR-0005) : simple affordance visuelle « ceci se tire » — la sheet
+   s'attrape partout au toucher (scroll natif). Ni cursor grab (mensonger : pas de drag souris),
+   ni touch-action (le geste EST le scroll), ni cible 44px (ce n'est plus un contrôle). */
   .kt-select__sheet-grab {
     display: flex;
     align-items: center;
     justify-content: center;
     flex: none;
-    block-size: 44px; /* Cible tactile minimale WCAG 2.5.5 AAA (44px) */
-    cursor: grab;
-    touch-action: none;
-  }
-
-  .kt-select__sheet-grab:active {
-    cursor: grabbing;
+    block-size: 28px;
   }
 
   .kt-select__sheet-grab::before {

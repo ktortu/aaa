@@ -67,16 +67,15 @@
       <div #popup popover="manual" class="kt-select__popup" [class.kt-select__popup--sheet]="compact()">
         @if (compact()) {
           <div class="kt-select__sheet-scrim" aria-hidden="true" (click)="expanded.set(false)"></div>
+          <div class="kt-select__sheet-spacer" aria-hidden="true"></div>
         }
         <div class="kt-select__sheet-card">
           @if (compact()) {
-            <div
-              class="kt-select__sheet-grab"
-              aria-hidden="true"
-              (pointerdown)="onDragStart($event)"
-              (mousedown)="$event.preventDefault()"
-            ></div>
-            <header class="kt-select__sheet-header">
+            <!-- Poignée DÉCORATIVE (ADR-0005) : la sheet s'attrape partout, le geste est natif. -->
+            <div class="kt-select__sheet-grab" aria-hidden="true" (mousedown)="$event.preventDefault()"></div>
+            <!-- mousedown préventif : un tap sur la carcasse ne doit pas voler le focus du widget
+                 (closePopupOnBlur fermerait le combobox) ; le click du bouton Fermer survit. -->
+            <header class="kt-select__sheet-header" (mousedown)="$event.preventDefault()">
               <span class="kt-select__sheet-title">{{ label() }}</span>
               <button
                 type="button"

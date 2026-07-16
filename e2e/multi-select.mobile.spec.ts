@@ -1,6 +1,7 @@
 import AxeBuilder from '@axe-core/playwright';
 import type { Locator, Page } from '@playwright/test';
 import { expect, test } from './fixtures';
+import { settleSheetOpen, touchDragFrom } from './sheet-gestures';
 
 /** Carte « Base (options simples) » : kt-multi-select sur `tags` (8 options, présélection Angular + Signals). */
 function baseCard(page: Page): Locator {
@@ -47,6 +48,7 @@ test.describe('Multi-Select mobile (bottom-sheet)', () => {
     const card = baseCard(page);
     await card.locator('.kt-select__trigger').tap();
     const popup = card.locator('.kt-select__popup');
+    await settleSheetOpen(popup); // toute interaction intra-sheet attend le repos du snap
     const cdk = popup.locator('.kt-select__option').filter({ hasText: 'CDK' }); // non présélectionné
 
     await cdk.tap();
@@ -64,43 +66,42 @@ test.describe('Multi-Select mobile (bottom-sheet)', () => {
     const card = baseCard(page);
     await card.locator('.kt-select__trigger').tap();
     await expect(card.locator('.kt-select__popup')).toBeVisible();
+    await settleSheetOpen(card.locator('.kt-select__popup'));
 
     await card.locator('.kt-select__sheet-close').tap();
     await expect(card.locator('.kt-select__popup')).toBeHidden();
     await expect(page.locator('body')).not.toHaveCSS('overflow', 'hidden');
   });
 
-  /** Glisse la poignée verticalement (cf. select.mobile.spec.ts). */
-  async function dragGrab(page: Page, card: Locator, deltaY: number): Promise<void> {
-    await settleAnimations(page); // l'animation d'entrée (kt-sheet-in) doit être finie : la poignée se stabilise
-    const box = (await card.locator('.kt-select__sheet-grab').boundingBox())!;
-    const cx = box.x + box.width / 2;
-    const cy = box.y + box.height / 2;
-    await page.mouse.move(cx, cy);
-    await page.mouse.down();
-    await page.mouse.move(cx, cy + deltaY, { steps: 10 });
-    await page.mouse.up();
+  /** Drag tactile depuis l'EN-TÊTE : la poignée est décorative, la sheet s'attrape partout
+      (ADR-0005 — le geste est le scroll natif du popup, cf. select.mobile.spec.ts). */
+  async function dragSheet(card: Locator, dy: number, pauseMs: number): Promise<void> {
+    await settleSheetOpen(card.locator('.kt-select__popup'));
+    await touchDragFrom(card.locator('.kt-select__sheet-header'), dy, { steps: 16, stepMs: 20, pauseMs });
   }
 
-  test('drag vers le bas (au-delà du seuil) ferme la sheet, sélection intacte', async ({ page }) => {
+  test('drag vers le bas (au-delà de la moitié) ferme la sheet, sélection intacte', async ({ page }) => {
     const card = baseCard(page);
     await card.locator('.kt-select__trigger').tap();
     const popup = card.locator('.kt-select__popup');
     await expect(popup).toBeVisible();
+    await settleSheetOpen(popup);
 
-    await dragGrab(page, card, 250);
+    const sheetCard = (await popup.locator('.kt-select__sheet-card').boundingBox())!;
+    await dragSheet(card, Math.round(sheetCard.height * 0.6), 400);
     await expect(popup).toBeHidden();
     await expect(card.locator('.kt-chip')).toHaveCount(2); // présélection conservée (Angular, Signals)
   });
 
-  test('petit drag (sous le seuil) : snap-back, la sheet reste ouverte', async ({ page }) => {
+  test('petit drag relâché immobile : re-snap, la sheet reste ouverte', async ({ page }) => {
     const card = baseCard(page);
     await card.locator('.kt-select__trigger').tap();
     const popup = card.locator('.kt-select__popup');
     await expect(popup).toBeVisible();
 
-    await dragGrab(page, card, 24);
+    await dragSheet(card, 24, 300);
     await expect(popup).toBeVisible();
+    await settleSheetOpen(popup); // re-snap en position ouverte
   });
 
   test('AXE : aucune violation serious/critical, sheet multi ouverte', async ({ page }) => {
@@ -111,7 +112,7 @@ test.describe('Multi-Select mobile (bottom-sheet)', () => {
     expect(await seriousAxe(page)).toEqual([]);
   });
 
-  test('joue l’animation d’entrée (keyframe kt-sheet-in) et bloque les clics arrière-plan (pointer-events: auto) sur le backdrop', async ({
+  test('scroller à snap : entrée par glissement jusqu’au snap ouvert, scrim bloquant (pointer-events: auto)', async ({
     page,
   }) => {
     const card = baseCard(page);
@@ -120,9 +121,10 @@ test.describe('Multi-Select mobile (bottom-sheet)', () => {
     const popup = card.locator('.kt-select__popup');
     await expect(popup).toBeVisible();
 
-    const sheetCard = popup.locator('.kt-select__sheet-card');
-    const animationName = await sheetCard.evaluate((el) => window.getComputedStyle(el).animationName);
-    expect(animationName).toContain('kt-sheet-in');
+    // L'entrée est un scroll programmatique vers le snap « ouvert » (ADR-0005, plus de keyframe).
+    await settleSheetOpen(popup);
+    const snapType = await popup.evaluate((el) => window.getComputedStyle(el).scrollSnapType);
+    expect(snapType).toContain('mandatory');
 
     const scrim = popup.locator('.kt-select__sheet-scrim');
     const pointerEvents = await scrim.evaluate((el) => window.getComputedStyle(el).pointerEvents);
