@@ -1,0 +1,304 @@
+<!doctype html>
+<html lang="fr">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Spike — sheet scroll-snap (piste B, ADR-0005)</title>
+    <style>
+      /*
+       * Prototype JETABLE (spike GO/NO-GO ADR-0005, piste B).
+       * La sheet est un SCROLLER à snap points : position fermée (scrollTop 0)
+       * et position ouverte (scrollTop max). L'arbitrage scroll interne ↔ geste
+       * de fermeture est rendu au navigateur (latching natif entre le scroller
+       * externe et la listbox imbriquée).
+       */
+      * {
+        box-sizing: border-box;
+        margin: 0;
+      }
+      body {
+        font-family: system-ui, sans-serif;
+        color: #1a1a1a;
+        background: #f4f4f5;
+        min-height: 200vh; /* page derrière volontairement scrollable */
+        padding: 24px;
+      }
+      button {
+        font: inherit;
+      }
+      #trigger {
+        min-height: 44px;
+        padding: 0 20px;
+        border: 1px solid #52525b;
+        border-radius: 8px;
+        background: #fff;
+        cursor: pointer;
+      }
+
+      /* ---- Le scroller plein écran (scrim + sheet) ---- */
+      #overlay {
+        position: fixed;
+        inset: 0;
+        overflow-y: auto;
+        scroll-snap-type: y mandatory;
+        background: rgba(24, 24, 27, 0.55);
+        z-index: 10;
+      }
+      #overlay[hidden] {
+        display: none;
+      }
+      /* Zone de dismiss (le scrim) : un écran entier, snap "fermé". */
+      #dismiss {
+        height: 100%;
+        scroll-snap-align: start;
+        scroll-snap-stop: always;
+      }
+      /* ---- La carte sheet : snap "ouvert" (bord bas aligné au viewport) ---- */
+      #sheet {
+        scroll-snap-align: end;
+        scroll-snap-stop: always;
+        height: 65%;
+        display: flex;
+        flex-direction: column;
+        background: #ffffff;
+        border-radius: 16px 16px 0 0;
+        box-shadow: 0 -8px 32px rgba(0, 0, 0, 0.25);
+      }
+      .sheet__handle {
+        width: 40px;
+        height: 4px;
+        border-radius: 2px;
+        background: #a1a1aa;
+        margin: 10px auto 2px;
+        flex: none;
+        /* décoratif : pas de cursor grab, pas de rôle, aria-hidden */
+      }
+      .sheet__header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 8px 16px;
+        flex: none;
+      }
+      .sheet__header h2 {
+        font-size: 1.05rem;
+      }
+      .sheet__close {
+        min-width: 44px;
+        min-height: 44px;
+        border: none;
+        background: transparent;
+        border-radius: 8px;
+        cursor: pointer;
+        font-size: 1.2rem;
+      }
+      .sheet__close:hover {
+        background: #f4f4f5;
+      }
+      .sheet__filter {
+        margin: 0 16px 8px;
+        flex: none;
+        min-height: 44px;
+        padding: 0 12px;
+        border: 1px solid #71717a;
+        border-radius: 8px;
+        font: inherit;
+      }
+      /*
+       * Scroller INTERNE (nested). Volontairement SANS overscroll-behavior:
+       * question empirique du spike — le latching au départ du geste doit
+       * rendre la main au scroller externe quand la listbox est en haut.
+       * (La molette desktop est gardée en JS, voir plus bas.)
+       */
+      #listbox {
+        flex: 1;
+        overflow-y: auto;
+        padding: 0 8px 16px;
+        outline-offset: -2px;
+      }
+      [role='option'] {
+        min-height: 44px;
+        display: flex;
+        align-items: center;
+        padding: 0 12px;
+        border-radius: 8px;
+        cursor: pointer;
+      }
+      [role='option']:hover {
+        background: #f4f4f5;
+      }
+      [role='option'][aria-selected='true'] {
+        background: #e0e7ff;
+      }
+      [role='option'][aria-selected='true']::before {
+        content: '✓';
+        margin-right: 8px;
+      }
+      [role='option'][hidden] {
+        display: none;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Spike scroll-snap sheet</h1>
+    <p>Prototype jetable — ADR-0005, piste B. La page derrière est scrollable.</p>
+    <button id="trigger" type="button">Ouvrir la sheet</button>
+
+    <div id="overlay" hidden data-state="closed">
+      <div id="dismiss" data-testid="scrim"></div>
+      <section id="sheet" role="dialog" aria-modal="true" aria-label="Choisir une option">
+        <div class="sheet__handle" aria-hidden="true"></div>
+        <div class="sheet__header">
+          <h2>Choisir une option</h2>
+          <button class="sheet__close" id="closeBtn" type="button" aria-label="Fermer">✕</button>
+        </div>
+        <input id="filter" class="sheet__filter" type="text" aria-label="Filtrer les options" />
+        <div id="listbox" role="listbox" tabindex="0" aria-label="Options"></div>
+      </section>
+    </div>
+
+    <script>
+      'use strict';
+      const overlay = document.getElementById('overlay');
+      const sheet = document.getElementById('sheet');
+      const listbox = document.getElementById('listbox');
+      const trigger = document.getElementById('trigger');
+      const closeBtn = document.getElementById('closeBtn');
+      const scrim = document.getElementById('dismiss');
+      const filter = document.getElementById('filter');
+
+      // Journal observable par Playwright (assertions déterministes, zéro sleep).
+      window.__sheetLog = [];
+      const log = (evt) => window.__sheetLog.push(evt);
+
+      // 30 options → la listbox scrolle réellement (nested scroller).
+      const FRUITS = [
+        'Abricot',
+        'Airelle',
+        'Ananas',
+        'Banane',
+        'Bergamote',
+        'Cassis',
+        'Cerise',
+        'Citron',
+        'Clémentine',
+        'Coing',
+        'Datte',
+        'Figue',
+        'Fraise',
+        'Framboise',
+        'Goyave',
+        'Grenade',
+        'Groseille',
+        'Kaki',
+        'Kiwi',
+        'Litchi',
+        'Mangue',
+        'Melon',
+        'Mirabelle',
+        'Myrtille',
+        'Nectarine',
+        'Orange',
+        'Papaye',
+        'Pastèque',
+        'Pêche',
+        'Poire',
+      ];
+      for (const name of FRUITS) {
+        const opt = document.createElement('div');
+        opt.setAttribute('role', 'option');
+        opt.setAttribute('aria-selected', 'false');
+        opt.textContent = name;
+        opt.addEventListener('click', () => {
+          opt.setAttribute('aria-selected', String(opt.getAttribute('aria-selected') !== 'true'));
+          log('select:' + name);
+        });
+        listbox.append(opt);
+      }
+
+      const reduceMotion = matchMedia('(prefers-reduced-motion: reduce)').matches;
+      const behavior = reduceMotion ? 'auto' : 'smooth';
+      const maxScroll = () => overlay.scrollHeight - overlay.clientHeight;
+
+      // Machine à états minimale : closed → opening → open → closing → closed.
+      let state = 'closed';
+      let armed = false; // vrai dès que l'ouverture a dépassé 50px (anti faux "closed" au départ)
+      const setState = (next) => {
+        state = next;
+        overlay.dataset.state = next;
+      };
+
+      function open() {
+        if (state !== 'closed') return;
+        setState('opening');
+        armed = false;
+        document.body.style.overflow = 'hidden'; // verrou body (équivalent KtBodyScrollLock)
+        overlay.hidden = false;
+        overlay.scrollTop = 0; // position fermée, puis animation d'entrée = scroll programmatique
+        requestAnimationFrame(() => overlay.scrollTo({ top: maxScroll(), behavior }));
+        log('opening');
+      }
+
+      function requestClose(reason) {
+        if (state === 'closed' || state === 'closing') return;
+        setState('closing');
+        log('closing:' + reason);
+        overlay.scrollTo({ top: 0, behavior });
+      }
+
+      function finalizeClose() {
+        setState('closed');
+        overlay.hidden = true;
+        document.body.style.overflow = '';
+        trigger.focus();
+        log('closed');
+      }
+
+      // Détection du snap de fermeture SANS scrollsnapchange (Chromium-only) :
+      // scroll mandatory → un repos à scrollTop 0 est forcément le snap "fermé".
+      overlay.addEventListener('scroll', () => {
+        const top = overlay.scrollTop;
+        if (top > 50) armed = true;
+        if (state === 'opening' && top >= maxScroll() - 2) {
+          setState('open');
+          log('opened');
+          return;
+        }
+        if (state !== 'closed' && armed && top <= 1) finalizeClose();
+      });
+
+      // Molette desktop : ne doit JAMAIS fermer la sheet (décision ferme : pas de
+      // geste souris). On n'autorise la molette que si la listbox peut consommer.
+      overlay.addEventListener(
+        'wheel',
+        (event) => {
+          if (listbox.contains(event.target)) {
+            const canDown = listbox.scrollTop + listbox.clientHeight < listbox.scrollHeight - 1;
+            const canUp = listbox.scrollTop > 0;
+            if ((event.deltaY > 0 && canDown) || (event.deltaY < 0 && canUp)) return;
+          }
+          event.preventDefault();
+        },
+        { passive: false },
+      );
+
+      trigger.addEventListener('click', open);
+      closeBtn.addEventListener('click', () => requestClose('button'));
+      scrim.addEventListener('click', () => requestClose('scrim'));
+      document.addEventListener('keydown', (event) => {
+        if (event.key === 'Escape' && !overlay.hidden) requestClose('escape');
+      });
+
+      filter.addEventListener('input', () => {
+        const needle = filter.value.trim().toLowerCase();
+        for (const opt of listbox.querySelectorAll('[role="option"]')) {
+          opt.hidden = needle !== '' && !opt.textContent.toLowerCase().includes(needle);
+        }
+      });
+
+      // Diagnostic support (repris dans le rapport du spike).
+      log('support:scrollend=' + ('onscrollend' in window));
+      log('support:scrollsnapchange=' + ('onscrollsnapchange' in window));
+    </script>
+  </body>
+</html>
