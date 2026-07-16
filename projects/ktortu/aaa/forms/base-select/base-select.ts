@@ -31,7 +31,7 @@ import {
 import { KtFieldErrorResolver } from '../field/error-messages';
 import { KT_SELECT_CONFIG, DEFAULT_KT_SELECT_CONFIG } from '../select/select-config';
 import { type KtKeyish, accessor, defaultIdentity, defaultLabel } from '../keyish';
-import { KtViewport, createKtSheetDrag, KtIdGenerator, KtBodyScrollLock } from '@ktortu/aaa/cdk';
+import { KtViewport, KtIdGenerator, KtBodyScrollLock } from '@ktortu/aaa/cdk';
 
 export type { KtKeyish } from '../keyish';
 
@@ -312,16 +312,30 @@ export abstract class KtBaseSelect<T, V = T> {
       if (!el) return;
       if (this.expanded()) {
         el.classList.remove('kt-select__popup--closing');
-        el.style.translate = ''; // efface un éventuel translate résiduel d'un drag-to-dismiss précédent
         el.style.setProperty('position-anchor', this.anchorName);
         el.showPopover?.();
         this.popoverShown = true;
+        // Sheet (ADR-0005) : l'animation d'entrée est le scroll programmatique vers le snap ouvert.
+        if (this.compact() && this.sheetState === 'idle') this.openSheetByScroll(el);
         // Desktop filtrable : le champ de recherche prend le focus à l'ouverture (pattern
         // SelectPanel). Pas sur téléphone : le clavier virtuel recouvrirait la bottom-sheet.
         if (this.filterable() && !this.compact()) this.filterInputEl()?.nativeElement.focus();
       } else if (this.popoverShown) {
         this.animateAndCloseSelect(el);
       }
+    });
+
+    // Sheet (ADR-0005) : détection du snap « fermé » (scroll) + garde molette (wheel non-passif).
+    // Attachés une fois par élément popup ; inertes hors mode compact (le scroll ne bulle pas,
+    // la garde s'auto-neutralise). preserveContent garde l'élément vivant sur mobile.
+    effect(() => {
+      const el = this.popupEl()?.nativeElement;
+      if (!el || el === this.sheetEl) return;
+      this.sheetEl?.removeEventListener('scroll', this.onSheetScroll);
+      this.sheetEl?.removeEventListener('wheel', this.onSheetWheel);
+      this.sheetEl = el;
+      el.addEventListener('scroll', this.onSheetScroll);
+      el.addEventListener('wheel', this.onSheetWheel, { passive: false });
     });
 
     // Filtre éphémère : réinitialisé à la fermeture (liste complète à la réouverture).
@@ -336,7 +350,9 @@ export abstract class KtBaseSelect<T, V = T> {
 
     this.destroyRef.onDestroy(() => {
       clearTimeout(this.announceTimer);
-      this.sheetDrag.destroy();
+      clearTimeout(this.sheetCloseTimer);
+      this.sheetEl?.removeEventListener('scroll', this.onSheetScroll);
+      this.sheetEl?.removeEventListener('wheel', this.onSheetWheel);
       this.setBodyScrollLock(false);
     });
 
@@ -379,18 +395,22 @@ export abstract class KtBaseSelect<T, V = T> {
       });
     }
 
-    // Fait défiler la liste pour afficher l'option active lors de la navigation au clavier (mode activedescendant).
+    // Fait défiler la liste pour afficher l'option active lors de la navigation au clavier (mode
+    // activedescendant). Défilement SCOPÉ à la listbox (sémantique « nearest » manuelle) — PAS
+    // scrollIntoView : il scrolle aussi les ANCÊTRES, dont le popup sheet scroll-snap (ADR-0005),
+    // ce qui annulait le scroll d'entrée de la sheet et la re-snappait fermée.
     effect(() => {
       const activeId = this.listboxDir()?.activeDescendant();
       if (!this.expanded() || !activeId) return;
 
       requestAnimationFrame(() => {
         const listbox = this.listboxEl()?.nativeElement;
-        if (!listbox) return;
-        const activeEl = listbox.querySelector('.kt-select__option--active');
-        // `?.` : scrollIntoView n'est pas implémenté par tous les environnements de test (jsdom) ;
-        // sans ce garde, un consommateur testant le Select en jsdom subit un crash en rAF.
-        activeEl?.scrollIntoView?.({ block: 'nearest' });
+        const activeEl = listbox?.querySelector('.kt-select__option--active');
+        if (!listbox || !activeEl) return;
+        const lbRect = listbox.getBoundingClientRect();
+        const optRect = activeEl.getBoundingClientRect();
+        if (optRect.top < lbRect.top) listbox.scrollTop += optRect.top - lbRect.top;
+        else if (optRect.bottom > lbRect.bottom) listbox.scrollTop += optRect.bottom - lbRect.bottom;
       });
     });
 
@@ -506,6 +526,7 @@ export abstract class KtBaseSelect<T, V = T> {
   /** Fermeture synchrone du Popover (l'effect, différé, ne re-cachera pas : flag popoverShown). */
   protected closePopupNow(): void {
     this.expanded.set(false);
+    this.resetSheetState();
     if (!this.popoverShown) return;
     const el = this.popupEl()?.nativeElement as (HTMLElement & { hidePopover?(): void }) | undefined;
     el?.classList.remove('kt-select__popup--closing');
@@ -513,18 +534,79 @@ export abstract class KtBaseSelect<T, V = T> {
     this.popoverShown = false;
   }
 
-  // --- Drag-to-dismiss de la bottom-sheet (téléphone) ---
-  // Geste DOUBLÉ par le bouton Fermer + tap-extérieur + Échap (WCAG 2.5.1). Logique FACTORISÉE
-  // avec le mode `sheet` du Dialog via createKtSheetDrag (@ktortu/aaa).
-  private readonly sheetDrag = createKtSheetDrag({
-    pane: () => (this.popupEl()?.nativeElement.querySelector('.kt-select__sheet-card') as HTMLElement) ?? null,
-    onDismiss: () => this.expanded.set(false),
-    draggingClass: 'kt-select__popup--dragging',
-  });
+  // --- Bottom-sheet scroll-snap (téléphone, ADR-0005) ---
+  // Le popup est un scroller à snap (spacer « fermé » / carte « ouvert ») : le drag-to-dismiss
+  // « attrapable partout » et l'arbitrage avec la listbox interne sont NATIFS (latching du
+  // navigateur). Le JS ne fait plus que : l'entrée/sortie (scrolls programmatiques), la
+  // détection du repos au snap « fermé », et la garde molette. Geste DOUBLÉ par le bouton
+  // Fermer + tap-scrim + Échap (WCAG 2.5.1 / 2.5.7).
+  private sheetEl: HTMLElement | null = null;
+  private sheetState: 'idle' | 'opening' | 'open' | 'closing' = 'idle';
+  /** Armé quand l'ouverture a dépassé 50px : un repos à ~0 est alors forcément le snap « fermé »
+      (et non la position initiale) — même logique que le prototype du spike. */
+  private sheetArmed = false;
+  private sheetCloseTimer: ReturnType<typeof setTimeout> | undefined;
 
-  protected onDragStart(event: PointerEvent): void {
-    if (!this.compact()) return; // glissement actif sur écran compact uniquement
-    this.sheetDrag.start(event);
+  private resetSheetState(): void {
+    this.sheetState = 'idle';
+    this.sheetArmed = false;
+    clearTimeout(this.sheetCloseTimer);
+  }
+
+  private prefersReducedMotion(): boolean {
+    return this.doc.defaultView?.matchMedia?.('(prefers-reduced-motion: reduce)').matches ?? false;
+  }
+
+  /** Entrée de la sheet : position « fermée » puis scroll animé vers le snap « ouvert ». */
+  private openSheetByScroll(el: HTMLElement): void {
+    if (!isPlatformBrowser(this.platformId)) return;
+    this.sheetState = 'opening';
+    this.sheetArmed = false;
+    el.scrollTop = 0;
+    const behavior: ScrollBehavior = this.prefersReducedMotion() ? 'auto' : 'smooth';
+    requestAnimationFrame(() => {
+      el.scrollTo?.({ top: el.scrollHeight - el.clientHeight, behavior });
+    });
+  }
+
+  /** Détection du snap « fermé » par position de scroll (ni scrollsnapchange ni scrollend :
+      non interopérables — cf. ADR-0005). Un geste de l'utilisateur qui amène la sheet au repos
+      à 0 EST la fermeture ; les fermetures programmatiques y convergent aussi. */
+  private readonly onSheetScroll = (): void => {
+    const el = this.sheetEl;
+    if (!el || !this.compact() || this.sheetState === 'idle') return;
+    const top = el.scrollTop;
+    if (top > 50) this.sheetArmed = true;
+    if (this.sheetState === 'opening' && top >= el.scrollHeight - el.clientHeight - 2) {
+      this.sheetState = 'open';
+      return;
+    }
+    if (this.sheetArmed && top <= 1) this.finalizeSheetClose();
+  };
+
+  /** La molette ne ferme JAMAIS la sheet (pas de geste souris — ADR-0005) : seule la listbox
+      peut consommer, dans les limites de son propre défilement. */
+  private readonly onSheetWheel = (event: WheelEvent): void => {
+    if (!this.compact() || !this.expanded()) return;
+    const listbox = this.listboxEl()?.nativeElement;
+    if (listbox?.contains(event.target as Node)) {
+      const canScrollDown = listbox.scrollTop + listbox.clientHeight < listbox.scrollHeight - 1;
+      const canScrollUp = listbox.scrollTop > 0;
+      if ((event.deltaY > 0 && canScrollDown) || (event.deltaY < 0 && canScrollUp)) return;
+    }
+    event.preventDefault();
+  };
+
+  private finalizeSheetClose(): void {
+    this.resetSheetState();
+    const el = this.sheetEl as (HTMLElement & { hidePopover?(): void }) | null;
+    if (this.popoverShown) {
+      el?.hidePopover?.();
+      el?.classList.remove('kt-select__popup--closing');
+      this.popoverShown = false;
+    }
+    // Dismissal par geste : synchronise le signal (les fermetures programmatiques l'ont déjà fait).
+    if (this.expanded()) this.expanded.set(false);
   }
 
   private animateAndCloseSelect(el: HTMLElement & { hidePopover?(): void }): void {
@@ -533,43 +615,21 @@ export abstract class KtBaseSelect<T, V = T> {
       this.popoverShown = false;
       return;
     }
-
-    el.classList.add('kt-select__popup--closing');
-    const card = (el.querySelector('.kt-select__sheet-card') as HTMLElement) || el;
-
-    // Récupérer la durée de transition configurée en CSS (ex: "150ms" ou "0.2s")
-    const styles = window.getComputedStyle(card);
-    const durationStr = styles.transitionDuration || '0s';
-    const durationMs = parseFloat(durationStr) * (durationStr.includes('ms') ? 1 : 1000);
-
-    if (durationMs === 0) {
-      el.hidePopover?.();
-      el.classList.remove('kt-select__popup--closing');
-      this.popoverShown = false;
+    // Sheet : sortie = scroll programmatique vers le snap « fermé » ; onSheetScroll finalise au
+    // repos. Déjà en bas (jsdom, reduced-motion instantané, geste déjà abouti) : finalise direct.
+    if (el.scrollTop <= 1) {
+      this.finalizeSheetClose();
       return;
     }
-
-    // Écouter la fin de la transition sur la propriété 'translate'
-    const onTransitionEnd = (event: TransitionEvent) => {
-      if (event.target === card && event.propertyName === 'translate') {
-        card.removeEventListener('transitionend', onTransitionEnd);
-        if (this.expanded()) return;
-        el.hidePopover?.();
-        el.classList.remove('kt-select__popup--closing');
-        this.popoverShown = false;
-      }
-    };
-    card.addEventListener('transitionend', onTransitionEnd);
-
-    // Sécurité (au cas où la transition n'aboutirait pas)
-    setTimeout(() => {
-      card.removeEventListener('transitionend', onTransitionEnd);
-      if (this.expanded()) return;
-      if (this.popoverShown) {
-        el.hidePopover?.();
-        el.classList.remove('kt-select__popup--closing');
-        this.popoverShown = false;
-      }
-    }, durationMs + 50);
+    this.sheetState = 'closing';
+    this.sheetArmed = true;
+    el.classList.add('kt-select__popup--closing'); // fondu du scrim pendant la sortie
+    el.scrollTo?.({ top: 0, behavior: this.prefersReducedMotion() ? 'auto' : 'smooth' });
+    // Sécurité (scroll lisse interrompu, moteur sans événement final) — même filet que l'ancien
+    // transitionend : on finalise si la fermeture est toujours d'actualité.
+    clearTimeout(this.sheetCloseTimer);
+    this.sheetCloseTimer = setTimeout(() => {
+      if (!this.expanded() && this.popoverShown) this.finalizeSheetClose();
+    }, 400);
   }
 }

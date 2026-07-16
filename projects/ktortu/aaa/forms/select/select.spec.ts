@@ -345,16 +345,24 @@ describe('Select', () => {
       outside.remove();
     });
 
-    it('non filtrable : fait défiler l’option active à la navigation (ref listboxEl présente)', async () => {
-      Element.prototype.scrollIntoView ??= () => undefined;
-      const spy = vi.spyOn(Element.prototype, 'scrollIntoView');
+    it('non filtrable : fait défiler la listbox (défilement SCOPÉ, pas les ancêtres) à la navigation', async () => {
       TestBed.configureTestingModule({ imports: [PrimitiveHost] });
       const f = TestBed.createComponent(PrimitiveHost);
       f.detectChanges();
       const native = f.nativeElement as HTMLElement;
       const select = await selectHarness(f);
       await select.open();
-      spy.mockClear();
+      await new Promise((resolve) => requestAnimationFrame(resolve)); // purge le rAF d'ouverture
+      // Géométrie simulée (jsdom ne mesure rien) : l'option active déborde de 94px sous la
+      // listbox → le composant doit corriger listbox.scrollTop, et RIEN d'autre (pas de
+      // scrollIntoView : il défilerait aussi les ancêtres — dont le popup sheet scroll-snap).
+      const listbox = native.querySelector('[role="listbox"]') as HTMLElement;
+      const rect = (top: number, bottom: number) => ({ top, bottom }) as DOMRect;
+      const rectSpy = vi.spyOn(Element.prototype, 'getBoundingClientRect').mockImplementation(function (this: Element) {
+        if (this.matches('.kt-select__option--active')) return rect(150, 194);
+        if (this.matches('[role="listbox"]')) return rect(0, 100);
+        return rect(0, 0);
+      });
 
       // Navigation : keydown directement sur le listbox (comme le relay du combobox le ferait).
       native
@@ -364,7 +372,8 @@ describe('Select', () => {
       await new Promise((resolve) => requestAnimationFrame(resolve));
       f.detectChanges();
 
-      expect(spy).toHaveBeenCalledWith({ block: 'nearest' });
+      expect(listbox.scrollTop).toBe(94); // bas de l'option (194) − bas de la listbox (100)
+      rectSpy.mockRestore();
     });
   });
 
@@ -523,17 +532,25 @@ describe('Select', () => {
       expect(await select.getActiveOptionText()).toBe('Banane');
     });
 
-    it('fait défiler la liste pour afficher l’option active lors de la navigation', async () => {
-      const spy = vi.spyOn(Element.prototype, 'scrollIntoView');
+    it('fait défiler la listbox (défilement scopé) pour afficher l’option active à la navigation', async () => {
       const select = await selectHarness(fixture);
       await select.open();
-      spy.mockClear(); // on ignore l'appel à l'ouverture
+      await new Promise((resolve) => requestAnimationFrame(resolve)); // purge le rAF d'ouverture
+      // Géométrie simulée (cf. test non filtrable) : l'option active déborde de 94px sous la listbox.
+      const listbox = el.querySelector('[role="listbox"]') as HTMLElement;
+      const rect = (top: number, bottom: number) => ({ top, bottom }) as DOMRect;
+      const rectSpy = vi.spyOn(Element.prototype, 'getBoundingClientRect').mockImplementation(function (this: Element) {
+        if (this.matches('.kt-select__option--active')) return rect(150, 194);
+        if (this.matches('[role="listbox"]')) return rect(0, 100);
+        return rect(0, 0);
+      });
 
       await select.pressInFilter(TestKey.DOWN_ARROW);
       await new Promise((resolve) => requestAnimationFrame(resolve));
       fixture.detectChanges();
 
-      expect(spy).toHaveBeenCalledWith({ block: 'nearest' });
+      expect(listbox.scrollTop).toBe(94); // bas de l'option (194) − bas de la listbox (100)
+      rectSpy.mockRestore();
     });
 
     it('Enter sélectionne l’option active, ferme et rend le focus au trigger', async () => {

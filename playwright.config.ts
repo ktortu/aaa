@@ -28,7 +28,9 @@ export default defineConfig({
       name: 'mobile',
       testMatch: /\.mobile\.spec\.ts$/,
       // hasTouch + petit viewport → (pointer: coarse) and (hover: none) → bottom-sheet.
-      use: { viewport: { width: 390, height: 844 }, hasTouch: true },
+      // channel chromium = NOUVEAU headless : requis pour le snap au relâchement des gestes
+      // tactiles des sheets scroll-snap (le headless shell ne snappe jamais — cf. ADR-0005).
+      use: { viewport: { width: 390, height: 844 }, hasTouch: true, channel: 'chromium' },
     },
   ],
   webServer: {
