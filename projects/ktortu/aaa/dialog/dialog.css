@@ -55,7 +55,7 @@
 
   /* ============ Dimensionnement du pane overlay (panelClass: kt-dialog) ============ */
   .cdk-overlay-pane.kt-dialog {
-    inline-size: var(--dialog-max-width);
+    max-inline-size: var(--dialog-max-width);
   }
 
   /* ============ Surface = conteneur CDK (porte role="dialog") ============ */
@@ -63,6 +63,7 @@
     display: flex;
     flex-direction: column;
     box-sizing: border-box;
+    inline-size: 100%;
     /* Reflow AAA (1.4.10) : conteneur plafonné en hauteur ; le contenu long ([ktDialogContent])
      scrolle verticalement (jamais en 2D), titre et actions restant visibles. */
     max-block-size: var(--dialog-max-height);
