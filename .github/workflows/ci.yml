@@ -53,9 +53,26 @@ jobs:
           path: coverage/
           if-no-files-found: ignore
 
+  # Un job par projet Playwright : les runners n'ont que 2 cœurs (1 worker Playwright), une
+  # suite 4-navigateurs en série y dépasse les 40 min — la matrice ramène le wall-clock au shard
+  # le plus lent. `timeout-minutes` borne les blocages (un locator qui pend × retries × 15 tests
+  # a déjà coûté des runs d'1 h+). webkit réintégré : le crash au boot (Temporal non polyfillé)
+  # est corrigé par la résolution paresseuse du proxy Temporal.
   e2e:
-    name: E2E Playwright (+ axe)
+    name: E2E ${{ matrix.project }} (+ axe)
     runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - project: chromium
+            browser: chromium
+          - project: firefox
+            browser: firefox
+          - project: webkit
+            browser: webkit
+          - project: mobile # viewport tactile 390×844, moteur chromium
+            browser: chromium
     steps:
       - uses: actions/checkout@v4
 
@@ -71,19 +88,18 @@ jobs:
       - name: Build lib
         run: npm run build:lib
 
-      # webkit réintégré : le crash au boot (Temporal non polyfillé) est corrigé par la
-      # résolution paresseuse du proxy Temporal — suite complète verte en local sur webkit.
-      - name: Install Playwright browsers
-        run: npx playwright install --with-deps chromium firefox webkit
+      - name: Install Playwright browser (${{ matrix.browser }})
+        run: npx playwright install --with-deps ${{ matrix.browser }}
 
-      - name: Run E2E (chromium + firefox + webkit + mobile)
-        run: npm run e2e:ci
+      - name: Run E2E (${{ matrix.project }})
+        run: npx playwright test --project=${{ matrix.project }}
+        timeout-minutes: 25
 
       - name: Upload Playwright report
         if: ${{ !cancelled() }}
         uses: actions/upload-artifact@v4
         with:
-          name: playwright-report
+          name: playwright-report-${{ matrix.project }}
           path: playwright-report/
           retention-days: 7
           if-no-files-found: ignore
