@@ -71,7 +71,7 @@ jobs:
       - name: Build lib
         run: npm run build:lib
 
-      # webkit réintégré (cf. #12) : le crash au boot (Temporal non polyfillé) est corrigé par la
+      # webkit réintégré : le crash au boot (Temporal non polyfillé) est corrigé par la
       # résolution paresseuse du proxy Temporal — suite complète verte en local sur webkit.
       - name: Install Playwright browsers
         run: npx playwright install --with-deps chromium firefox webkit
