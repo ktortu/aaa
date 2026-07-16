@@ -18,3 +18,4 @@ Statuts : `proposé` · `accepté` · `remplacé par ADR-NNNN` · `déprécié`.
 | 0002 | [Verrou de scroll du fond par compteur partagé](0002-verrou-scroll-body-compteur-partage.md)   | accepté |
 | 0003 | [Configuration i18n par entry-point](0003-convention-i18n-config-par-entry-point.md)           | accepté |
 | 0004 | [Disclosure composé plutôt que `<details>` natif](0004-disclosure-compose-vs-details-natif.md) | accepté |
+| 0005 | [Drag-to-dismiss des sheets sur toute la surface](0005-sheet-drag-toute-surface.md)            | proposé |
