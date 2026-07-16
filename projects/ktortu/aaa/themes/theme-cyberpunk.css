@@ -47,7 +47,7 @@
   /* ============ Socle (cyan/magenta sur quasi-noir) ============ */
   --kt-surface: light-dark(#f0f8ff, #0b0f1a);
   --kt-on-surface: light-dark(#04141a, #e6f6ff); /* ~15:1 */
-  --kt-muted: light-dark(#5a7a91, #94b2c8); /* ~7:1 */
+  --kt-muted: light-dark(#3d5468, #94b2c8); /* 7.3:1 (l'ancien #5a7a91 = 4.23:1, sous AA) / ~7:1 */
   --kt-outline: light-dark(#9ec3d9, #2f5a73); /* 3:1 non-texte */
   --kt-outline-strong: light-dark(#5fb6da, #5fb6da);
   --kt-primary: light-dark(#003847, #28d6ef); /* cyan, texte ~10:1 */
