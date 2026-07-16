@@ -13,7 +13,9 @@
   /* ============ Socle ============ */
   --kt-surface: light-dark(#eff1f5, #1e1e2e); /* base */
   --kt-on-surface: light-dark(#4c4f69, #cdd6f4); /* text, ~12:1 */
-  --kt-muted: light-dark(#6c6f85, #a6adc8); /* subtext0, ~7.4:1 */
+  /* Latte : subtext1 (subtext0 = 4.36:1, sous AA). 5.5:1 = AA confortable ; 7:1 exigerait
+     d'égaler text (#4c4f69) et tuerait la hiérarchie visuelle. Mocha : subtext0, ~7.4:1. */
+  --kt-muted: light-dark(#5c5f77, #a6adc8);
   --kt-outline: light-dark(#bcc0cc, #6c7086); /* overlay0 */
   --kt-outline-strong: light-dark(#9ca0b0, #9399b2); /* overlay2 */
   --kt-primary: light-dark(#4a0e94, #cba6f7); /* mauve assombri pour AAA */
