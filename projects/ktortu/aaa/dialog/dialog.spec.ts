@@ -112,6 +112,9 @@ describe('injectKtDialogOpener', () => {
     });
     // Plancher a11y garanti par l'opener, indépendamment de provideKtDialogDefaults().
     expect(config).toMatchObject({ ariaModal: true, role: 'dialog', restoreFocus: true });
+    // Plafond de largeur : appliqué en STYLE INLINE par l'overlay (seul canal qui bat les styles
+    // structurels HORS layer injectés par le CDK), tout en restant thémable via le token.
+    expect(config).toMatchObject({ maxWidth: 'var(--dialog-max-width)' });
   });
 
   it('le plancher a11y de l’opener cède à un override par appel', () => {

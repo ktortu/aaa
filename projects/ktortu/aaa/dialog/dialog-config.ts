@@ -25,6 +25,12 @@ export const KT_DIALOG_AAA_DEFAULTS: DialogConfig = {
   hasBackdrop: true,
   panelClass: 'kt-dialog',
   backdropClass: 'kt-dialog__backdrop',
+  /* Plafond de largeur posé en STYLE INLINE sur le pane par l'overlay (canal prévu par le CDK).
+     Indispensable : le CDK injecte à l'exécution `.cdk-overlay-pane { max-width: 100% }` HORS
+     layer, qui bat toute règle de la lib importée via layer() — seul un style inline gagne.
+     La custom property garde la thémisation ; `--fullscreen`/`--sheet` la retunent sur leur
+     pane (cf. dialog.css). */
+  maxWidth: 'var(--dialog-max-width)',
 };
 
 /**

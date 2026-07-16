@@ -54,6 +54,14 @@
   }
 
   /* ============ Dimensionnement du pane overlay (panelClass: kt-dialog) ============ */
+  /* Le PLAFOND réel vient de la config (`KT_DIALOG_AAA_DEFAULTS.maxWidth = var(--dialog-max-width)`),
+     posé en STYLE INLINE sur le pane par l'overlay CDK. Indispensable : le CDK injecte à
+     l'exécution `.cdk-overlay-pane { max-width: 100% }` HORS layer, qui bat toute règle de cette
+     feuille quand elle est importée via layer(kt-aaa). La règle ci-dessous n'est qu'une
+     CEINTURE-BRETELLES pour un import SANS layer (spécificité 0,2,0 > 0,1,0).
+     Mode centré (défaut) : la classe .kt-dialog--centered ne porte VOLONTAIREMENT aucune règle
+     interne — hook public, symétrique de --fullscreen/--sheet, qui permet aux devs de
+     cibler/identifier le mode centré en CSS. Ne pas la supprimer. */
   .cdk-overlay-pane.kt-dialog {
     max-inline-size: var(--dialog-max-width);
   }
@@ -256,6 +264,9 @@
   /* ===================== PLEIN ÉCRAN (kt-dialog--fullscreen) =====================
    Surface bord-à-bord ; [ktDialogHeader] devient la top app bar. */
   .cdk-overlay-pane.kt-dialog--fullscreen {
+    /* Retune le token lu par le style inline du pane (config `maxWidth`) : bord-à-bord. */
+    --dialog-max-width: 100vw;
+
     inline-size: 100vw;
     max-inline-size: 100vw;
   }
@@ -292,6 +303,11 @@
   /* ===================== BOTTOM-SHEET (kt-dialog--sheet) =====================
    Feuille glissant du bas, tokens --kt-sheet-* (partagés avec le Select). On positionne+translate
    le CONTENEUR ; la directive [ktDialogSheetHandle] le drag via .cdk-dialog-container. */
+  .cdk-overlay-pane.kt-dialog--sheet {
+    /* Retune le token lu par le style inline du pane (config `maxWidth`) : pleine largeur.
+       (Le conteneur est en position:fixed — seul le token du pane doit suivre.) */
+    --dialog-max-width: 100%;
+  }
   .cdk-overlay-pane.kt-dialog--sheet .cdk-dialog-container {
     position: fixed;
     inset: auto 0 0 0;
