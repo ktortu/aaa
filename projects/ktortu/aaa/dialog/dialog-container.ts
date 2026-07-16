@@ -108,9 +108,9 @@ export class KtDialogContainer extends CdkDialogContainer {
       return;
     }
 
-    // Écouter la fin de la transition sur la propriété 'translate'
+    // Écouter la fin de la transition (opacity pour le dialog classique, translate pour la sheet)
     const onTransitionEnd = (event: TransitionEvent) => {
-      if (event.target === this.host && event.propertyName === 'translate') {
+      if (event.target === this.host && (event.propertyName === 'translate' || event.propertyName === 'opacity')) {
         this.host.removeEventListener('transitionend', onTransitionEnd);
         originalCloseFn(result);
       }
