@@ -80,10 +80,7 @@ export class KtMultiSelect<T, V = T> extends KtBaseSelect<T, V> implements FormV
   readonly selectionChange = output<KtMultiSelectSelectionChange<T, V>>();
 
   // --- Présentation / Configuration (spécifique multi) ---
-  /** Bouton « tout effacer » sur le champ (même contrat que `clearable` de BaseInputField). @default false */
-  readonly clearable = input(false, { transform: booleanAttribute });
-  /** Libellé i18n du bouton « tout effacer ». @default 'Clear' (ou KT_FIELD_CONFIG.clearLabel) */
-  readonly clearLabel = input<string>(this.fieldConfig?.clearLabel ?? 'Clear');
+  // `clearable` / `clearLabel` sont mutualisés dans KtBaseSelect (contrat identique au single).
   /** Barre « Tout sélectionner / Tout effacer » en tête du popup (bascule le popup en panneau dialog). */
   readonly selectionActions = input(false, { transform: booleanAttribute });
   /** Nombre maximal de chips affichés avant repli derrière un bouton « +N more ». Défaut : illimité. */

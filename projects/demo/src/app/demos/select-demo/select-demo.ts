@@ -41,6 +41,9 @@ export class SelectDemo {
   protected readonly countries = ['France', 'Belgique', 'Suisse', 'Canada', 'Luxembourg'];
   protected readonly country = signal<string | null>(null);
 
+  /** Effacement depuis le champ : présélectionné pour que la croix soit visible d'emblée. */
+  protected readonly clearableCountry = signal<string | null>('France');
+
   protected readonly users: readonly DemoUser[] = [
     { id: 1, name: 'Ada Lovelace' },
     { id: 2, name: 'Alan Turing' },

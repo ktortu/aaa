@@ -153,6 +153,13 @@ export abstract class KtBaseSelect<T, V = T> {
     transform: booleanAttribute,
   });
 
+  // --- Effacement depuis le champ (clearable) ---
+  /** Bouton « effacer » (×) sur le champ quand une valeur est sélectionnée (même contrat que
+      `clearable` de BaseInputField ; single vide la sélection, multi vide toute la sélection). @default false */
+  readonly clearable = input(false, { transform: booleanAttribute });
+  /** Libellé i18n du bouton « effacer ». @default 'Clear' (ou KT_FIELD_CONFIG.clearLabel) */
+  readonly clearLabel = input<string>(this.fieldConfig?.clearLabel ?? 'Clear');
+
   // --- Filtrage (champ de recherche dans le popup, opt-in) ---
   /** Affiche un champ de recherche en tête du popup (desktop) / de la sheet (téléphone).
       Pour les listes longues ; le texte tapé ne sert qu'à filtrer (réinitialisé à la fermeture). @default false */

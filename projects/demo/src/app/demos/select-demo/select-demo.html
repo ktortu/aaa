@@ -42,6 +42,16 @@
       <kt-select label="Ville" [options]="cities" [filterable]="true" [(value)]="city" />
     </kt-doc-example>
 
+    <kt-doc-example label="Effaçable (clearable)">
+      <kt-select
+        label="Pays"
+        [options]="countries"
+        [(value)]="clearableCountry"
+        clearable
+        hint="Le bouton × apparaît dès qu'une valeur est sélectionnée ; il vide la sélection et rend le focus au champ."
+      />
+    </kt-doc-example>
+
     <kt-doc-example label="États">
       <kt-select label="Désactivé" [options]="countries" [disabled]="true" />
       <kt-select label="Lecture seule" [options]="countries" [value]="'France'" [readonly]="true" />

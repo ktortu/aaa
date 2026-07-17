@@ -76,6 +76,7 @@ export class KtSelectHarness extends ComponentHarness {
   private readonly field = this.locatorFor(KtFieldHarness);
   private readonly filterInputEl = this.locatorForOptional('.kt-select__filter-input');
   private readonly activeOptionEl = this.locatorForOptional('.kt-select__option--active');
+  private readonly clearButton = this.locatorForOptional('.kt-select__clear');
 
   /** Texte du label associé (chaîne vide si absent). */
   async getLabel(): Promise<string> {
@@ -125,6 +126,17 @@ export class KtSelectHarness extends ComponentHarness {
   /** Texte affiché dans le trigger (placeholder si aucune sélection). */
   async getValueText(): Promise<string> {
     return (await (await this.valueEl()).text()).trim();
+  }
+
+  /** Le bouton « effacer » (clearable) est-il présent ? (visible seulement avec une valeur). */
+  async isClearAvailable(): Promise<boolean> {
+    return (await this.clearButton()) !== null;
+  }
+
+  /** Efface la sélection via le bouton « effacer » (no-op s'il est absent). */
+  async clear(): Promise<void> {
+    const button = await this.clearButton();
+    if (button) await button.click();
   }
 
   /** Saisit du texte dans le champ de filtre (mode filtrable). Ouvre le popup au besoin. */
