@@ -221,12 +221,33 @@ export class KtChipList<T> implements ChipTransitionScope {
 
   private activeTransition: ViewTransition | null = null;
 
+  /**
+   * Vrai sur le moteur WebKit (Safari desktop + TOUS les navigateurs iOS, qui embarquent WebKit).
+   *
+   * Contournement DOCUMENTÉ et RÉVERSIBLE d'un bug de compositing des View Transitions au niveau
+   * document sur WebKit : après la transition, les chips (hôtes d'éléments custom dont le
+   * `view-transition-name` est posé puis retiré dynamiquement) ne se repeignent pas — seules les
+   * croix « retirer » (boutons natifs, compositées sur une couche distincte) subsistent à l'écran.
+   * Touche aussi bien le retrait que le déplier/replier : les deux passent par ce wrapper.
+   *
+   * Le défaut n'est PAS feature-detectable : `startViewTransition` répond présente puis rate le
+   * rendu final, d'où la détection de MOTEUR. `navigator.vendor` est gelé pour compat — vaut
+   * « Apple Computer, Inc. » sur WebKit UNIQUEMENT (Blink = « Google Inc. », Gecko = « »). On NE
+   * gate PAS sur l'absence de la variante scopée `element.startViewTransition` : cela exclurait
+   * Firefox à tort (transition document parfaitement rendue chez lui). À RETIRER quand Safari
+   * corrigera le compositing.
+   */
+  private isWebKitEngine(): boolean {
+    return this.doc.defaultView?.navigator.vendor === 'Apple Computer, Inc.';
+  }
+
   /** Exécute `action` dans une View Transition (morph des chips qui se déplacent, entrée/sortie
       stylées via `::view-transition-*(.chip-transition)` — cf. tokens.css). Transition SCOPÉE à
       l'élément quand le navigateur le permet (`element.startViewTransition`, Chrome 147+) ; sinon
       transition document — dans les deux cas, seuls les chips de CETTE liste sont nommés (cf.
-      `transitioning`). Fallback : action directe si l'API est absente ou si l'utilisateur
-      préfère moins de mouvement. */
+      `transitioning`). Fallback : action directe (retrait/dépli instantané, état final garanti
+      correct) si l'API est absente, si l'utilisateur préfère moins de mouvement, ou sur WebKit
+      (bug de compositing, cf. `isWebKitEngine`). */
   private withViewTransition(action: () => void): void {
     if (!isPlatformBrowser(this.platformId)) {
       action();
@@ -243,7 +264,8 @@ export class KtChipList<T> implements ChipTransitionScope {
     const startViewTransition =
       hostEl.startViewTransition?.bind(hostEl) ??
       (this.doc.startViewTransition?.bind(this.doc) as typeof hostEl.startViewTransition);
-    if (!startViewTransition || prefersReducedMotion) {
+    // WebKit : court-circuit AVANT tout nommage — sinon les chips restent fantômes (bug iOS).
+    if (!startViewTransition || prefersReducedMotion || this.isWebKitEngine()) {
       action();
       return;
     }

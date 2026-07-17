@@ -402,6 +402,76 @@ describe('ChipList', () => {
     expect(el.querySelector('.kt-chip-list__more')?.textContent?.trim()).toBe('2 cachés');
   });
 
+  // --- Garde WebKit : contournement du bug de compositing des View Transitions sur iOS/Safari ---
+  // En jsdom, `startViewTransition` est absente : on la SIMULE présente pour exercer la garde de
+  // moteur (le vrai iOS Safari n'est rejoué ni par le webkit de Playwright ni par le mobile-Chromium).
+  function stubViewTransitionEngine(vendor: string, svt: unknown): () => void {
+    Object.defineProperty(document, 'startViewTransition', { value: svt, configurable: true, writable: true });
+    Object.defineProperty(navigator, 'vendor', { value: vendor, configurable: true });
+    return () => {
+      Reflect.deleteProperty(document, 'startViewTransition');
+      Reflect.deleteProperty(navigator, 'vendor');
+    };
+  }
+
+  it('WebKit : View Transition court-circuitée — retrait direct, jamais nommé (bug compositing iOS)', async () => {
+    const svt = vi.fn();
+    const restore = stubViewTransitionEngine('Apple Computer, Inc.', svt);
+    try {
+      const { fixture, host, el } = setup();
+      removeButtons(el)[0].click();
+      fixture.detectChanges();
+      await fixture.whenStable();
+
+      expect(svt).not.toHaveBeenCalled(); // API présente mais sautée sur WebKit
+      expect(host.list().transitioning()).toBe(false); // jamais de nommage → pas de croix orphelines
+      expect(host.items()).toEqual(['Banane', 'Cerise']); // état final correct
+      expect(chipLabels(el)).toEqual(['Banane', 'Cerise']); // DOM cohérent (pilules bien retirées)
+    } finally {
+      restore();
+    }
+  });
+
+  it('WebKit : déplier/replier aussi court-circuité (même wrapper que le retrait)', async () => {
+    const svt = vi.fn();
+    const restore = stubViewTransitionEngine('Apple Computer, Inc.', svt);
+    try {
+      const { fixture, host, el } = setup();
+      host.maxVisible.set(2);
+      fixture.detectChanges();
+      const more = el.querySelector<HTMLButtonElement>('.kt-chip-list__more')!;
+
+      more.click(); // déplie
+      fixture.detectChanges();
+      await fixture.whenStable();
+
+      expect(svt).not.toHaveBeenCalled();
+      expect(host.list().transitioning()).toBe(false);
+      expect(chipLabels(el)).toEqual(['Pomme', 'Banane', 'Cerise']); // dépli correct, sans animation
+    } finally {
+      restore();
+    }
+  });
+
+  it('moteur non-WebKit : la View Transition est empruntée quand startViewTransition existe', async () => {
+    const svt = vi.fn((update: () => unknown) => {
+      const done = Promise.resolve(update()).then(() => undefined);
+      return { ready: done, finished: done, updateCallbackDone: done, skipTransition: (): void => undefined };
+    });
+    const restore = stubViewTransitionEngine('Google Inc.', svt); // Blink
+    try {
+      const { fixture, host, el } = setup();
+      removeButtons(el)[0].click();
+      fixture.detectChanges();
+      await fixture.whenStable();
+
+      expect(svt).toHaveBeenCalledTimes(1); // VT bien empruntée hors WebKit
+      expect(host.items()).toEqual(['Banane', 'Cerise']); // état final correct dans les deux chemins
+    } finally {
+      restore();
+    }
+  });
+
   it('[chipTemplate] forwardé rend le contenu custom ; un ktChipItem projeté est prioritaire', () => {
     // chipTemplate seul
     @Component({
