@@ -331,21 +331,26 @@
     transform: none;
     animation: none;
     transition: none;
-    /* Transparent aux CLICS : au-dessus de la carte, ils atteignent le VRAI backdrop CDK
-     (fermeture + backdropClick natifs, disableClose respecté). Réactivé sur la carte. */
-    pointer-events: none;
+    /* Le scroller DOIT capter le tactile (`pointer-events: auto`, hérité du pane). Un
+     `pointer-events: none` (pour laisser les taps traverser vers le backdrop CDK) EMPÊCHE iOS
+     Safari de défiler ce conteneur au doigt : le geste de drag-to-dismiss fuit alors vers la
+     page (pull-to-refresh) et la sheet ne se ferme jamais. Même choix que le popup du Select.
+     Le scrim sombre reste le backdrop CDK (derrière ce conteneur transparent) ; la fermeture
+     au tap-extérieur est portée par le spacer (`(click)` → `onScrimClick`), le verrou de scroll
+     du fond par `KtBodyScrollLock` (cf. `KtDialogContainer`). */
   }
 
-  /* Spacer de dismiss : un écran entier au-dessus de la carte (snap « fermé »). */
+  /* Spacer de dismiss : un écran entier au-dessus de la carte (snap « fermé »). Cliquable pour
+     fermer (tap-extérieur, façon backdrop) ET saisissable au doigt pour le drag (scroll natif). */
   .cdk-overlay-pane.kt-dialog--sheet .kt-dialog-container__spacer {
     block-size: 100%;
     scroll-snap-align: start;
     scroll-snap-stop: always;
+    cursor: default;
   }
 
   /* La carte : reprend la surface du dialog (déplacée du conteneur, devenu scroller). */
   .cdk-overlay-pane.kt-dialog--sheet .kt-dialog-container__layout {
-    pointer-events: auto;
     scroll-snap-align: end;
     scroll-snap-stop: always;
     display: flex;

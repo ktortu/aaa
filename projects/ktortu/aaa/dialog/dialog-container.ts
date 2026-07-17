@@ -12,6 +12,7 @@ import {
 import { isPlatformBrowser } from '@angular/common';
 import { CdkDialogContainer, DialogRef } from '@angular/cdk/dialog';
 import { PortalModule } from '@angular/cdk/portal';
+import { KtBodyScrollLock } from '@ktortu/aaa/cdk';
 
 @Component({
   selector: 'kt-dialog-container',
@@ -33,7 +34,10 @@ import { PortalModule } from '@angular/cdk/portal';
     <!-- Sheet scroll-snap (ADR-0005) : le conteneur est le SCROLLER, le spacer porte le snap
          « fermé » (un écran) et la carte (layout) le snap « ouvert ». -->
     @if (isSheet()) {
-      <div class="kt-dialog-container__spacer" aria-hidden="true"></div>
+      <!-- Spacer = zone de tap-extérieur (ferme, comme un backdrop) ET surface de drag (scroll natif).
+           Le conteneur capte le tactile (pointer-events auto) : le clic ne traverse plus vers le
+           backdrop CDK, la fermeture au tap est donc portée ici (disableClose respecté). -->
+      <div class="kt-dialog-container__spacer" aria-hidden="true" (click)="onScrimClick()"></div>
     }
     <div class="kt-dialog-container__layout">
       @if (isSheet() && showSheetHandle()) {
@@ -51,6 +55,7 @@ export class KtDialogContainer extends CdkDialogContainer {
   private readonly host = this.elementRef.nativeElement as HTMLElement;
   private readonly platformId = inject(PLATFORM_ID);
   private readonly destroyRef = inject(DestroyRef);
+  private readonly bodyScrollLock = inject(KtBodyScrollLock);
 
   protected readonly isClosing = signal(false);
 
@@ -115,16 +120,31 @@ export class KtDialogContainer extends CdkDialogContainer {
     return !this._config.panelClass?.includes('kt-dialog--no-handle');
   }
 
+  /** Tap sur le spacer (zone extérieure à la carte) = fermeture, façon backdrop. Le conteneur
+      captant désormais le tactile (pointer-events auto, requis pour le drag iOS), le clic ne
+      traverse plus vers le backdrop CDK : on porte donc ICI la fermeture au tap-extérieur, en
+      respectant `disableClose` (comme le faisait le backdropClick natif). Un drag n'émet pas de
+      `click` (le navigateur le supprime après un scroll) : seul un vrai tap ferme. */
+  protected onScrimClick(): void {
+    if (this._config.disableClose || this.isClosing()) return;
+    this.dialogRef.close();
+  }
+
   /** Sheet scroll-snap : écouteurs (détection du repos + garde molette) et scroll d'ENTRÉE
       programmatique vers le snap « ouvert ». Appelé au premier rendu, en présentation sheet. */
   private initSheetGesture(): void {
     const host = this.host;
     host.addEventListener('scroll', this.onSheetScroll);
     host.addEventListener('wheel', this.onSheetWheel, { passive: false });
+    // Verrou de scroll du fond (compteur partagé) : sans lui, le fond défile SOUS la sheet et,
+    // sur iOS, le geste de dismiss déclenche le pull-to-refresh de la page. La stratégie `block`
+    // du CDK ne suffit pas ici (non appliquée / non fiable sur iOS) — même approche que le Select.
+    this.bodyScrollLock.lock();
     this.destroyRef.onDestroy(() => {
       clearTimeout(this.sheetCloseTimer);
       host.removeEventListener('scroll', this.onSheetScroll);
       host.removeEventListener('wheel', this.onSheetWheel);
+      this.bodyScrollLock.unlock();
     });
     host.scrollTop = 0;
     requestAnimationFrame(() => {

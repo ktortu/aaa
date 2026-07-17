@@ -132,3 +132,18 @@ virtuel). La gate bloquante de l'ADR est donc levée.
   toujours équilibré ; purge du `translate` résiduel conservée.
 - ⚠️ Risque résiduel assumé : Playwright WebKit ≠ iOS Safari réel → passe manuelle sur
   appareil iOS **effectuée et validée le 2026-07-17** (cf. verdict du spike ci-dessus).
+
+### Correctif post-implémentation (2026-07-17) — pointer-events du scroller (Dialog)
+
+La première implémentation du Dialog `sheet` rendait le conteneur-scroller `pointer-events: none`
+(taps « traversants » vers le backdrop CDK, carte seule `auto`). Ce choix **casse le drag sur
+iOS Safari** : un scroller en `pointer-events: none` n'est pas défilable au doigt → le geste de
+fermeture fuit vers la page (**pull-to-refresh**) au lieu de fermer la sheet. Invisible sur le
+Dialog `sheet` de démo (contenu long → un scroller interne absorbe le geste), le bug se voyait sur
+les sheets à **contenu court** sans scroller interne (`centered-sheet` du sélecteur de thème,
+alertes/confirmations `KtQuickDialog`). Correctif aligné sur le popup du Select (déjà validé iOS) :
+scroller en `pointer-events: auto`, fermeture au tap-extérieur portée par le spacer
+(`(click)` → `onScrimClick`, `disableClose` respecté), et **verrou de scroll du fond**
+(`KtBodyScrollLock`) — la stratégie `block` du CDK n'était pas appliquée (fond libre de défiler).
+Gardes e2e ajoutées (`dialog.mobile.spec.ts`) : `pointer-events: auto` + body verrouillé, et
+drag qui ferme une sheet à contenu court.
