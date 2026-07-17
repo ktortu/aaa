@@ -201,9 +201,10 @@ export class KtDialogContainer extends CdkDialogContainer {
       return;
     }
 
-    // Récupérer la durée de transition configurée en CSS (ex: "150ms" ou "0.2s")
-    const styles = window.getComputedStyle(this.host);
-    const durationStr = styles.transitionDuration || '0s';
+    // Récupérer la durée de transition configurée en CSS (ex: "150ms" ou "0.2s"). Vue lue via
+    // ownerDocument.defaultView (pas le global `window`) : cohérent avec prefersReducedMotion() et
+    // sûr indépendamment du garde de plateforme — si la vue manque, durée 0 → fermeture immédiate.
+    const durationStr = this.host.ownerDocument.defaultView?.getComputedStyle(this.host).transitionDuration || '0s';
     const durationMs = parseFloat(durationStr) * (durationStr.includes('ms') ? 1 : 1000);
 
     if (durationMs === 0) {
