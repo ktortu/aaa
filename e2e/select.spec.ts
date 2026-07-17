@@ -77,6 +77,20 @@ test.describe('Select (single)', () => {
     const serious = results.violations.filter((v) => v.impact === 'serious' || v.impact === 'critical');
     expect(serious.map((v) => v.id)).toEqual([]);
   });
+
+  test('clearable : la croix vide la sélection et rend le focus au trigger', async ({ page }) => {
+    const card = example(page, 'Effaçable (clearable)'); // présélection : 'France'
+    const trigger = card.locator('.kt-select__trigger');
+    await expect(trigger).toContainText('France');
+
+    const clear = card.getByRole('button', { name: 'Effacer' }); // provideKtDefaultFR
+    await expect(clear).toBeVisible();
+    await clear.click();
+
+    await expect(trigger).not.toContainText('France');
+    await expect(trigger).toBeFocused();
+    await expect(clear).toBeHidden(); // plus rien à effacer
+  });
 });
 
 test.describe('Select filtrable (desktop)', () => {

@@ -162,6 +162,34 @@ class TruncatedHost {
   value = signal<string | null>(null);
 }
 
+// --- Clearable (bouton « effacer » sur le champ) ---
+@Component({
+  imports: [KtSelect],
+  template: `
+    <kt-select
+      [options]="fruits"
+      label="Fruit"
+      clearable
+      clearLabel="Effacer"
+      [disabled]="disabled()"
+      [readonly]="readonly()"
+      [(value)]="value"
+      (selectionChange)="last.set($event)"
+    />
+  `,
+})
+class ClearableHost {
+  fruits = ['Pomme', 'Banane', 'Cerise'];
+  value = signal<string | null>(null);
+  disabled = signal(false);
+  readonly = signal(false);
+  last = signal<{ value: string | null; option: string | null } | null>(null);
+}
+
+function clearButton(el: HTMLElement): HTMLButtonElement | null {
+  return el.querySelector<HTMLButtonElement>('.kt-select__clear');
+}
+
 describe('Select', () => {
   describe('primitifs', () => {
     let fixture: ComponentFixture<PrimitiveHost>;
@@ -740,6 +768,74 @@ describe('Select', () => {
       await open(f);
       const panel = (f.nativeElement as HTMLElement).querySelector<HTMLElement>('[role="dialog"]')!;
       expect(trigger(f.nativeElement).getAttribute('aria-controls')).toBe(panel.id);
+    });
+  });
+
+  describe('clearable', () => {
+    let fixture: ComponentFixture<ClearableHost>;
+    let host: ClearableHost;
+    let el: HTMLElement;
+
+    beforeEach(() => {
+      TestBed.configureTestingModule({ imports: [ClearableHost] });
+      fixture = TestBed.createComponent(ClearableHost);
+      host = fixture.componentInstance;
+      el = fixture.nativeElement;
+      fixture.detectChanges();
+    });
+
+    it('bouton absent sans valeur, présent dès qu’une valeur est sélectionnée', () => {
+      expect(clearButton(el)).toBeFalsy();
+      host.value.set('Banane');
+      fixture.detectChanges();
+      expect(clearButton(el)).toBeTruthy();
+    });
+
+    it('porte le clearLabel comme aria-label', () => {
+      host.value.set('Banane');
+      fixture.detectChanges();
+      expect(clearButton(el)?.getAttribute('aria-label')).toBe('Effacer');
+    });
+
+    it('efface la sélection, émet { value: null, option: null } et rend le focus au trigger', () => {
+      host.value.set('Banane');
+      fixture.detectChanges();
+      clearButton(el)!.click();
+      fixture.detectChanges();
+      expect(host.value()).toBeNull();
+      expect(host.last()).toEqual({ value: null, option: null });
+      expect(document.activeElement).toBe(trigger(el));
+    });
+
+    it('marque le champ comme touché après effacement', () => {
+      host.value.set('Banane');
+      fixture.detectChanges();
+      clearButton(el)!.click();
+      fixture.detectChanges();
+      expect((internals(fixture) as unknown as { touched(): boolean }).touched()).toBe(true);
+    });
+
+    it('bouton masqué quand disabled ou readonly (même avec une valeur)', () => {
+      host.value.set('Banane');
+      host.disabled.set(true);
+      fixture.detectChanges();
+      expect(clearButton(el)).toBeFalsy();
+
+      host.disabled.set(false);
+      host.readonly.set(true);
+      fixture.detectChanges();
+      expect(clearButton(el)).toBeFalsy();
+    });
+
+    it('exposé via le harness (isClearAvailable / clear)', async () => {
+      const select = await selectHarness(fixture);
+      expect(await select.isClearAvailable()).toBe(false);
+      host.value.set('Cerise');
+      fixture.detectChanges();
+      expect(await select.isClearAvailable()).toBe(true);
+      await select.clear();
+      fixture.detectChanges();
+      expect(host.value()).toBeNull();
     });
   });
 });

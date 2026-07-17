@@ -59,6 +59,13 @@ export class KtSelect<T, V = T> extends KtBaseSelect<T, V> implements FormValueC
   /** Fermer le popup après une sélection (sémantique single ; le multi reste ouvert). */
   private readonly closeOnSelect = computed(() => this.config?.closeOnSelect ?? true);
 
+  /** Affiche le bouton « effacer » (×) sur le champ dès qu'une valeur est présente (`clearable`).
+      Basé sur `value()` et non `selectedOption()` : une clé orpheline (option retirée des données)
+      reste effaçable. */
+  protected readonly showClear = computed(
+    () => this.clearable() && !this.disabled() && !this.readonly() && this.value() !== null,
+  );
+
   /** Option correspondant à la valeur courante (clé extraite, ou objet si `optionValue` est omis). */
   protected readonly selectedOption = computed<T | null>(() => {
     const v = this.value();
@@ -109,5 +116,12 @@ export class KtSelect<T, V = T> extends KtBaseSelect<T, V> implements FormValueC
       this.expanded.set(false);
       this.refocusTriggerAfterFilterClose();
     }
+  }
+
+  /** Efface la sélection depuis le champ (bouton `clearable`) et rend le focus au trigger. */
+  protected clearSelection(): void {
+    if (!this.showClear()) return;
+    this.commitSelection(null);
+    this.triggerEl()?.nativeElement.focus();
   }
 }

@@ -1,7 +1,8 @@
 import { PropRow, TokenGroup } from '../../shared/doc-types';
 
 /** Inputs/outputs publics de `kt-select` (hérités de `KtBaseSelect` + propres au single).
-    Les inputs booléens n'ont PAS de `booleanAttribute` → liaison de propriété requise (`[disabled]="true"`). */
+    `clearable` porte `booleanAttribute` (attribut nu accepté : `clearable`) ; les autres booléens
+    (`disabled`, `readonly`, `filterable`, `required`…) exigent une liaison de propriété (`[disabled]="true"`). */
 export const SELECT_PROPS: readonly PropRow[] = [
   {
     name: 'options',
@@ -14,6 +15,18 @@ export const SELECT_PROPS: readonly PropRow[] = [
     type: 'V | null',
     default: 'null',
     description: 'Valeur sélectionnée (two-way `[(value)]`). Clé extraite si `optionValue`, sinon objet entier.',
+  },
+  {
+    name: 'clearable',
+    type: 'boolean',
+    default: 'false',
+    description: "Bouton « effacer » (×) sur le champ dès qu'une valeur est présente. Porte `booleanAttribute`.",
+  },
+  {
+    name: 'clearLabel',
+    type: 'string',
+    default: `'Clear' (KT_FIELD_CONFIG)`,
+    description: 'Libellé accessible (aria-label) du bouton « effacer ».',
   },
   {
     name: 'optionLabel',
@@ -281,6 +294,9 @@ export const SELECT_HTML_SNIPPET = `<!-- Options simples (valeur = chaîne) -->
 
 <!-- Liste longue : champ de recherche (input booléen → liaison de propriété) -->
 <kt-select label="Ville" [options]="cities" [filterable]="true" [(value)]="city" />
+
+<!-- Effaçable : bouton × sur le champ (booleanAttribute → attribut nu) -->
+<kt-select label="Pays" [options]="countries" [(value)]="country" clearable />
 
 <!-- Template d'option personnalisé (T inféré via [ktSelectOption]) -->
 <kt-select [options]="users" optionValue="id" [(value)]="userId">

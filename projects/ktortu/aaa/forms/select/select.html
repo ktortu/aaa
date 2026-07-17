@@ -23,6 +23,7 @@
       ktFieldControl
       type="button"
       class="kt-field-box kt-select__trigger"
+      [class.kt-select__trigger--clearable]="showClear()"
       [(expanded)]="expanded"
       [disabled]="disabled()"
       [softDisabled]="false"
@@ -43,6 +44,20 @@
       </span>
       <span class="kt-select__arrow" aria-hidden="true">arrow_drop_down</span>
     </button>
+
+    <!-- Effacer la sélection depuis le champ : sibling du trigger (pas de bouton imbriqué dans un bouton).
+         mousedown préventif : un tap ne doit pas voler le focus du combobox (closePopupOnBlur). -->
+    @if (showClear()) {
+      <button
+        type="button"
+        class="kt-select__clear"
+        [attr.aria-label]="clearLabel()"
+        (mousedown)="$event.preventDefault()"
+        (click)="clearSelection()"
+      >
+        <span class="kt-select__clear-icon" aria-hidden="true">close</span>
+      </button>
+    }
 
     <!-- Un seul Popover (top-layer). CSS @media : dropdown ancré (desktop) ↔ bottom-sheet (téléphone).
          Pas de <dialog>.showModal() : ce combobox se ferme au blur, et showModal volerait le focus.

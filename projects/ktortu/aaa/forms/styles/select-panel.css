@@ -11,7 +11,8 @@
     --select-popup-enter-animation (défaut : none — entrée du dropdown desktop ; keyframes de
     thème limitées à transform/opacity/filter, le popup est ancré : ne pas animer la position),
     --kt-sheet-anim-duration (défaut : 120ms — glissement + scrim de la bottom-sheet mobile).
-   Les règles spécifiques au multi (chips, clear, actions, checkbox) vivent dans multi-select.css. */
+   Les règles spécifiques au multi (chips, actions de masse, compteur, checkbox) vivent dans
+   multi-select.css. La croix « effacer » (clearable) est PARTAGÉE (single + multi) : elle est ici. */
   :host {
     display: block;
   }
@@ -65,6 +66,57 @@
 
   .kt-select--open .kt-select__arrow {
     transform: rotate(180deg);
+  }
+
+  /* ===== Croix « effacer » (clearable) — PARTAGÉE single + multi ===== */
+  /* Réserve la place de la croix (sibling absolu) : sur le TEXTE, pas sur le padding du trigger —
+   la flèche reste collée au bord, la croix se glisse entre texte et flèche. */
+  .kt-select__trigger--clearable .kt-select__value {
+    margin-inline-end: 2rem;
+  }
+
+  /* Effacer : entre le texte et la flèche, disposition standard « texte … ✕ ▾ ».
+   24px visibles ; cible étendue à 44px via ::after transparent (AAA). */
+  .kt-select__clear {
+    position: absolute;
+    inset-block-start: 50%;
+    inset-inline-end: 2.5rem;
+    translate: 0 -50%;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    inline-size: 24px;
+    block-size: 24px;
+    padding: 0;
+    border: 0;
+    border-radius: 50%;
+    background: transparent;
+    color: var(--field-icon-color, #5f6368);
+    cursor: pointer;
+  }
+
+  .kt-select__clear::after {
+    content: '';
+    position: absolute;
+    inset: -10px;
+  }
+
+  .kt-select__clear:hover {
+    background-color: color-mix(in srgb, currentColor 12%, transparent);
+    color: var(--field-color, inherit);
+  }
+
+  .kt-select__clear:focus-visible {
+    outline: 2px solid var(--field-border-color-focus, #0b57d0);
+    outline-offset: 1px;
+  }
+
+  .kt-select__clear-icon {
+    font-family: 'Material Symbols Outlined';
+    font-feature-settings: 'liga';
+    font-size: 1.25rem;
+    line-height: 1;
+    -webkit-font-smoothing: antialiased;
   }
 
   /* Conteneur popover (div). Affiché en top-layer via le Popover API.

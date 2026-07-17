@@ -23,7 +23,7 @@ export class KtMultiSelectHarness extends KtSelectHarness {
 
   private readonly chipLabelEls = this.locatorForAll('.kt-chip__label');
   private readonly chipRemoveEls = this.locatorForAll('.kt-chip__remove');
-  private readonly clearButton = this.locatorForOptional('.kt-select__clear');
+  // `clear()` / `isClearAvailable()` (bouton « tout effacer ») sont hérités de KtSelectHarness.
 
   /** Toggle une option (ajoute/retire ; le popup reste ouvert). Alias sémantique de `clickOption`. */
   async toggleOption(filter: { text: string | RegExp }): Promise<void> {
@@ -42,11 +42,5 @@ export class KtMultiSelectHarness extends KtSelectHarness {
       throw new Error(`KtMultiSelectHarness: aucun chip à l'index ${index}`);
     }
     await buttons[index].click();
-  }
-
-  /** Vide toute la sélection via le bouton « tout effacer » (no-op s'il est absent). */
-  async clear(): Promise<void> {
-    const button = await this.clearButton();
-    if (button) await button.click();
   }
 }
