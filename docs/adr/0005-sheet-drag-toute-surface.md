@@ -93,10 +93,13 @@ Tableau détaillé dans `spikes/scroll-snap-sheet/NOTES.md`. Découvertes struct
 - JS résiduel ≈ 40 lignes (garde molette non-passive, détection du repos, fermetures
   programmatiques par scrollTo) contre ~200 pour la machine à états de la piste A.
 
-La **piste A reste documentée ci-dessus comme plan de repli**. La **passe manuelle iOS
-réelle est EN ATTENTE** (aucun appareil disponible au 2026-07-16) : elle reste **bloquante
-avant merge**, pas pour le développement (options : iPhone d'un collègue via le serveur LAN
-`spikes/scroll-snap-sheet/serve.mjs`, URL publique Firebase Hosting, ou cloud de devices).
+La **piste A reste documentée ci-dessus comme plan de repli**.
+
+**Passe manuelle iOS réelle : VALIDÉE le 2026-07-17** (iPhone, Safari, dev server exposé sur
+le LAN). Comportement conforme sur la vraie implémentation (Select compact + Dialog `sheet`) :
+drag « attrapable partout », arbitrage avec le scroll interne, flick et re-snap — aucune
+régression observée sur les points sensibles iOS (rubber-band, barre d'URL dynamique, clavier
+virtuel). La gate bloquante de l'ADR est donc levée.
 
 ## Alternatives écartées
 
@@ -127,5 +130,5 @@ avant merge**, pas pour le développement (options : iPhone d'un collègue via l
   clavier virtuel à la prise de geste ; hauteur de référence **figée à l'appui** (contenu
   asynchrone) ; idempotence de la fermeture (Échap pendant un drag) ; compteur du verrou body
   toujours équilibré ; purge du `translate` résiduel conservée.
-- ⚠️ Risque résiduel assumé : Playwright WebKit ≠ iOS Safari réel → **passe manuelle sur
-  appareil iOS** exigée et consignée dans la PR avant merge.
+- ⚠️ Risque résiduel assumé : Playwright WebKit ≠ iOS Safari réel → passe manuelle sur
+  appareil iOS **effectuée et validée le 2026-07-17** (cf. verdict du spike ci-dessus).
