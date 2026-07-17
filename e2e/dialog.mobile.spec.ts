@@ -77,11 +77,46 @@ test.describe('Dialog (mobile)', () => {
     await expect(container).toBeHidden();
   });
 
-  test('tap au-dessus de la carte : le clic traverse le scroller et ferme via le backdrop CDK', async ({ page }) => {
+  test('tap au-dessus de la carte (spacer) ferme la sheet', async ({ page }) => {
     const container = await openSheet(page);
-    // Le conteneur plein écran est pointer-events:none hors de la carte : le tap atteint le
-    // VRAI backdrop (sémantique CDK intacte : fermeture, backdropClick, disableClose).
-    await page.touchscreen.tap(page.viewportSize()!.width / 2, 60);
+    // Le scroller capte le tactile (pointer-events auto, requis pour le drag iOS — cf. test
+    // dédié plus bas) : le tap n'atteint plus le backdrop CDK par transparence, la fermeture au
+    // tap-extérieur est portée par le spacer ((click) → onScrimClick, disableClose respecté).
+    await page.touchscreen.tap(page.viewportSize()!.width / 2, 40);
+    await expect(container).toBeHidden();
+  });
+
+  test('régression iOS : le scroller capte le tactile (pointer-events auto) et verrouille le fond', async ({
+    page,
+  }) => {
+    // Garde-fou du bug « la sheet ne se ferme pas au drag sur iPhone » : un scroller en
+    // pointer-events:none n'était PAS défilable au doigt sur iOS → le geste fuyait vers la page
+    // (pull-to-refresh) au lieu de fermer la sheet. Le fond doit aussi être verrouillé.
+    const container = await openSheet(page);
+    expect(await container.evaluate((el) => getComputedStyle(el).pointerEvents)).toBe('auto');
+    expect(await page.evaluate(() => getComputedStyle(document.body).overflow)).toBe('hidden');
+
+    await page.keyboard.press('Escape');
+    await expect(container).toBeHidden();
+    // Verrou relâché à la fermeture (compteur équilibré).
+    expect(await page.evaluate(() => getComputedStyle(document.body).overflow)).not.toBe('hidden');
+  });
+
+  test('drag tactile ferme une sheet à CONTENU COURT (alert) — cas du sélecteur de thème', async ({ page }) => {
+    // Reproduit le bug remonté : les sheets à contenu court (alertes, sélecteur de thème) n'ont
+    // aucun scroller interne pour absorber le geste — c'est là que la fuite tactile iOS se voyait.
+    await page.getByRole('button', { name: 'Alerte (Neutre)' }).click();
+    const container = page.locator('.cdk-dialog-container');
+    await expect(container).toBeVisible();
+    await expect(page.locator('.cdk-overlay-pane')).toHaveClass(/kt-dialog--sheet/);
+    await settleSheetOpen(container);
+
+    const card = (await container.locator('.kt-dialog-container__layout').boundingBox())!;
+    await touchDragFrom(container.locator('.kt-dialog-container__sheet-handle'), Math.round(card.height), {
+      steps: 16,
+      stepMs: 20,
+      pauseMs: 400,
+    });
     await expect(container).toBeHidden();
   });
 });
