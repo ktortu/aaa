@@ -30,6 +30,37 @@
       <kt-switch label="Invalide" [invalid]="true" [touched]="true" [errors]="demoErrors" />
     </kt-doc-example>
 
+    <!-- Contenu projeté : on peut mettre ce qu'on veut à côté de l'interrupteur (texte, icône/image
+         + texte, deux lignes empilées…). Un PNG via `<img ngSrc … alt="">` fonctionne à l'identique. -->
+    <kt-doc-example label="Contenu projeté (kt-switch)">
+      <!-- Icône (SVG inline) + texte -->
+      <kt-switch [value]="true">
+        <span class="demo-switch-rich">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+            <path d="M12 22a2 2 0 0 0 2-2h-4a2 2 0 0 0 2 2Zm6-6v-5a6 6 0 1 0-12 0v5l-2 2v1h16v-1l-2-2Z" />
+          </svg>
+          Notifications par e-mail
+        </span>
+      </kt-switch>
+
+      <!-- Deux lignes empilées (titre + sous-titre) -->
+      <kt-switch>
+        <span class="demo-switch-stack">
+          <span>Synchronisation</span>
+          <span class="demo-switch-sub">Sauvegarde toutes les 5 min</span>
+        </span>
+      </kt-switch>
+
+      <!-- Média seul, sans texte : le nom accessible est porté par ariaLabel (WCAG 4.1.2) -->
+      <kt-switch ariaLabel="Activer le mode sombre">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+          <path
+            d="M12 3a9 9 0 1 0 9 9c0-.46-.04-.92-.1-1.36a5.39 5.39 0 0 1-4.4 2.26 5.4 5.4 0 0 1-5.4-5.4c0-1.81.9-3.42 2.26-4.4-.44-.06-.9-.1-1.36-.1Z"
+          />
+        </svg>
+      </kt-switch>
+    </kt-doc-example>
+
     <kt-doc-example label="Case à cocher (kt-checkbox)">
       <kt-checkbox label="Accepter les conditions" [(value)]="accepted" />
       <kt-checkbox label="Pré-cochée" [value]="true" />

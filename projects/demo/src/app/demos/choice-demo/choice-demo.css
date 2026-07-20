@@ -58,3 +58,23 @@
   align-items: center;
   gap: 0.75rem 1.5rem;
 }
+
+/* Contenu projeté du switch : la LIB n'impose aucune disposition interne, c'est le
+   consommateur (ici la démo) qui aligne l'icône/l'image + le texte, ou empile deux lignes. */
+.demo-switch-rich {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+}
+
+.demo-switch-stack {
+  display: inline-flex;
+  flex-direction: column;
+  line-height: 1.2;
+}
+
+.demo-switch-sub {
+  font-weight: 400;
+  font-size: 0.75rem;
+  color: var(--field-hint-color, #5f6368);
+}

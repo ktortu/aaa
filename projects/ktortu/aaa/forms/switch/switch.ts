@@ -22,9 +22,19 @@ import { KtIdGenerator } from '@ktortu/aaa/cdk';
  * Permet d'activer ou désactiver une option avec effet immédiat.
  * Intégré aux Signal Forms de l'application via FormValueControl.
  *
+ * Libellé : `label` (texte) par défaut ; un contenu projeté le remplace pour les rendus riches
+ * (image + texte, spans empilés…). `ariaLabel` porte alors le nom accessible si le contenu projeté
+ * n'a pas de texte (WCAG 4.1.2). Même règle que `kt-checkbox` / `kt-radio`.
+ *
  * @example
  * ```html
+ * <!-- Simple -->
  * <kt-switch label="Notifications par e-mail" [(value)]="emailNotif" />
+ *
+ * <!-- Contenu projeté (image + texte) -->
+ * <kt-switch [(value)]="emailNotif">
+ *   <img ngSrc="/assets/mail.png" width="20" height="20" alt="" /> Notifications par e-mail
+ * </kt-switch>
  * ```
  */
 @Component({
@@ -46,7 +56,7 @@ import { KtIdGenerator } from '@ktortu/aaa/cdk';
           [id]="baseId()"
           [attr.aria-checked]="value()"
           [attr.aria-label]="resolvedAriaLabel()"
-          [attr.aria-labelledby]="label() ? labelId() : null"
+          [attr.aria-labelledby]="resolvedAriaLabel() ? null : labelId()"
           [attr.aria-describedby]="describedBy()"
           [attr.aria-invalid]="showInvalid() ? 'true' : null"
           [attr.aria-required]="required() ? 'true' : null"
@@ -60,14 +70,12 @@ import { KtIdGenerator } from '@ktortu/aaa/cdk';
           <span class="kt-switch__thumb"></span>
         </button>
 
-        @if (label(); as labelText) {
-          <label [id]="labelId()" [attr.for]="baseId()" class="kt-switch-label">
-            {{ labelText }}
-            @if (required()) {
-              <span class="kt-switch-label__required" aria-hidden="true">*</span>
-            }
-          </label>
-        }
+        <label [id]="labelId()" [attr.for]="baseId()" class="kt-switch-label">
+          <ng-content>{{ label() }}</ng-content>
+          @if (required()) {
+            <span class="kt-switch-label__required" aria-hidden="true">*</span>
+          }
+        </label>
       </div>
 
       @if (hint() && !showInvalid()) {
@@ -110,7 +118,7 @@ export class KtSwitch implements FormValueControl<boolean> {
   // --- Présentation ---
   /** id imposé (sélecteurs de test stables) ; sinon auto-généré, anti-collision. @default undefined */
   readonly id = input<string>();
-  /** Texte du libellé associé à la bascule. @default undefined */
+  /** Texte du libellé (remplacé visuellement par un contenu projeté). @default undefined */
   readonly label = input<string>();
   /** Texte d'aide affiché sous la bascule (masqué quand une erreur s'affiche). @default undefined */
   readonly hint = input<string>();
@@ -124,6 +132,7 @@ export class KtSwitch implements FormValueControl<boolean> {
   });
 
   private readonly switchBtn = viewChild.required<ElementRef<HTMLButtonElement>>('switchBtn');
+  private readonly el = inject<ElementRef<HTMLElement>>(ElementRef);
 
   private readonly errorResolver = inject(KtFieldErrorResolver);
   private readonly idGen = inject(KtIdGenerator);
@@ -159,12 +168,16 @@ export class KtSwitch implements FormValueControl<boolean> {
 
   constructor() {
     // Garde-fou a11y (dev, navigateur uniquement) : un switch sans nom accessible est annoncé vide
-    // (WCAG 4.1.2). Le nom vient de `label` ou `ariaLabel` (pas de contenu projeté ici).
+    // (WCAG 4.1.2). Le nom vient de `label`, `ariaLabel` OU du contenu projeté (même règle que
+    // checkbox/radio) : sans label ni ariaLabel, on inspecte le texte réellement rendu dans le label.
     afterNextRender(() => {
       if (!isDevMode() || this.label() || this.ariaLabel()) return;
-      console.warn(
-        '[ktSwitch] sans `label` ni `ariaLabel` : le contrôle est annoncé sans nom accessible (WCAG 4.1.2).',
-      );
+      const labelText = this.el.nativeElement.querySelector('.kt-switch-label')?.textContent?.replace('*', '').trim();
+      if (!labelText) {
+        console.warn(
+          '[ktSwitch] sans `label`, `ariaLabel` ni contenu projeté : le contrôle est annoncé sans nom accessible (WCAG 4.1.2).',
+        );
+      }
     });
   }
 

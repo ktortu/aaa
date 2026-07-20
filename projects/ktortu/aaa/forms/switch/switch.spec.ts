@@ -1,4 +1,4 @@
-import { Component, signal } from '@angular/core';
+import { Component, Type, signal } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { ValidationError } from '@angular/forms/signals';
 import { KtFieldErrorMatcher } from '../field/field-config';
@@ -196,13 +196,15 @@ describe('Switch', () => {
     expect(button().getAttribute('aria-required')).toBe('true');
   });
 
-  it('repli sur aria-label quand label absent (aria-labelledby retiré, aucun <label>)', () => {
+  it('repli sur aria-label quand ariaLabel fourni (aria-labelledby retiré ; label présent mais vide)', () => {
     host.label.set(undefined);
     host.ariaLabel.set('Activer les notifications');
     fixture.detectChanges();
     expect(button().getAttribute('aria-label')).toBe('Activer les notifications');
     expect(button().hasAttribute('aria-labelledby')).toBe(false);
-    expect(labelElement()).toBeNull();
+    // Le <label> reste dans le DOM pour accueillir un contenu projeté, mais sans texte (masqué via :empty).
+    expect(labelElement()).toBeTruthy();
+    expect(labelElement()?.textContent?.trim()).toBe('');
   });
 
   it('suppression message:"" — invalide sans texte, et errorId hors describedby', () => {
@@ -256,6 +258,52 @@ describe('Switch', () => {
     button().dispatchEvent(new KeyboardEvent('keydown', { key: ' ', cancelable: true }));
     fixture.detectChanges();
     expect(host.value()).toBe(false);
+  });
+
+  describe('contenu projeté (ng-content)', () => {
+    @Component({
+      imports: [KtSwitch],
+      template: `<kt-switch [(value)]="v"><img alt="" width="16" height="16" /><span>Notifications</span></kt-switch>`,
+    })
+    class ProjectedHost {
+      v = signal(false);
+    }
+
+    @Component({
+      imports: [KtSwitch],
+      template: `<kt-switch label="Ignoré"><span>Projeté</span></kt-switch>`,
+    })
+    class ProjectedOverLabelHost {}
+
+    function make<T>(type: Type<T>): ComponentFixture<T> {
+      TestBed.resetTestingModule();
+      TestBed.configureTestingModule({ imports: [type] });
+      const f = TestBed.createComponent(type);
+      f.detectChanges();
+      return f;
+    }
+
+    it('projette un contenu riche (image + texte) et nomme le switch par ce contenu', () => {
+      const f = make(ProjectedHost);
+      const label = f.nativeElement.querySelector('label.kt-switch-label') as HTMLLabelElement;
+      const btn = f.nativeElement.querySelector('button[role="switch"]') as HTMLButtonElement;
+
+      expect(label.querySelector('img')).toBeTruthy();
+      expect(label.textContent).toContain('Notifications');
+      // Sans ariaLabel : le nom accessible vient du label (contenu projeté) via aria-labelledby.
+      expect(btn.getAttribute('aria-labelledby')).toBe(label.id);
+      expect(btn.hasAttribute('aria-label')).toBe(false);
+      f.destroy();
+    });
+
+    it('le contenu projeté prime sur le label texte', () => {
+      const f = make(ProjectedOverLabelHost);
+      const label = f.nativeElement.querySelector('label.kt-switch-label') as HTMLLabelElement;
+
+      expect(label.textContent).toContain('Projeté');
+      expect(label.textContent).not.toContain('Ignoré');
+      f.destroy();
+    });
   });
 
   // Accès aux coulisses pour valider les signaux internes
