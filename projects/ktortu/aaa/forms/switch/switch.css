@@ -143,6 +143,12 @@
     user-select: none;
   }
 
+  /* Label vide (ni texte ni contenu projeté — switch nommé via ariaLabel) : masqué pour ne pas
+     réserver l'écart flex de la rangée. Le label reste dans le DOM pour accueillir la projection. */
+  .kt-switch-label:empty {
+    display: none;
+  }
+
   .kt-switch-field--disabled .kt-switch-label {
     cursor: not-allowed;
     color: var(--field-hint-color, #5f6368);
