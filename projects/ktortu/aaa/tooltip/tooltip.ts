@@ -66,6 +66,7 @@ export function provideKtTooltip(config: Partial<KtTooltipConfig>): Provider {
     '(mouseleave)': 'hide()',
     '(focusin)': 'show()',
     '(focusout)': 'hide()',
+    '(pointerdown)': 'onActivate()',
     '(keydown.escape)': 'onEscape($event)',
   },
 })
@@ -186,6 +187,26 @@ export class KtTooltip implements OnDestroy {
   protected hide(): void {
     clearTimeout(this.showTimer);
     this.hideTimer = setTimeout(() => this.dismiss(), this.hideDelay());
+  }
+
+  /**
+   * Fermeture immédiate à l'activation de la cible (clic souris, tap tactile, stylet).
+   * Dès que l'utilisateur AGIT sur l'élément (typiquement un bouton qui ouvre une bottom sheet ou un
+   * dialog), l'infobulle a fini son rôle : on la ferme sans attendre le hideDelay, et on purge un
+   * affichage en attente pour qu'il ne surgisse pas après coup.
+   *
+   * Sans ce déclencheur, une infobulle affichée au survol SURVIVAIT à l'ouverture d'un overlay : le
+   * pointeur reste sur la cible (aucun `mouseleave`) et un clic ne défocalise pas toujours (aucun
+   * `focusout` fiable, ex. Safari/Firefox macOS). Comme l'infobulle est un popover en top layer, elle
+   * flottait alors AU-DESSUS de l'overlay (lui empilé au z-index) — impossible à masquer autrement.
+   *
+   * `pointerdown` (et non `click`) car il précède l'ouverture de l'overlay et le déplacement de focus
+   * → zéro flash. On ne fait ni preventDefault ni stopPropagation : l'action native (clic) doit suivre
+   * son cours. Le cas clavier (Entrée/Espace) reste couvert par `focusout` quand l'overlay prend le focus.
+   */
+  protected onActivate(): void {
+    clearTimeout(this.showTimer);
+    this.dismiss();
   }
 
   protected onEscape(event: Event): void {

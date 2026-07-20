@@ -296,6 +296,31 @@ describe('Tooltip', () => {
     });
   });
 
+  describe('dismiss à l’activation (pointerdown)', () => {
+    beforeEach(() => setup());
+
+    it('ferme immédiatement l’infobulle affichée quand on presse la cible (ex. ouverture d’une sheet)', () => {
+      trigger.dispatchEvent(new MouseEvent('mouseenter'));
+      vi.advanceTimersByTime(100);
+      fixture.detectChanges();
+      expect(currentTip()).toBeTruthy();
+
+      // Activation (clic/tap) : fermeture SANS attendre le hideDelay.
+      trigger.dispatchEvent(new Event('pointerdown', { bubbles: true }));
+      fixture.detectChanges();
+      expect(currentTip()).toBeNull();
+    });
+
+    it('annule un affichage EN ATTENTE (pointerdown avant la fin du showDelay)', () => {
+      trigger.dispatchEvent(new MouseEvent('mouseenter'));
+      vi.advanceTimersByTime(50); // avant les 100ms de showDelay
+      trigger.dispatchEvent(new Event('pointerdown', { bubbles: true }));
+      vi.advanceTimersByTime(200);
+      fixture.detectChanges();
+      expect(currentTip()).toBeNull();
+    });
+  });
+
   describe('dismiss with Escape', () => {
     beforeEach(() => setup());
 
