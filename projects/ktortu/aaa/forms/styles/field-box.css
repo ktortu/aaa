@@ -87,12 +87,22 @@
     color: inherit;
     font: inherit;
     caret-color: var(--field-caret-color, auto); /* bascule (thème terminal, etc.) */
-    padding-inline-end: 0.5rem;
+    padding-inline-end: var(--field-input-padding-end, 0.5rem);
   }
 
   .kt-field-box__input:disabled {
     cursor: not-allowed;
     color: color-mix(in srgb, currentColor 50%, transparent);
+  }
+
+  /* Types temporels natifs (date/time/datetime-local/month) : l'indicateur natif de sélecteur
+   (calendrier/horloge) vit à la FIN de l'input et gère déjà son propre espacement. Le respir de
+   fin « texte » ne protège ici aucune saisie libre : il ne ferait que repousser ce picto vers
+   l'intérieur (renfoncement de 1.25rem = box 0.75 + input 0.5, incohérent avec les champs texte).
+   On remet donc le token à 0 ; la gouttière commune reste le padding de la boîte (0.75rem). La
+   propriété consommatrice est LOGIQUE => l'indicateur bascule aussi côté départ en RTL. */
+  .kt-field-box__input:is([type='date'], [type='time'], [type='datetime-local'], [type='month']) {
+    --field-input-padding-end: 0;
   }
 
   /* Datalist : masque la flèche déroulante native (Chromium) sur les champs texte/number. Le

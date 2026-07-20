@@ -35,6 +35,11 @@
     --field-padding-y: 0.5rem;
     --field-gap: 0.375rem;
     --field-control-gap: 0.5rem;
+    /* Respir de fin propre à l'input (texte/caret), distinct de la gouttière de la boîte
+     (--field-padding-x) et de l'écart entre contrôles (--field-control-gap). Neutralisé à 0 pour
+     les champs temporels natifs (cf. field-box.css : l'indicateur de picker gère son propre
+     espacement, ce respir ne ferait que le décaler vers l'intérieur). */
+    --field-input-padding-end: 0.5rem;
     /* Largeur du champ : un seul réglage pilote tous les champs. Défaut `auto` (remplit le
      conteneur en bloc, se dimensionne au contenu en flex). Ex. global : --field-width: 320px. */
     --field-width: auto;
