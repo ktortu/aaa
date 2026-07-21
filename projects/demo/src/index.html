@@ -11,9 +11,17 @@
     <link rel="icon" type="image/x-icon" href="favicon.ico" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" />
+    <!-- Axes explicitement demandés (opsz,wght,FILL,GRAD) : sans eux, Google Fonts sert une instance
+       dont les axes ne sont PAS ajustables et `font-variation-settings` (dont [fill] de ktIcon) est ignoré. -->
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200"
+    />
     <!-- Police d'icône à ligatures alternative (démo : swap via --kt-icon-font sur l'input `icon`). -->
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded" />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200"
+    />
     <!-- Polices emblématiques des thèmes de démo (--kt-font) : Roboto (Material/You), IBM Plex
        Sans (Carbon), Quicksand (Végétal), JetBrains Mono (Catppuccin), Inter (Aurora),
        Oxanium (Cyberpunk), Architects Daughter (Architecte). Les autres thèmes : stacks

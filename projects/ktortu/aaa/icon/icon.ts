@@ -179,6 +179,8 @@ export class KtIcon {
 
   /** Version **remplie** plutôt que contour, pour les polices variables à axe `FILL` (Material Symbols).
       Force `FILL` à 1 en préservant les autres axes (graisse…) ; sans effet sur une police sans cet axe.
+      Nécessite une police chargée **avec l'axe FILL ajustable** (ex. Google Fonts :
+      `…Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200`).
       @default false (contour) */
   readonly fill = input<boolean, unknown>(false, { transform: booleanAttribute });
 
