@@ -1,9 +1,10 @@
 import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { RouterLink } from '@angular/router';
+import { KtIcon } from '@ktortu/aaa/icon';
 
 @Component({
   selector: 'kt-foundations-index',
-  imports: [RouterLink],
+  imports: [RouterLink, KtIcon],
   template: `
     <div style="max-width: 900px; margin: 0 auto; padding: 2rem;">
       <h1 style="margin-bottom: 2rem; font-size: 2.5rem; font-weight: 300; letter-spacing: -0.02em;">Fondations</h1>
@@ -21,10 +22,7 @@ import { RouterLink } from '@angular/router';
           <div
             style="width: 48px; height: 48px; border-radius: 8px; background: color-mix(in oklab, var(--kt-primary) 15%, transparent); color: var(--kt-primary); display: flex; align-items: center; justify-content: center;"
           >
-            <span
-              style="font-family: var(--kt-icon-font, 'Material Symbols Outlined'); font-size: 24px; font-variation-settings: 'FILL' 0, 'wght' 300;"
-              >design_services</span
-            >
+            <span ktIcon="design_services" size="24px"></span>
           </div>
           <h2 style="margin: 0; font-size: 1.25rem; font-weight: 500;">Tokens CSS</h2>
           <p style="margin: 0; color: var(--kt-muted); font-size: 0.9rem; line-height: 1.5;">
@@ -41,14 +39,12 @@ import { RouterLink } from '@angular/router';
           <div
             style="width: 48px; height: 48px; border-radius: 8px; background: color-mix(in oklab, var(--kt-primary) 15%, transparent); color: var(--kt-primary); display: flex; align-items: center; justify-content: center;"
           >
-            <span
-              style="font-family: var(--kt-icon-font, 'Material Symbols Outlined'); font-size: 24px; font-variation-settings: 'FILL' 0, 'wght' 300;"
-              >interests</span
-            >
+            <span ktIcon="interests" size="24px"></span>
           </div>
           <h2 style="margin: 0; font-size: 1.25rem; font-weight: 500;">Icônes</h2>
           <p style="margin: 0; color: var(--kt-muted); font-size: 0.9rem; line-height: 1.5;">
-            Directives d'utilisation de la police d'icônes Material Symbols.
+            Primitive autonome [ktIcon] : ligatures, polices à classes (Font Awesome, SVG), tailles, couleur,
+            accessibilité.
           </p>
         </a>
 
@@ -61,10 +57,7 @@ import { RouterLink } from '@angular/router';
           <div
             style="width: 48px; height: 48px; border-radius: 8px; background: color-mix(in oklab, var(--kt-primary) 15%, transparent); color: var(--kt-primary); display: flex; align-items: center; justify-content: center;"
           >
-            <span
-              style="font-family: var(--kt-icon-font, 'Material Symbols Outlined'); font-size: 24px; font-variation-settings: 'FILL' 0, 'wght' 300;"
-              >language</span
-            >
+            <span ktIcon="language" size="24px"></span>
           </div>
           <h2 style="margin: 0; font-size: 1.25rem; font-weight: 500;">Internationalisation</h2>
           <p style="margin: 0; color: var(--kt-muted); font-size: 0.9rem; line-height: 1.5;">

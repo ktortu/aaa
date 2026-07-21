@@ -1,0 +1,51 @@
+@layer kt-aaa.components {
+  /* Styles de la primitive d'icône autonome [ktIcon]. Global : enregistré dans angular.json > styles,
+   applicable partout où la directive est posée. Ciblé par la CLASSE `.kt-icon` (posée en dur sur
+   l'hôte par la directive) et NON par l'attribut de sélecteur : un binding `[ktIcon]="x"` ne reflète
+   aucun attribut dans le DOM, la classe reste le seul marqueur fiable. Leviers = BASCULES NON déclarées
+   (le fallback var() fait foi) : --kt-icon-font / --kt-icon-font-weight / --kt-icon-font-variation (posées
+   par la directive quand une police du registre est résolue, sinon cascade globale) + --kt-icon-size
+   (posée par [size]) + --kt-icon-overflow (bascule d'opt-out du rognage de la boîte ligature). */
+
+  .kt-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex: none;
+    /* Taille pilotée par --kt-icon-size (posée par [size]) ; défaut relatif au texte du contexte. */
+    font-size: var(--kt-icon-size, 1.25em);
+    line-height: 1;
+    /* Couleur héritée du texte courant (currentColor) : l'icône suit son contexte sans réglage. */
+    color: inherit;
+    /* Alignement propre au fil du texte (icône ↔ libellé adjacent). */
+    vertical-align: middle;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* Rendu de la LIGATURE (nom → glyphe) via un pseudo-élément, comme Button/Field.
+   Police : --kt-icon-font (posée par la directive si police du registre résolue) > cascade globale
+   > Material Symbols Outlined. Un set NON-ligature (Font Awesome…) se projette dans l'hôte (ktIcon
+   vide) : aucun ::before n'est alors rendu. */
+  .kt-icon[data-icon]::before {
+    content: attr(data-icon);
+    font-family: var(--kt-icon-font, 'Material Symbols Outlined');
+    font-weight: var(--kt-icon-font-weight, normal);
+    font-style: normal;
+    font-size: 1em; /* = taille de l'hôte (--kt-icon-size) */
+    line-height: 1;
+    font-variation-settings: var(--kt-icon-font-variation, normal);
+    font-feature-settings: 'liga';
+  }
+
+  /* Boîte réservée (1 em, carrée) UNIQUEMENT en mode ligature : évite le décalage de mise en page au
+   chargement de la police et masque le clignotement du nom en clair (FOUT) tant que la police n'est
+   pas prête. `clip` + une petite marge tolèrent un léger débordement d'encre (polices tierces dont le
+   glyphe dépasse le cadratin) sans rogner, tout en bridant le texte de repli. Bascule d'opt-out via
+   --kt-icon-overflow (ex. `visible`). Non appliqué au mode projeté (contenu de largeur libre). */
+  .kt-icon[data-icon] {
+    inline-size: 1em;
+    block-size: 1em;
+    overflow: var(--kt-icon-overflow, clip);
+    overflow-clip-margin: 0.15em;
+  }
+}

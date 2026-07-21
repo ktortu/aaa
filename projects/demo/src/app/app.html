@@ -14,24 +14,9 @@
           routerLinkActive="shell__link--active"
         >
           <kt-nav-item [label]="item.label">
-            <span
-              kt-icon
-              aria-hidden="true"
-              style="
-                font-family: var(--kt-icon-font, 'Material Symbols Outlined');
-                font-size: 24px;
-                width: 24px;
-                height: 24px;
-                display: inline-flex;
-                justify-content: center;
-                align-items: center;
-                font-variation-settings:
-                  'FILL' 0,
-                  'wght' 300;
-              "
-            >
-              {{ item.icon }}
-            </span>
+            <!-- kt-icon (attribut) aiguille la projection vers le slot du nav-item ; [ktIcon] (directive)
+                 peint le glyphe. La police/graisse vient du provideKtIcon racine (app.config.ts). -->
+            <span kt-icon [ktIcon]="item.icon ?? ''" size="24px" aria-hidden="true"></span>
           </kt-nav-item>
         </a>
       }

@@ -15,6 +15,7 @@
    importez aussi '@angular/cdk/overlay-prebuilt.css'. */
 
 @import './foundation.css';
+@import './icon.css';
 @import './tabs.css';
 @import './forms.css';
 @import './button.css';

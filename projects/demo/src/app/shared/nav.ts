@@ -30,6 +30,7 @@ export const NAV_ITEMS: readonly NavItem[] = [
     label: 'Fondations',
     icon: 'architecture',
   },
+  { link: '/foundations/icons', path: 'foundations/icons', label: 'Icônes', icon: 'interests' },
   { link: '/layout', path: 'layout', label: 'Layout & Shell', icon: 'view_sidebar' },
   { link: '/outline', path: 'outline', label: 'Apparence outline', icon: 'border_outer' },
   { link: '/buttons', path: 'buttons', label: 'Boutons', icon: 'smart_button' },
@@ -50,5 +51,8 @@ export const NAV_ITEMS: readonly NavItem[] = [
   { link: '/progress-bar', path: 'progress-bar', label: 'Progress Bar', icon: 'hourglass_empty' },
 ];
 
-/** Pages « composants » pour l'index d'accueil : exclut l'Accueil et les groupes (Fondations). */
-export const COMPONENT_NAV_ITEMS: readonly NavItem[] = NAV_ITEMS.filter((item) => item.path !== '' && !item.children);
+/** Pages « composants » pour l'index d'accueil : exclut l'Accueil, les groupes et les sous-pages
+    (chemins à segment, ex. `foundations/icons`, déjà couverts par leur page-index). */
+export const COMPONENT_NAV_ITEMS: readonly NavItem[] = NAV_ITEMS.filter(
+  (item) => item.path !== '' && !item.path.includes('/') && !item.children,
+);

@@ -6,6 +6,7 @@
   },
   "assets": [
     "./styles/*.css",
+    "./icon/*.css",
     "./button/*.css",
     "./progress-bar/*.css",
     "./card/*.css",

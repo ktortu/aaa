@@ -8,6 +8,7 @@ export * from '@ktortu/aaa/dialog';
 export * from '@ktortu/aaa/disclosure';
 export * from '@ktortu/aaa/forms';
 export * from '@ktortu/aaa/i18n';
+export * from '@ktortu/aaa/icon';
 export * from '@ktortu/aaa/menu';
 export * from '@ktortu/aaa/snackbar';
 export * from '@ktortu/aaa/tabs';

@@ -1,7 +1,7 @@
 import AxeBuilder from '@axe-core/playwright';
 import { expect, test } from './fixtures';
 
-const routes = ['/buttons', '/forms', '/select', '/multi-select', '/chips', '/dialog'];
+const routes = ['/buttons', '/forms', '/select', '/multi-select', '/chips', '/dialog', '/foundations/icons'];
 
 for (const route of routes) {
   test(`la route ${route} se charge (rendu + 0 erreur console + AXE)`, async ({ page }) => {
