@@ -95,21 +95,21 @@ declare module '@ktortu/aaa/icon' {
           <em>outlined</em> (défaut) puis en <em>rounded</em>.
         </p>
 
-        <kt-doc-example label="Même icône, deux polices">
+        <kt-doc-example label="Même icône, deux polices (coins francs → la différence saute aux yeux)">
           <span style="display: inline-flex; flex-direction: column; align-items: center; gap: 0.35rem;">
-            <span ktIcon="settings" size="2.5rem"></span>
+            <span ktIcon="dashboard" size="2.75rem"></span>
             <small style="color: var(--kt-muted)">outlined (défaut)</small>
           </span>
           <span style="display: inline-flex; flex-direction: column; align-items: center; gap: 0.35rem;">
-            <span ktIcon="settings" font="rounded" size="2.5rem"></span>
+            <span ktIcon="dashboard" font="rounded" size="2.75rem"></span>
             <small style="color: var(--kt-muted)">rounded</small>
           </span>
           <span style="display: inline-flex; flex-direction: column; align-items: center; gap: 0.35rem;">
-            <span ktIcon="favorite" size="2.5rem"></span>
+            <span ktIcon="chat" size="2.75rem"></span>
             <small style="color: var(--kt-muted)">outlined</small>
           </span>
           <span style="display: inline-flex; flex-direction: column; align-items: center; gap: 0.35rem;">
-            <span ktIcon="favorite" font="rounded" size="2.5rem"></span>
+            <span ktIcon="chat" font="rounded" size="2.75rem"></span>
             <small style="color: var(--kt-muted)">rounded</small>
           </span>
         </kt-doc-example>
@@ -240,8 +240,8 @@ export class IconsDemo {
 <span ktIcon="favorite" fill style="color: var(--kt-danger)"></span>`;
 
   protected readonly fontSnippet = `<!-- Police par défaut (outlined) vs police enregistrée (rounded). -->
-<span ktIcon="settings"></span>
-<span ktIcon="settings" font="rounded"></span>`;
+<span ktIcon="dashboard"></span>
+<span ktIcon="dashboard" font="rounded"></span>`;
 
   protected readonly registrySnippet = `// app-icons.ts — UNE seule source : cet objet TYPE et FOURNIT le registre.
 export const APP_ICON_FONTS = {
