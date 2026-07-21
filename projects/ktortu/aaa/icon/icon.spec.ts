@@ -8,13 +8,14 @@ import { KtIconHarness } from './icon.harness';
 
 @Component({
   imports: [KtIcon],
-  template: `<span [ktIcon]="name()" [font]="font()" [ariaLabel]="ariaLabel()" [size]="size()"></span>`,
+  template: `<span [ktIcon]="name()" [font]="font()" [ariaLabel]="ariaLabel()" [size]="size()" [fill]="fill()"></span>`,
 })
 class TestHost {
   name = signal<string>('');
   font = signal<string | undefined>(undefined);
   ariaLabel = signal<string | undefined>(undefined);
   size = signal<string | undefined>(undefined);
+  fill = signal(false);
 }
 
 // Hôte en mode PROJECTION (set à classes) : ktIcon vide + contenu projeté.
@@ -209,6 +210,36 @@ describe('Icon', () => {
       host.font.set('does-not-exist');
       fixture.detectChanges();
       expect(el.style.getPropertyValue('--kt-icon-font')).toBe('');
+    });
+  });
+
+  describe('fill (rempli / contour)', () => {
+    it('should not set any variation by default (contour)', () => {
+      setup();
+      host.name.set('favorite');
+      fixture.detectChanges();
+      expect(el.style.getPropertyValue('--kt-icon-font-variation')).toBe('');
+    });
+
+    it('should force FILL 1 when [fill] is set, without a registry', () => {
+      setup();
+      host.name.set('favorite');
+      host.fill.set(true);
+      fixture.detectChanges();
+      expect(el.style.getPropertyValue('--kt-icon-font-variation')).toBe("'FILL' 1");
+    });
+
+    it('should append FILL 1 while preserving the registry axes (last duplicate axis wins)', () => {
+      setup([
+        provideKtIcon({
+          fonts: { rounded: { family: 'Material Symbols Rounded', variationSettings: "'FILL' 0, 'wght' 300" } },
+          defaultFont: 'rounded',
+        }),
+      ]);
+      host.name.set('favorite');
+      host.fill.set(true);
+      fixture.detectChanges();
+      expect(el.style.getPropertyValue('--kt-icon-font-variation')).toBe("'FILL' 0, 'wght' 300, 'FILL' 1");
     });
   });
 

@@ -4,6 +4,7 @@ import {
   InjectionToken,
   PLATFORM_ID,
   Provider,
+  booleanAttribute,
   computed,
   effect,
   inject,
@@ -127,9 +128,9 @@ export function provideKtIcon<F extends Record<string, KtIconFont>>(config: {
  *
  * @example
  * ```html
- * <!-- Ligature autonome, taille et couleur héritées du contexte -->
+ * <!-- Ligature autonome, taille et couleur héritées du contexte ; `fill` = version remplie -->
  * <span ktIcon="home"></span>
- * <span ktIcon="favorite" font="rounded" size="2rem" style="color: var(--kt-primary)"></span>
+ * <span ktIcon="favorite" fill size="2rem" style="color: var(--kt-primary)"></span>
  *
  * <!-- Set à classes (Font Awesome) : projection, ktIcon reste vide -->
  * <span ktIcon><i class="fa-solid fa-user"></i></span>
@@ -176,6 +177,11 @@ export class KtIcon {
   /** Taille de l'icône (longueur CSS, ex. `'24px'`, `'2rem'`, `'1.5em'`). @default `1.25em` (héritée du contexte) */
   readonly size = input<string>();
 
+  /** Version **remplie** plutôt que contour, pour les polices variables à axe `FILL` (Material Symbols).
+      Force `FILL` à 1 en préservant les autres axes (graisse…) ; sans effet sur une police sans cet axe.
+      @default false (contour) */
+  readonly fill = input<boolean, unknown>(false, { transform: booleanAttribute });
+
   /** Nom rendu en ligature : coupé, `null` si vide (aucun `::before`, laisse place à la projection). */
   protected readonly renderedName = computed(() => this.ktIcon()?.trim() || null);
 
@@ -194,7 +200,13 @@ export class KtIcon {
     const weight = this.resolvedFont()?.weight;
     return weight == null ? null : String(weight);
   });
-  protected readonly resolvedVariation = computed(() => this.resolvedFont()?.variationSettings ?? null);
+  protected readonly resolvedVariation = computed(() => {
+    const base = this.resolvedFont()?.variationSettings ?? null;
+    if (!this.fill()) return base;
+    // Rempli : on force l'axe FILL à 1. En cas d'axe dupliqué, la DERNIÈRE valeur prime (spec CSS
+    // Fonts) → on préserve les autres axes de la police du registre (graisse, GRAD, opsz…).
+    return base ? `${base}, 'FILL' 1` : `'FILL' 1`;
+  });
 
   constructor() {
     // Garde-fou dev : un alias absent du registre (input [font] OU defaultFont) retombe silencieusement

@@ -75,6 +75,14 @@ declare module '@ktortu/aaa/icon' {
           <span ktIcon="circle" style="color: seagreen"></span>
         </kt-doc-example>
         <kt-doc-code language="html" [code]="colorSnippet" />
+
+        <kt-doc-example label="Rempli ou contour — attribut fill (polices variables)">
+          <span ktIcon="favorite" size="2.5rem"></span>
+          <span ktIcon="favorite" fill size="2.5rem" style="color: var(--kt-danger)"></span>
+          <span ktIcon="settings" size="2.5rem"></span>
+          <span ktIcon="settings" fill size="2.5rem"></span>
+        </kt-doc-example>
+        <kt-doc-code language="html" [code]="fillSnippet" />
       </kt-doc-section>
 
       <!-- ============================ CHOIX DE POLICE ============================ -->
@@ -225,6 +233,11 @@ export class IconsDemo {
 <span ktIcon="circle"></span>
 <span ktIcon="circle" style="color: var(--kt-primary)"></span>
 <span ktIcon="circle" style="color: var(--kt-danger)"></span>`;
+
+  protected readonly fillSnippet = `<!-- Contour par défaut ; ajoutez fill pour la version remplie
+     (axe FILL des polices variables — Material Symbols). Les autres axes sont préservés. -->
+<span ktIcon="favorite"></span>
+<span ktIcon="favorite" fill style="color: var(--kt-danger)"></span>`;
 
   protected readonly fontSnippet = `<!-- Police par défaut (outlined) vs police enregistrée (rounded). -->
 <span ktIcon="settings"></span>
