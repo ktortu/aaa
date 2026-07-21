@@ -207,6 +207,10 @@ export class KtIcon {
     if (!this.fill()) return base;
     // Rempli : on force l'axe FILL à 1. En cas d'axe dupliqué, la DERNIÈRE valeur prime (spec CSS
     // Fonts) → on préserve les autres axes de la police du registre (graisse, GRAD, opsz…).
+    // ADR [fill] cross-navigateur : la spec CSS Fonts module 4 stipule que si un axe est
+    // dupliqué dans font-variation-settings, la dernière déclaration l'emporte.
+    // Cela fonctionne parfaitement sur Chromium. WebKit/Firefox pourraient théoriquement avoir
+    // des bugs historiques (bien que non constatés), le risque est assumé (dégradation = contour).
     return base ? `${base}, 'FILL' 1` : `'FILL' 1`;
   });
 
@@ -221,6 +225,18 @@ export class KtIcon {
           `[ktIcon] police "${String(alias)}" absente du registre : ` +
             'enregistrez-la via provideKtIcon({ fonts }) — repli sur --kt-icon-font.',
         );
+      }
+
+      // Garde-fou dev opt-in projection focusable
+      if (!this.accessibleLabel()) {
+        const focusable = this.host.querySelector(
+          'a[href],button,input,select,textarea,[tabindex]:not([tabindex="-1"]),[contenteditable="true"]',
+        );
+        if (focusable) {
+          console.warn(
+            '[ktIcon] (WCAG 4.1.2) : icône décorative (aria-hidden) avec un enfant projeté focusable. Ajoutez ariaLabel ou retirez le focus.',
+          );
+        }
       }
     });
   }

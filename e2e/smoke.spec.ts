@@ -16,6 +16,8 @@ for (const route of routes) {
 
 test('la nav route vers chaque démo', async ({ page }) => {
   await page.goto('/buttons');
+  await expect(page.locator('.kt-icon[data-icon]').first()).toBeVisible();
+
   await page.getByRole('link', { name: 'Select', exact: true }).click();
   await expect(page).toHaveURL(/\/select$/);
   await expect(page.locator('kt-select').first()).toBeVisible();

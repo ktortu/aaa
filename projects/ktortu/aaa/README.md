@@ -40,7 +40,7 @@ export class Exemple {
 ```
 
 Points d'entrée TypeScript : `@ktortu/aaa/button`, `/card`, `/dialog`, `/layout`, `/menu`, `/snackbar`, `/tabs`,
-`/tooltip`, `/forms`, `/cdk` (breakpoints, viewport, sheet-drag, id-generator) et `/i18n`
+`/tooltip`, `/forms`, `/icon` (icônes), `/cdk` (breakpoints, viewport, sheet-drag, id-generator) et `/i18n`
 (traductions). La racine `@ktortu/aaa` ré-exporte tout par commodité, mais importer depuis le
 point d'entrée précis préserve le tree-shaking. Les thèmes sont des fichiers CSS (cf. §Styles),
 pas un point d'entrée TypeScript.
@@ -169,6 +169,7 @@ Bundles disponibles :
 | `@ktortu/aaa/snackbar.css`   | snackbar (requiert l'overlay CDK + `a11y-prebuilt.css`)      |
 | `@ktortu/aaa/forms.css`      | base des formulaires (champs, chips, switch)                 |
 | `@ktortu/aaa/tabs.css`       | onglets                                                      |
+| `@ktortu/aaa/icon.css`       | icônes (`ktIcon`)                                            |
 
 > `foundation.css` doit **toujours** être importé en premier (les bundles composant en dérivent).
 > Si vous utilisez plusieurs composants, l'agrégat `@ktortu/aaa/styles.css` fait tout cela dans le
@@ -176,6 +177,8 @@ Bundles disponibles :
 >
 > Les formulaires « riches » (Select, MultiSelect, Field, Chips) embarquent leur CSS via les
 > composants eux-mêmes (`styleUrl`) : rien à importer en plus pour ceux-ci.
+
+> **Note icônes remplies** : L'utilisation de `[fill]` ou `fill` sur un `ktIcon` exige de charger une police dont l'axe `FILL` est ajustable (ex. Material Symbols avec l'axe dans la requête URL).
 
 ## Développement
 

@@ -72,15 +72,29 @@ declare module '@ktortu/aaa/icon' {
           <span ktIcon="circle"></span>
           <span ktIcon="circle" style="color: var(--kt-primary)"></span>
           <span ktIcon="circle" style="color: var(--kt-danger)"></span>
-          <span ktIcon="circle" style="color: seagreen"></span>
+          <span ktIcon="circle" style="color: var(--kt-success)"></span>
         </kt-doc-example>
         <kt-doc-code language="html" [code]="colorSnippet" />
 
         <kt-doc-example label="Rempli ou contour — attribut fill (polices variables)">
-          <span ktIcon="favorite" size="2.5rem"></span>
-          <span ktIcon="favorite" fill size="2.5rem" style="color: var(--kt-danger)"></span>
-          <span ktIcon="settings" size="2.5rem"></span>
-          <span ktIcon="settings" fill size="2.5rem"></span>
+          <button ktButton mode="text" (click)="isFavorite = !isFavorite">
+            <span
+              ktIcon="favorite"
+              [fill]="isFavorite"
+              size="1.5rem"
+              [style.color]="isFavorite ? 'var(--kt-danger)' : 'currentColor'"
+            ></span>
+            Favori
+          </button>
+          <button ktButton mode="text" (click)="isRating = !isRating">
+            <span
+              ktIcon="star"
+              [fill]="isRating"
+              size="1.5rem"
+              [style.color]="isRating ? 'var(--kt-warning)' : 'currentColor'"
+            ></span>
+            Note
+          </button>
         </kt-doc-example>
         <kt-doc-code language="html" [code]="fillSnippet" />
       </kt-doc-section>
@@ -174,7 +188,7 @@ declare module '@ktortu/aaa/icon' {
           <span style="display: inline-flex; align-items: center; gap: 0.4rem;">
             <span ktIcon="download"></span> Télécharger
           </span>
-          <span style="display: inline-flex; align-items: center; gap: 0.4rem; color: seagreen;">
+          <span style="display: inline-flex; align-items: center; gap: 0.4rem; color: var(--kt-success);">
             <span ktIcon="check_circle"></span> Terminé
           </span>
           <span ktIcon="warning" ariaLabel="Attention" style="color: var(--kt-danger)"></span>
@@ -219,6 +233,9 @@ declare module '@ktortu/aaa/icon' {
   `,
 })
 export class IconsDemo {
+  isFavorite = false;
+  isRating = false;
+
   protected readonly basicSnippet = `<span ktIcon="home"></span>
 <span ktIcon="search"></span>
 <span ktIcon="favorite"></span>
@@ -236,8 +253,11 @@ export class IconsDemo {
 
   protected readonly fillSnippet = `<!-- Contour par défaut ; ajoutez fill pour la version remplie
      (axe FILL des polices variables — Material Symbols). Les autres axes sont préservés. -->
-<span ktIcon="favorite"></span>
-<span ktIcon="favorite" fill style="color: var(--kt-danger)"></span>`;
+<button ktButton mode="text" (click)="isFavorite = !isFavorite">
+  <span ktIcon="favorite" [fill]="isFavorite"
+        [style.color]="isFavorite ? 'var(--kt-danger)' : 'currentColor'"></span>
+  Favori
+</button>`;
 
   protected readonly fontSnippet = `<!-- Police par défaut (outlined) vs police enregistrée (rounded). -->
 <span ktIcon="dashboard"></span>

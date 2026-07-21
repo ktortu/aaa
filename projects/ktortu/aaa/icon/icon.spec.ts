@@ -325,5 +325,62 @@ describe('Icon', () => {
       const icon = await loader.getHarness(KtIconHarness.with({ name: 'settings' }));
       expect(await icon.getName()).toBe('settings');
     });
+
+    it('should target an icon by fill state via the harness predicate', async () => {
+      host.name.set('favorite');
+      host.fill.set(true);
+      fixture.detectChanges();
+      const icon = await loader.getHarness(KtIconHarness.with({ filled: true }));
+      expect(await icon.isFilled()).toBe(true);
+    });
+
+    it('should expose size and font family', async () => {
+      host.size.set('2rem');
+      host.name.set('home');
+      fixture.detectChanges();
+      const icon = await loader.getHarness(KtIconHarness);
+      expect(await icon.getSize()).toBe('2rem');
+      expect(await icon.getFontFamily()).toBe('');
+    });
+  });
+});
+
+@Component({
+  imports: [KtIcon],
+  template: `<span ktIcon="favorite" fill></span>`,
+})
+class BooleanFillHost {}
+
+describe('Icon (boolean attribute shortcut)', () => {
+  it('should accept the fill attribute without a binding (booleanAttribute)', () => {
+    TestBed.configureTestingModule({ imports: [BooleanFillHost] });
+    const f = TestBed.createComponent(BooleanFillHost);
+    f.detectChanges();
+    const icon: HTMLElement = f.nativeElement.querySelector('.kt-icon');
+    expect(icon.style.getPropertyValue('--kt-icon-font-variation')).toBe("'FILL' 1");
+    f.destroy();
+  });
+});
+
+@Component({
+  imports: [KtIcon],
+  template: `<span ktIcon><button>Focusable</button></span>`,
+})
+class FocusableChildHost {}
+
+describe('Icon (WCAG 4.1.2 audit)', () => {
+  it('should warn when a decorative icon contains a focusable child', async () => {
+    const warn = vi.spyOn(console, 'warn').mockImplementation(() => undefined);
+    TestBed.configureTestingModule({
+      imports: [FocusableChildHost],
+      providers: [{ provide: KT_AUDIT_ENABLED, useValue: true }],
+    });
+    const f = TestBed.createComponent(FocusableChildHost);
+    f.detectChanges();
+    await f.whenStable();
+
+    expect(warn).toHaveBeenCalledWith(expect.stringContaining('[ktIcon] (WCAG 4.1.2)'));
+    warn.mockRestore();
+    f.destroy();
   });
 });

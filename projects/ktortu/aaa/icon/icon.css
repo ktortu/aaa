@@ -1,5 +1,5 @@
 @layer kt-aaa.components {
-  /* Styles de la primitive d'icône autonome [ktIcon]. Global : enregistré dans angular.json > styles,
+  /* Styles de la primitive d'icône autonome [ktIcon]. Global : chargé via l'agrégat styles.css,
    applicable partout où la directive est posée. Ciblé par la CLASSE `.kt-icon` (posée en dur sur
    l'hôte par la directive) et NON par l'attribut de sélecteur : un binding `[ktIcon]="x"` ne reflète
    aucun attribut dans le DOM, la classe reste le seul marqueur fiable. Leviers = BASCULES NON déclarées
@@ -45,6 +45,7 @@
   .kt-icon[data-icon] {
     inline-size: 1em;
     block-size: 1em;
+    overflow: hidden; /* Fallback pour WebView < 90 */
     overflow: var(--kt-icon-overflow, clip);
     overflow-clip-margin: 0.15em;
   }

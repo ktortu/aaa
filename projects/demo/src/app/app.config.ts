@@ -20,7 +20,10 @@ export const appConfig: ApplicationConfig = {
     // Registre de police d'icônes de la démo (racine) : la primitive [ktIcon] restitue ainsi le
     // rendu des anciens spans manuels (Material Symbols Outlined, FILL 0 / wght 300).
     provideKtIcon({
-      fonts: { outlined: { family: 'Material Symbols Outlined', variationSettings: "'FILL' 0, 'wght' 300" } },
+      fonts: {
+        outlined: { family: 'Material Symbols Outlined', variationSettings: "'FILL' 0, 'wght' 300" },
+        rounded: { family: 'Material Symbols Rounded', variationSettings: "'FILL' 0, 'wght' 300" },
+      },
       defaultFont: 'outlined',
     }),
     // Toute la lib en français en un appel. On ne surcharge que les quelques libellés select

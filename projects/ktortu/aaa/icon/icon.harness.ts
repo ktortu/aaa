@@ -11,6 +11,8 @@ import { BaseHarnessFilters, ComponentHarness, HarnessPredicate } from '@angular
 export interface KtIconHarnessFilters extends BaseHarnessFilters {
   /** Filtre par nom d'icône (ligature, attribut `data-icon`). */
   name?: string | RegExp;
+  /** Filtre par état rempli (axe FILL). */
+  filled?: boolean;
 }
 
 /** Harness pour l'hôte d'une directive `[ktIcon]` (ciblé par sa classe stable `.kt-icon`). */
@@ -18,9 +20,11 @@ export class KtIconHarness extends ComponentHarness {
   static hostSelector = '.kt-icon';
 
   static with(filters: KtIconHarnessFilters = {}): HarnessPredicate<KtIconHarness> {
-    return new HarnessPredicate(KtIconHarness, filters).addOption('name', filters.name, async (harness, name) =>
-      HarnessPredicate.stringMatches((await harness.getName()) ?? '', name),
-    );
+    return new HarnessPredicate(KtIconHarness, filters)
+      .addOption('name', filters.name, async (harness, name) =>
+        HarnessPredicate.stringMatches((await harness.getName()) ?? '', name),
+      )
+      .addOption('filled', filters.filled, async (harness, filled) => (await harness.isFilled()) === filled);
   }
 
   /** Nom de l'icône rendue en ligature (`data-icon`), ou `null` en mode projeté. */
@@ -41,5 +45,21 @@ export class KtIconHarness extends ComponentHarness {
   /** Rôle ARIA (`img` quand un `ariaLabel` est fourni, sinon `null`). */
   async getRole(): Promise<string | null> {
     return (await this.host()).getAttribute('role');
+  }
+
+  /** L'icône est-elle en version remplie (axe FILL présent) ? */
+  async isFilled(): Promise<boolean> {
+    const variation = await (await this.host()).getCssValue('--kt-icon-font-variation');
+    return variation.includes("'FILL' 1") || variation.includes('"FILL" 1');
+  }
+
+  /** Taille de l'icône (--kt-icon-size). */
+  async getSize(): Promise<string> {
+    return await (await this.host()).getCssValue('--kt-icon-size');
+  }
+
+  /** Famille de police (--kt-icon-font). */
+  async getFontFamily(): Promise<string> {
+    return await (await this.host()).getCssValue('--kt-icon-font');
   }
 }
