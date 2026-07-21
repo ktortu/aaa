@@ -1,0 +1,7 @@
+@layer kt-aaa.tokens, kt-aaa.base, kt-aaa.components;
+
+/* Icône autonome (directive ktIcon) : apparence pure (aucun token dédié — cf. les bascules
+   --kt-icon-font / --kt-icon-font-weight / --kt-icon-size du socle). Nécessite le socle
+   (@ktortu/aaa/foundation.css) et le chargement d'une police d'icônes côté application.
+     @import '@ktortu/aaa/icon.css'; */
+@import '../icon/icon.css';

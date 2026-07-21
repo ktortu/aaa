@@ -143,6 +143,17 @@ export const FOUNDATIONS_TOKENS: readonly TokenGroup[] = [
         description: 'Famille de police utilisée pour le rendu par ligature des icônes.',
       },
       { name: '--kt-icon-font-weight', default: 'normal', description: "Graisse de la police d'icônes." },
+      {
+        name: '--kt-icon-font-variation',
+        default: 'normal',
+        description:
+          'font-variation-settings des icônes autonomes [ktIcon] (polices variables, ex. FILL/wght). Posé par la police du registre.',
+      },
+      {
+        name: '--kt-icon-size',
+        default: '1.25em',
+        description: "Taille des icônes autonomes [ktIcon] (relative au texte). Posée par l'attribut size.",
+      },
     ],
   },
 ];
@@ -197,41 +208,3 @@ providers: [
 providers: [{ provide: KT_FIELD_CONFIG, useValue: { clearLabel: 'Effacer' } }];
 
 // Résolution effective d'un libellé : input() ?? token de config ?? défaut anglais.`;
-
-/** Gestion des icônes : ligatures, variables CSS ou markup projeté. */
-export const FOUNDATIONS_ICONS_SNIPPET = `<!-- 1) Par défaut : rendu CSS par ligature.
-     Il suffit de charger le fichier de police dans votre index.html. -->
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" />
-
-<!-- Utilisation standard : -->
-<button ktButton icon="download">Télécharger</button>
-<kt-text-field label="Recherche" icon="search" />
-
-
-<!-- 2) Personnalisation de la police d'icônes (ex. Material Symbols Rounded) :
-     Surchargez la variable --kt-icon-font au niveau global ou local. -->
-<style>
-  :root {
-    --kt-icon-font: 'Material Symbols Rounded';
-  }
-</style>
-
-
-<!-- 3) Sets d'icônes sans ligature (ex. Font Awesome ou SVG en ligne) :
-     Ne pas utiliser l'attribut [icon]. Projetez directement le markup HTML. -->
-<!-- Boutons : directement dans le contenu projeté -->
-<button ktButton>
-  <i class="fas fa-download"></i>
-  Télécharger
-</button>
-
-<button ktButton iconOnly ariaLabel="Fermer">
-  <i class="fas fa-times"></i>
-</button>
-
-<!-- Champs : via les templates de préfixe ou suffixe -->
-<kt-text-field label="Lien de profil" [prefix]="faIcon">
-  <ng-template #faIcon>
-    <i class="fas fa-user"></i>
-  </ng-template>
-</kt-text-field>`;

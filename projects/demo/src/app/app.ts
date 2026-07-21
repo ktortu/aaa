@@ -4,6 +4,7 @@ import { NavigationEnd, Router, RouterLink, RouterLinkActive, RouterOutlet } fro
 import { filter, map } from 'rxjs';
 
 import { KtButton } from '@ktortu/aaa/button';
+import { KtIcon } from '@ktortu/aaa/icon';
 import { KT_THEMES, KT_THEME_MODES, KtTheme } from './theme/theme';
 import { NAV_ITEMS } from './shared/nav';
 
@@ -25,6 +26,7 @@ import { injectThemeDialog } from './theme/theme-dialog/theme-dialog';
     RouterLink,
     RouterLinkActive,
     KtButton,
+    KtIcon,
     KtLayoutComponent,
     KtSidenavComponent,
     KtToolbarComponent,
