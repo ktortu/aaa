@@ -1,0 +1,60 @@
+name: Publish to npm
+
+# Se déclenche uniquement quand tu PUBLIES une GitHub Release (pas un brouillon).
+# La Release crée/pointe un tag (ex. v0.9.10) : c'est ce tag qui pilote la version publiée.
+on:
+  release:
+    types: [published]
+
+# Droits minimaux du job.
+permissions:
+  contents: read
+  id-token: write # ← indispensable au Trusted Publishing (OIDC) : autorise GitHub
+  #   à générer le jeton éphémère qui prouve son identité à npm.
+  #   Aucun NPM_TOKEN n'est stocké nulle part.
+
+# Empêche deux publications simultanées de la même release.
+concurrency:
+  group: publish-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  publish:
+    name: Build & publish @ktortu/aaa
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          registry-url: 'https://registry.npmjs.org'
+
+      # Le Trusted Publishing exige npm >= 11.5.1.
+      - name: Mettre npm à jour
+        run: npm install -g npm@latest
+
+      - name: Install
+        run: npm ci
+
+      # Garde-fou : la version de la lib DOIT correspondre au tag de la release.
+      # Sinon on refuse de publier (évite de publier une version incohérente avec le tag).
+      - name: Vérifier version == tag
+        run: |
+          PKG="$(node -p "require('./projects/ktortu/aaa/package.json').version")"
+          TAG="${GITHUB_REF_NAME#v}"   # enlève le "v" de "v0.9.10" -> "0.9.10"
+          echo "package.json=$PKG | tag=$TAG"
+          if [ "$PKG" != "$TAG" ]; then
+            echo "::error::Incohérence : package.json ($PKG) ne correspond pas au tag ($TAG)."
+            exit 1
+          fi
+
+      - name: Build lib
+        run: npm run build:lib
+
+      # Publie le paquet buildé. Le Trusted Publishing détecte le jeton OIDC
+      # (id-token: write) et signe automatiquement la provenance (badge "signed" sur npmjs).
+      - name: Publish
+        run: npm publish
+        working-directory: dist/ktortu/aaa
