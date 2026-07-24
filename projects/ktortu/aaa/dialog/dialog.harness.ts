@@ -15,6 +15,8 @@ export class KtDialogHarness extends ComponentHarness {
   private readonly titleEl = this.locatorForOptional('[ktDialogTitle]');
   private readonly descriptionEl = this.locatorForOptional('[ktDialogDescription]');
   private readonly closeButton = this.locatorForOptional('[ktDialogClose]');
+  private readonly sheetCloseButton = this.locatorForOptional('.kt-dialog-container__sheet-close');
+  private readonly sheetHandle = this.locatorForOptional('.kt-dialog-container__sheet-handle');
 
   /** Rôle ARIA du conteneur (`dialog` par défaut, `alertdialog` si configuré). */
   async getRole(): Promise<string | null> {
@@ -49,6 +51,38 @@ export class KtDialogHarness extends ComponentHarness {
       throw new Error('KtDialogHarness: aucun [ktDialogClose] dans le dialog.');
     }
     await button.click();
+  }
+
+  /**
+   * Le bouton de fermeture AUTO-RENDU de la bottom-sheet est-il présent ? (option `sheetCloseButton`).
+   * Distinct de {@link close} / {@link getCloseLabel}, qui visent le `[ktDialogClose]` du CONTENU
+   * projeté : les deux peuvent coexister (c'est justement ce que le garde-fou dev signale).
+   */
+  async hasSheetCloseButton(): Promise<boolean> {
+    return (await this.sheetCloseButton()) !== null;
+  }
+
+  /** Nom accessible du bouton de fermeture auto-rendu (null s'il n'est pas rendu). */
+  async getSheetCloseLabel(): Promise<string | null> {
+    const button = await this.sheetCloseButton();
+    return button ? button.getAttribute('aria-label') : null;
+  }
+
+  /**
+   * Clique le bouton de fermeture AUTO-RENDU de la bottom-sheet.
+   * Mêmes précautions d'animation que {@link close}.
+   */
+  async closeFromSheetButton(): Promise<void> {
+    const button = await this.sheetCloseButton();
+    if (!button) {
+      throw new Error('KtDialogHarness: aucun bouton de fermeture auto-rendu (option sheetCloseButton absente ?).');
+    }
+    await button.click();
+  }
+
+  /** La poignée décorative de la bottom-sheet est-elle rendue ? (option `sheetHandle`). */
+  async hasSheetHandle(): Promise<boolean> {
+    return (await this.sheetHandle()) !== null;
   }
 
   /** Variante de l'alerte ('success', 'error', 'warning', 'info' ou 'neutral' ; null si absent). */

@@ -6,6 +6,8 @@ import { KT_SNACKBAR_CONFIG } from '@ktortu/aaa/snackbar';
 import type { KtSnackbarConfig } from '@ktortu/aaa/snackbar';
 import { KT_TABS_CONFIG } from '@ktortu/aaa/tabs';
 import type { KtTabsConfig } from '@ktortu/aaa/tabs';
+import { KT_DIALOG_CONFIG } from '@ktortu/aaa/dialog';
+import type { KtDialogConfig } from '@ktortu/aaa/dialog';
 
 /**
  * Agrégat de TOUS les libellés traduisibles de la lib, groupés par famille de composants.
@@ -27,6 +29,8 @@ export interface KtTranslations {
   snackbar?: Partial<KtSnackbarConfig>;
   /** Libellés de la pagination des onglets → {@link KT_TABS_CONFIG}. */
   tabs?: Partial<KtTabsConfig>;
+  /** Libellés du dialog (`sheetCloseLabel`) → {@link KT_DIALOG_CONFIG}. */
+  dialog?: Partial<KtDialogConfig>;
 }
 
 /**
@@ -50,6 +54,7 @@ export function provideKtTranslations(t: KtTranslations): EnvironmentProviders {
   if (t.chips) providers.push({ provide: KT_CHIPS_CONFIG, useValue: t.chips });
   if (t.snackbar) providers.push({ provide: KT_SNACKBAR_CONFIG, useValue: t.snackbar });
   if (t.tabs) providers.push({ provide: KT_TABS_CONFIG, useValue: t.tabs });
+  if (t.dialog) providers.push({ provide: KT_DIALOG_CONFIG, useValue: t.dialog });
   return makeEnvironmentProviders(providers);
 }
 
@@ -74,5 +79,6 @@ export function mergeKtTranslations(base: KtTranslations, over: KtTranslations):
     chips: { ...base.chips, ...over.chips },
     snackbar: { ...base.snackbar, ...over.snackbar },
     tabs: { ...base.tabs, ...over.tabs },
+    dialog: { ...base.dialog, ...over.dialog },
   };
 }

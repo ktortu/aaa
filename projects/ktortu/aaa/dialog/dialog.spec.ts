@@ -6,7 +6,14 @@ import { KtDialogClose } from './dialog-close.directive';
 import { KtDialogDescription } from './dialog-description.directive';
 import { KtDialogTitle } from './dialog-title.directive';
 import { KtDialogContainer } from './dialog-container';
-import { provideKtDialogDefaults, resolveKtDialogPanelClass } from './dialog-config';
+import {
+  DEFAULT_KT_DIALOG_CONFIG,
+  KT_DIALOG_CONFIG,
+  provideKtDialog,
+  provideKtDialogDefaults,
+  resolveKtDialogPanelClass,
+} from './dialog-config';
+import { KtDialogActions, KtDialogFocusInitial } from './dialog-structure';
 import { defineKtDialog, injectKtDialogOpener } from './dialog-opener';
 
 describe('Dialog directives', () => {
@@ -127,6 +134,66 @@ describe('injectKtDialogOpener', () => {
     opener(undefined, { ariaModal: false });
 
     expect(open.mock.calls[0][1]).toMatchObject({ ariaModal: false });
+  });
+
+  it('résout la cascade des options maison et la passe par le canal `container.providers`', () => {
+    // Les `providers` de la config GÉNÉRALE n'atteignent que le portail de CONTENU : seuls ceux
+    // portés par `container` arrivent dans l'injecteur du conteneur. C'est le canal utilisé ici.
+    const open = vi.fn().mockReturnValue({ closed: { subscribe() {} } });
+    TestBed.configureTestingModule({
+      providers: [
+        { provide: Dialog, useValue: { open } },
+        provideKtDialog({ sheetCloseButton: true, sheetCloseLabel: 'Fermer' }),
+      ],
+    });
+
+    const opener = TestBed.runInInjectionContext(() =>
+      injectKtDialogOpener<FakeDialogComponent, void, string>(FakeDialogComponent),
+    );
+    // Option d'ouverture : bat le token ; les clés NON fournies gardent la valeur du token.
+    opener(undefined, { presentation: 'sheet', sheetHandle: false });
+
+    const config = open.mock.calls[0][1];
+    const providers = config.container.providers(config);
+    expect(config.container.type).toBe(KtDialogContainer);
+    expect(providers).toEqual([
+      {
+        provide: KT_DIALOG_CONFIG,
+        useValue: { sheetCloseButton: true, sheetCloseLabel: 'Fermer', sheetHandle: false },
+      },
+    ]);
+    // Les clés maison ne fuient PAS dans la config CDK transmise à `dialog.open`.
+    expect(config).not.toHaveProperty('sheetCloseButton');
+    expect(config).not.toHaveProperty('sheetHandle');
+    expect(config).not.toHaveProperty('sheetCloseLabel');
+  });
+
+  it('sans token ni option, la cascade retombe sur les défauts anglais', () => {
+    const open = vi.fn().mockReturnValue({ closed: { subscribe() {} } });
+    TestBed.configureTestingModule({ providers: [{ provide: Dialog, useValue: { open } }] });
+
+    const opener = TestBed.runInInjectionContext(() =>
+      injectKtDialogOpener<FakeDialogComponent, void, string>(FakeDialogComponent),
+    );
+    opener();
+
+    const config = open.mock.calls[0][1];
+    expect(config.container.providers(config)[0].useValue).toEqual(DEFAULT_KT_DIALOG_CONFIG);
+  });
+
+  it('une option d’ouverture à `undefined` ne masque pas la valeur du token', () => {
+    const open = vi.fn().mockReturnValue({ closed: { subscribe() {} } });
+    TestBed.configureTestingModule({
+      providers: [{ provide: Dialog, useValue: { open } }, provideKtDialog({ sheetCloseButton: true })],
+    });
+
+    const opener = TestBed.runInInjectionContext(() =>
+      injectKtDialogOpener<FakeDialogComponent, void, string>(FakeDialogComponent),
+    );
+    opener(undefined, { sheetCloseButton: undefined });
+
+    const config = open.mock.calls[0][1];
+    expect(config.container.providers(config)[0].useValue.sheetCloseButton).toBe(true);
   });
 });
 
@@ -279,6 +346,237 @@ describe('KtDialogContainer — montage réel (CDK Dialog)', () => {
     const titleEl = document.getElementById(labelledBy!);
     expect(titleEl).toBeTruthy();
     expect(titleEl!.textContent).toContain('Titre du dialog');
+  });
+});
+
+describe('KtDialogContainer — bouton de fermeture et poignée de la bottom-sheet', () => {
+  @Component({ imports: [KtDialogTitle], template: `<h2 ktDialogTitle>Titre</h2>` })
+  class SheetContent {}
+
+  @Component({ template: `` })
+  class SheetHost {
+    readonly open = injectKtDialogOpener(SheetContent, { presentation: 'sheet' });
+  }
+
+  /** Ouvre une sheet avec les options maison données et rend le conteneur monté. */
+  function openSheet(ktConfig?: Parameters<typeof provideKtDialog>[0]): HTMLElement {
+    TestBed.configureTestingModule({
+      providers: [provideKtDialogDefaults(), ...(ktConfig ? [provideKtDialog(ktConfig)] : [])],
+    });
+    const fixture = TestBed.createComponent(SheetHost);
+    fixture.componentInstance.open();
+    TestBed.inject(ApplicationRef).tick();
+    return document.querySelector('.kt-dialog-container') as HTMLElement;
+  }
+
+  const closeButtonOf = (c: HTMLElement) => c.querySelector('.kt-dialog-container__sheet-close') as HTMLButtonElement;
+
+  afterEach(() => {
+    document.querySelectorAll('.cdk-overlay-container, .cdk-overlay-container *').forEach((n) => n.remove());
+  });
+
+  it('ne rend AUCUN bouton de fermeture par défaut (une sheet à en-tête riche a déjà le sien)', () => {
+    const container = openSheet();
+    expect(closeButtonOf(container)).toBeNull();
+    expect(container.querySelector('.kt-dialog-container__layout--closable')).toBeNull();
+  });
+
+  it('rend le bouton quand `sheetCloseButton` est actif, avec le libellé anglais par défaut', () => {
+    const button = closeButtonOf(openSheet({ sheetCloseButton: true }));
+    expect(button).toBeTruthy();
+    expect(button.getAttribute('aria-label')).toBe('Close');
+    // Type explicite : jamais de submit implicite dans un formulaire projeté.
+    expect(button.getAttribute('type')).toBe('button');
+    // Glyphe décoratif : masqué aux technologies d'assistance (le nom vient de l'aria-label).
+    expect(button.querySelector('.kt-dialog-container__sheet-close-icon')?.getAttribute('aria-hidden')).toBe('true');
+  });
+
+  it('marque la carte `--closable` : c’est elle qui réserve la place du titre en CSS', () => {
+    const container = openSheet({ sheetCloseButton: true });
+    expect(container.querySelector('.kt-dialog-container__layout--closable')).toBeTruthy();
+  });
+
+  it('le bouton précède le contenu projeté dans l’ordre du document (ordre de tabulation)', () => {
+    const container = openSheet({ sheetCloseButton: true });
+    const button = closeButtonOf(container);
+    const title = container.querySelector('[ktDialogTitle]') as HTMLElement;
+    // DOCUMENT_POSITION_FOLLOWING : le titre suit le bouton.
+    expect(button.compareDocumentPosition(title) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
+  });
+
+  it('le libellé accessible suit la cascade complète : token < config de l’ouvreur < appel', () => {
+    TestBed.configureTestingModule({
+      providers: [provideKtDialogDefaults(), provideKtDialog({ sheetCloseButton: true, sheetCloseLabel: 'Fermer' })],
+    });
+    @Component({ template: `` })
+    class Host {
+      // Les 3 génériques sélectionnent la surcharge AVEC data, seule à accepter une config par appel.
+      readonly open = injectKtDialogOpener<SheetContent, void, unknown>(SheetContent, {
+        presentation: 'sheet',
+        sheetCloseLabel: 'Refermer', // bat le token…
+      });
+    }
+    const fixture = TestBed.createComponent(Host);
+    fixture.componentInstance.open(undefined, { sheetCloseLabel: 'Quitter' }); // …et l'appel bat tout.
+    TestBed.inject(ApplicationRef).tick();
+
+    const container = document.querySelector('.kt-dialog-container') as HTMLElement;
+    expect(closeButtonOf(container).getAttribute('aria-label')).toBe('Quitter');
+  });
+
+  it('un clic sur le bouton ferme le dialog', () => {
+    TestBed.configureTestingModule({
+      providers: [provideKtDialogDefaults(), provideKtDialog({ sheetCloseButton: true })],
+    });
+    const fixture = TestBed.createComponent(SheetHost);
+    const ref = fixture.componentInstance.open();
+    TestBed.inject(ApplicationRef).tick();
+
+    const closed = vi.fn();
+    ref.closed.subscribe(closed);
+    closeButtonOf(document.querySelector('.kt-dialog-container') as HTMLElement).click();
+    TestBed.inject(ApplicationRef).tick();
+
+    expect(closed).toHaveBeenCalledTimes(1);
+  });
+
+  it('n’est PAS rendu hors présentation sheet, et avertit (dev)', () => {
+    const warn = vi.spyOn(console, 'warn').mockImplementation(() => undefined);
+    TestBed.configureTestingModule({
+      providers: [provideKtDialogDefaults(), provideKtDialog({ sheetCloseButton: true })],
+    });
+    @Component({ template: `` })
+    class CenteredHost {
+      readonly open = injectKtDialogOpener(SheetContent); // présentation 'centered' par défaut
+    }
+    const fixture = TestBed.createComponent(CenteredHost);
+    fixture.componentInstance.open();
+    TestBed.inject(ApplicationRef).tick();
+
+    const container = document.querySelector('.kt-dialog-container') as HTMLElement;
+    expect(closeButtonOf(container)).toBeNull();
+    expect(warn.mock.calls.flat().join(' ')).toContain('`sheetCloseButton` ne s’applique qu’à la présentation');
+    warn.mockRestore();
+  });
+
+  it('n’avertit PAS pour un [ktDialogClose] dans la barre d’ACTIONS (aucune collision visuelle)', () => {
+    // Une action de pied qui ferme au passage (« Annuler », « Copier le lien ») est légitime et ne
+    // double pas la croix ancrée en haut : l'heuristique doit l'ignorer.
+    const warn = vi.spyOn(console, 'warn').mockImplementation(() => undefined);
+    @Component({
+      imports: [KtDialogTitle, KtDialogClose, KtDialogActions],
+      template: `<h2 ktDialogTitle>Titre</h2>
+        <footer ktDialogActions><button ktDialogClose>Annuler</button></footer>`,
+    })
+    class ActionsOnlySheet {}
+    TestBed.configureTestingModule({
+      providers: [provideKtDialogDefaults(), provideKtDialog({ sheetCloseButton: true })],
+    });
+    @Component({ template: `` })
+    class Host {
+      readonly open = injectKtDialogOpener(ActionsOnlySheet, { presentation: 'sheet' });
+    }
+    const fixture = TestBed.createComponent(Host);
+    fixture.componentInstance.open();
+    TestBed.inject(ApplicationRef).tick();
+
+    expect(warn.mock.calls.flat().join(' ')).not.toContain('double bouton de fermeture');
+    warn.mockRestore();
+  });
+
+  it('avertit (dev) quand une croix vit HORS de la barre d’actions (double croix)', () => {
+    const warn = vi.spyOn(console, 'warn').mockImplementation(() => undefined);
+    @Component({
+      imports: [KtDialogTitle, KtDialogClose],
+      template: `<h2 ktDialogTitle>Titre</h2>
+        <button ktDialogClose>Fermer</button>`,
+    })
+    class ComposedSheet {}
+    TestBed.configureTestingModule({
+      providers: [provideKtDialogDefaults(), provideKtDialog({ sheetCloseButton: true })],
+    });
+    @Component({ template: `` })
+    class Host {
+      readonly open = injectKtDialogOpener(ComposedSheet, { presentation: 'sheet' });
+    }
+    const fixture = TestBed.createComponent(Host);
+    fixture.componentInstance.open();
+    TestBed.inject(ApplicationRef).tick();
+
+    expect(warn.mock.calls.flat().join(' ')).toContain('double bouton de fermeture');
+    warn.mockRestore();
+  });
+
+  it('rend la poignée décorative par défaut (ADR-0005)', () => {
+    expect(openSheet().querySelector('.kt-dialog-container__sheet-handle')).toBeTruthy();
+  });
+
+  it('retire la poignée via l’option typée `sheetHandle`', () => {
+    expect(openSheet({ sheetHandle: false }).querySelector('.kt-dialog-container__sheet-handle')).toBeNull();
+  });
+
+  it('honore encore le panelClass déprécié `kt-dialog--no-handle`, en avertissant (dev)', () => {
+    const warn = vi.spyOn(console, 'warn').mockImplementation(() => undefined);
+    TestBed.configureTestingModule({ providers: [provideKtDialogDefaults()] });
+    @Component({ template: `` })
+    class LegacyHost {
+      readonly open = injectKtDialogOpener(SheetContent, {
+        presentation: 'sheet',
+        panelClass: 'kt-dialog--no-handle',
+      });
+    }
+    const fixture = TestBed.createComponent(LegacyHost);
+    fixture.componentInstance.open();
+    TestBed.inject(ApplicationRef).tick();
+
+    const container = document.querySelector('.kt-dialog-container') as HTMLElement;
+    expect(container.querySelector('.kt-dialog-container__sheet-handle')).toBeNull();
+    expect(warn.mock.calls.flat().join(' ')).toContain('déprécié');
+    warn.mockRestore();
+  });
+});
+
+describe('KtDialogContainer — repli de focus initial', () => {
+  afterEach(() => {
+    document.querySelectorAll('.cdk-overlay-container, .cdk-overlay-container *').forEach((n) => n.remove());
+  });
+
+  it('focalise le conteneur quand AUCUN élément ne porte [ktDialogFocusInitial]', () => {
+    // Sans ce repli, le CDK ne focalise rien (son sélecteur ne correspond à aucun élément) : le
+    // focus resterait sur le déclencheur, HORS du dialog, et Tab promènerait dans la page derrière.
+    @Component({ imports: [KtDialogTitle], template: `<h2 ktDialogTitle>Titre</h2>` })
+    class NoMarker {}
+    TestBed.configureTestingModule({ providers: [provideKtDialogDefaults()] });
+    @Component({ template: `` })
+    class Host {
+      readonly open = injectKtDialogOpener(NoMarker);
+    }
+    const fixture = TestBed.createComponent(Host);
+    fixture.componentInstance.open();
+    TestBed.inject(ApplicationRef).tick();
+
+    const container = document.querySelector('.kt-dialog-container') as HTMLElement;
+    expect(document.activeElement).toBe(container);
+  });
+
+  it('ne VOLE pas le focus quand [ktDialogFocusInitial] est présent', () => {
+    @Component({
+      imports: [KtDialogTitle, KtDialogFocusInitial],
+      template: `<h2 ktDialogTitle>Titre</h2>
+        <button ktDialogFocusInitial>Continuer</button>`,
+    })
+    class WithMarker {}
+    TestBed.configureTestingModule({ providers: [provideKtDialogDefaults()] });
+    @Component({ template: `` })
+    class Host {
+      readonly open = injectKtDialogOpener(WithMarker);
+    }
+    const fixture = TestBed.createComponent(Host);
+    fixture.componentInstance.open();
+    TestBed.inject(ApplicationRef).tick();
+
+    const marked = document.querySelector('[ktDialogFocusInitial]') as HTMLElement;
+    expect(document.activeElement).toBe(marked);
   });
 });
 

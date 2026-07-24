@@ -90,14 +90,48 @@ type `Partial<…>`) ou via les helpers `provideKt*` :
 ```ts
 import { KT_BUTTON_CONFIG } from '@ktortu/aaa/button';
 import { provideKtBreakpoints } from '@ktortu/aaa/cdk';
-import { provideKtDialogDefaults } from '@ktortu/aaa/dialog';
+import { provideKtDialog, provideKtDialogDefaults } from '@ktortu/aaa/dialog';
 
 providers: [
   { provide: KT_BUTTON_CONFIG, useValue: { size: 'lg' } },
   provideKtBreakpoints({ tablet: 768, desktop: 1200 }),
-  provideKtDialogDefaults({ maxWidth: '40rem' }),
+  provideKtDialogDefaults({ maxWidth: '40rem' }), // config CDK du dialog
+  provideKtDialog({ sheetCloseButton: true }), // options maison du dialog
 ];
 ```
+
+Le dialog a **deux** providers, complémentaires et sans recouvrement :
+`provideKtDialogDefaults()` porte la config `@angular/cdk/dialog` (plancher a11y, largeurs,
+classes) ; `provideKtDialog()` porte les options propres à la lib (`KT_DIALOG_CONFIG`).
+
+#### Bouton de fermeture des bottom-sheets
+
+`sheetCloseButton` ajoute une croix auto-rendue en haut de la carte, hors flux (cible tactile
+44 px, WCAG 2.5.5). **Désactivée par défaut** — pour une raison de compatibilité, pas d'ergonomie.
+
+`[ktDialogHeader]` ne rend aucune croix : c'est une simple rangée flex, où l'on POSE la sienne
+(`<button ktButton iconOnly icon="close" ktDialogClose>`). Mais comme c'est la composition usuelle,
+activer l'option par défaut ferait apparaître une **deuxième** croix chez ces consommateurs-là sans
+qu'ils aient rien changé. Le conteneur avertit en mode dev si les deux coexistent hors barre
+d'actions.
+
+Recommandée, donc, sur toute sheet qui ne pose pas déjà son propre bouton de fermeture en tête.
+
+Surchargeable par ouverture, comme `presentation` :
+
+```ts
+export const injectShareSheet = () =>
+  shareSheet.injectOpener(ShareSheet, { presentation: 'sheet', sheetCloseButton: true });
+```
+
+La position s'ajuste **en CSS seul** (propriétés logiques, donc correctes en RTL) :
+`--dialog-close-inset-block-start`, `--dialog-close-inset-inline-end`, `--dialog-close-size`,
+`--dialog-close-icon-size`, `--dialog-close-color`, `--dialog-close-bg`, `--dialog-close-glyph`.
+Chacune retombe sur une couche partagée `--kt-sheet-close-*`, pour harmoniser d'un coup ce bouton
+et celui du Select compact.
+
+L'option `sheetHandle: false` retire la poignée décorative (ADR-0005). Elle remplace le
+`panelClass` `kt-dialog--no-handle`, **déprécié** mais toujours honoré.
 
 ## Styles (CSS)
 

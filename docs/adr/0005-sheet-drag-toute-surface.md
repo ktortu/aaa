@@ -147,3 +147,32 @@ scroller en `pointer-events: auto`, fermeture au tap-extérieur portée par le s
 (`KtBodyScrollLock`) — la stratégie `block` du CDK n'était pas appliquée (fond libre de défiler).
 Gardes e2e ajoutées (`dialog.mobile.spec.ts`) : `pointer-events: auto` + body verrouillé, et
 drag qui ferme une sheet à contenu court.
+
+### Suite (2026-07-24) — options typées `sheetHandle` / `sheetCloseButton`
+
+L'opt-out de la poignée, laissé en `panelClass` magique (`kt-dialog--no-handle`) par cet ADR,
+migre vers le token maison `KT_DIALOG_CONFIG` (ADR-0003), créé à cette occasion — le dialog était
+le **seul** entry-point sans token de config propre, ce qui rendait toute option globale
+impossible à typer. La chaîne reste honorée (dépréciée, avertissement dev).
+
+Le même token porte `sheetCloseButton`, une croix auto-rendue en haut de la carte, **désactivée
+par défaut** — par compatibilité, pas par ergonomie. `[ktDialogHeader]` ne rend aucune croix (c'est
+une simple rangée flex), mais un dialog qui en compose un y place usuellement la sienne à la main :
+activer l'option par défaut ferait apparaître une **deuxième** croix chez ces consommateurs-là sans
+qu'ils aient rien changé. Un garde-fou dev signale la coexistence (hors barre d'actions, où un
+`[ktDialogClose]` est légitime).
+
+Deux invariants de cet ADR encadrent ce bouton :
+
+- **aucun `touch-action`** dessus — la sheet doit rester saisissable au travers (garde e2e :
+  « drag démarré SUR la croix ferme par geste ») ;
+- **ancrage sur la carte, jamais sur le conteneur** — celui-ci est le scroller à snap, un ancrage
+  dessus suivrait le geste et sortirait de l'écran.
+
+Le passage des options de l'ouvreur au conteneur emprunte le canal `container: { type, providers }`
+du CDK : les `providers` de la config **générale**, eux, n'atteignent que le portail de contenu.
+
+Corrigé au passage (indépendant) : avec `autoFocus` réglé sur un **sélecteur**, le CDK n'a aucun
+repli quand le sélecteur ne correspond à rien — le focus restait sur le déclencheur, hors du
+dialogue. `KtDialogContainer` rattrape désormais via `_focusTrapped` en focalisant le conteneur
+(jamais un bouton : atterrir sur « Fermer » est un anti-pattern lecteur d'écran).
