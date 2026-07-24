@@ -3,16 +3,33 @@ import { ComponentType } from '@angular/cdk/portal';
 import { ViewContainerRef, inject } from '@angular/core';
 import { KtViewport, KtIdGenerator } from '@ktortu/aaa/cdk';
 
-import { KT_DIALOG_AAA_DEFAULTS, KtDialogPresentation, resolveKtDialogPanelClass } from './dialog-config';
+import {
+  DEFAULT_KT_DIALOG_CONFIG,
+  KT_DIALOG_AAA_DEFAULTS,
+  KT_DIALOG_CONFIG,
+  KtDialogConfig,
+  KtDialogPresentation,
+  resolveKtDialogPanelClass,
+} from './dialog-config';
 import { KtDialogContainer } from './dialog-container';
 
-/** Config d'ouverture sans le champ `data` (fourni séparément, typé), enrichie de `presentation`. */
-export type KtDialogOpenerConfig<D, R, C> = Omit<DialogConfig<D, DialogRef<R, C>>, 'data'> & {
-  /** Présentation du dialog (cf. `KtDialogPresentation`) — choisie par le dev. Résolue à CHAQUE
-      ouverture : les variantes responsive lisent le signal d'écran compact. Défaut : `'centered'`.
-      Combinée à un éventuel `panelClass` additionnel. */
-  presentation?: KtDialogPresentation;
-};
+/**
+ * Config d'ouverture sans le champ `data` (fourni séparément, typé), enrichie de `presentation` et
+ * des options maison de {@link KtDialogConfig} (surcharge par ouverture de `KT_DIALOG_CONFIG`).
+ */
+export type KtDialogOpenerConfig<D, R, C> = Omit<DialogConfig<D, DialogRef<R, C>>, 'data'> &
+  Partial<KtDialogConfig> & {
+    /** Présentation du dialog (cf. `KtDialogPresentation`) — choisie par le dev. Résolue à CHAQUE
+        ouverture : les variantes responsive lisent le signal d'écran compact. Défaut : `'centered'`.
+        Combinée à un éventuel `panelClass` additionnel. */
+    presentation?: KtDialogPresentation;
+  };
+
+/** Retire les clés à `undefined` : une option NON fournie à l'ouverture ne doit pas écraser
+    la valeur du token global (une clé absente et une clé à `undefined` sont équivalentes ici). */
+function definedOnly<T extends object>(source: T): Partial<T> {
+  return Object.fromEntries(Object.entries(source).filter(([, value]) => value !== undefined)) as Partial<T>;
+}
 
 /**
  * ⚠️ API BAS-NIVEAU — n'utilisez PAS ceci par défaut. Pour implémenter un dialog, passez par
@@ -53,12 +70,27 @@ export function injectKtDialogOpener<C, D, R = unknown>(
   // Optionnel : hors d'un arbre de vue (ex. service root), il n'y a pas de ViewContainerRef.
   const viewContainerRef = inject(ViewContainerRef, { optional: true }) ?? undefined;
   const idGen = inject(KtIdGenerator);
+  // Options maison au niveau application (partielles) : socle de la cascade résolue ci-dessous.
+  const appKtConfig = inject(KT_DIALOG_CONFIG, { optional: true });
 
   return (data?: D, config?: KtDialogOpenerConfig<D, R, C>): DialogRef<R, C> => {
     // La présentation (choisie par le dev) est résolue ICI, à l'ouverture : les variantes
     // responsive lisent le signal d'écran compact. Le panelClass final = présentation concrète + extras.
-    const { presentation, panelClass, ...rest } = { ...baseConfig, ...config };
+    const { presentation, panelClass, sheetCloseButton, sheetCloseLabel, sheetHandle, ...rest } = {
+      ...baseConfig,
+      ...config,
+    };
     const extra = panelClass ? (Array.isArray(panelClass) ? panelClass : [panelClass]) : [];
+
+    // Cascade des options maison, résolue UNE SEULE FOIS ici (ADR-0003) : défaut → token
+    // application → option d'ouverture. Le conteneur ne relit JAMAIS le token de son côté ; il
+    // reçoit cette valeur déjà résolue par le canal `container.providers` du CDK (les
+    // `providers` de la config générale, eux, n'atteignent QUE le portail de contenu).
+    const ktConfig: Required<KtDialogConfig> = {
+      ...DEFAULT_KT_DIALOG_CONFIG,
+      ...definedOnly(appKtConfig ?? {}),
+      ...definedOnly({ sheetCloseButton, sheetCloseLabel, sheetHandle }),
+    };
     // Dédoublonné : une classe déjà fournie par la présentation (ex. `kt-dialog`) et repassée
     // en `panelClass` par le consommateur ne doit pas apparaître deux fois.
     const merged = [...new Set([...resolveKtDialogPanelClass(presentation, viewport.isCompact()), ...extra])];
@@ -72,7 +104,11 @@ export function injectKtDialogOpener<C, D, R = unknown>(
       // consommateur n'a pas câblé provideKtDialogDefaults(). `...rest` (config par appel) prime.
       ...KT_DIALOG_AAA_DEFAULTS,
       viewContainerRef,
-      container: KtDialogContainer,
+      // Canal TYPÉ vers le conteneur : ces providers-là atterrissent bien dans SON injecteur.
+      container: {
+        type: KtDialogContainer,
+        providers: () => [{ provide: KT_DIALOG_CONFIG, useValue: ktConfig }],
+      },
       ariaLabelledBy: titleId,
       ariaDescribedBy: descId,
       ...rest,

@@ -60,6 +60,9 @@ export const KT_FR_TRANSLATIONS: KtTranslations = {
     previousLabel: 'Onglets précédents',
     nextLabel: 'Onglets suivants',
   },
+  dialog: {
+    sheetCloseLabel: 'Fermer',
+  },
 };
 
 /**

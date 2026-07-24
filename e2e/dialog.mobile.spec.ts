@@ -102,6 +102,72 @@ test.describe('Dialog (mobile)', () => {
     expect(await page.evaluate(() => getComputedStyle(document.body).overflow)).not.toBe('hidden');
   });
 
+  test.describe('bouton de fermeture auto-rendu (sheetCloseButton)', () => {
+    /** Ouvre la sheet à titre nu de la démo. `withOption` choisit entre les deux ouvreurs du MÊME
+        composant : avec `sheetCloseButton`, ou sans (défaut de la lib). */
+    async function openPlainSheet(page: import('@playwright/test').Page, withOption = true) {
+      const label = withOption ? 'Avec la croix auto-rendue' : 'Sans (défaut)';
+      await page.getByRole('button', { name: label }).click();
+      const container = page.locator('.cdk-dialog-container');
+      await expect(container).toBeVisible();
+      await settleSheetOpen(container);
+      return container;
+    }
+
+    test('le MÊME composant n’a AUCUNE croix sans l’option (défaut désactivé)', async ({ page }) => {
+      const container = await openPlainSheet(page, false);
+      await expect(container.locator('.kt-dialog-container__sheet-close')).toHaveCount(0);
+      // La sortie reste assurée : le tap au-dessus de la carte ferme (WCAG 2.5.7 déjà satisfait).
+      await page.touchscreen.tap(page.viewportSize()!.width / 2, 40);
+      await expect(container).toBeHidden();
+    });
+
+    test('rend une croix nommée, à cible tactile 44px (WCAG 2.5.5)', async ({ page }) => {
+      const container = await openPlainSheet(page);
+      const close = container.getByRole('button', { name: 'Fermer' });
+      await expect(close).toBeVisible();
+
+      const box = (await close.boundingBox())!;
+      expect(box.width).toBeGreaterThanOrEqual(44);
+      expect(box.height).toBeGreaterThanOrEqual(44);
+
+      // Ancré sur la CARTE, pas sur le scroller : sans quoi il suivrait le geste et sortirait de l'écran.
+      const card = (await container.locator('.kt-dialog-container__layout').boundingBox())!;
+      expect(box.y).toBeGreaterThanOrEqual(card.y - 1);
+    });
+
+    test('un tap sur la croix ferme la sheet', async ({ page }) => {
+      const container = await openPlainSheet(page);
+      const box = (await container.getByRole('button', { name: 'Fermer' }).boundingBox())!;
+      await page.touchscreen.tap(box.x + box.width / 2, box.y + box.height / 2);
+      await expect(container).toBeHidden();
+    });
+
+    test('un drag démarré SUR la croix ferme par geste, sans double fermeture', async ({ page }) => {
+      // Invariant ADR-0005 : la sheet s'attrape partout, y compris au travers du bouton (aucun
+      // touch-action ne doit le rendre « mort » au geste). Le clic est supprimé après un
+      // défilement : la fermeture doit venir du geste seul, et rester idempotente.
+      const container = await openPlainSheet(page);
+      const card = (await container.locator('.kt-dialog-container__layout').boundingBox())!;
+
+      await touchDragFrom(container.getByRole('button', { name: 'Fermer' }), Math.round(card.height), {
+        steps: 16,
+        stepMs: 20,
+        pauseMs: 400,
+      });
+      await expect(container).toBeHidden();
+      // Une seule sheet fermée : aucun conteneur résiduel ni ré-ouverture parasite.
+      await expect(page.locator('.cdk-dialog-container')).toHaveCount(0);
+    });
+
+    test('les sheets à en-tête riche n’ont PAS de croix auto-rendue (pas de double croix)', async ({ page }) => {
+      const container = await openSheet(page); // dialog de contenu, composé avec [ktDialogHeader]
+      await expect(container.locator('.kt-dialog-container__sheet-close')).toHaveCount(0);
+      // Sa croix à lui vit dans l'en-tête projeté, dans le flux.
+      await expect(container.locator('[ktDialogHeader]').getByRole('button', { name: 'Fermer' })).toBeVisible();
+    });
+  });
+
   test('drag tactile ferme une sheet à CONTENU COURT (alert) — cas du sélecteur de thème', async ({ page }) => {
     // Reproduit le bug remonté : les sheets à contenu court (alertes, sélecteur de thème) n'ont
     // aucun scroller interne pour absorber le geste — c'est là que la fuite tactile iOS se voyait.

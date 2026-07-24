@@ -31,6 +31,22 @@
     --dialog-focus-ring-color: var(--kt-focus-ring-color, #0842a0);
     --dialog-focus-ring-width: var(--kt-focus-ring-width, 2px);
 
+    /* ============ Bouton de fermeture auto-rendu de la bottom-sheet ============ */
+    /* Rendu seulement si l'option `sheetCloseButton` est active (cf. KtDialogConfig). Chaque token
+     retombe sur une couche PARTAGÉE --kt-sheet-close-* (même mécanisme que --dialog-radius →
+     --kt-sheet-radius) : un thème harmonise d'un coup ce bouton et celui du Select compact.
+     La cible fait 44px RÉELS (WCAG 2.5.5 AAA) pour un glyphe de 1.25rem — l'anneau de focus
+     épouse donc la cible, comme sur le Select. */
+    --dialog-close-size: var(--kt-sheet-close-size, 44px);
+    --dialog-close-icon-size: var(--kt-sheet-close-icon-size, 1.25rem);
+    --dialog-close-inset-block-start: var(--kt-sheet-close-inset-block-start, 0.25rem);
+    --dialog-close-inset-inline-end: var(--kt-sheet-close-inset-inline-end, 0.25rem);
+    --dialog-close-color: var(--kt-sheet-close-color, var(--dialog-muted));
+    /* Bascules NON déclarées exprès (défauts entre parenthèses) :
+     --dialog-close-bg (transparent) : pastille opaque quand la croix flotte au-dessus d'un contenu
+       à fond propre (image, média) — sans elle, le contraste 1.4.11 n'est pas garantissable.
+     --dialog-close-glyph ('close')  : ligature du glyphe. */
+
     /* ============ Gouttière du conteneur scrollable ============ */
     /* Le dialog a des coins arrondis + une barre d'actions sticky : la gouttière à TRACK PLEIN
      héritée de la page y dessine un bandeau vertical disgracieux le long de l'arrondi. On force
@@ -241,6 +257,14 @@
       /* Le scrim translucide disparaît en forced-colors : on garde une séparation visible. */
       background: rgb(0 0 0 / 50%);
     }
+    /* Le fond transparent et la couleur atténuée du bouton de fermeture sont écrasés par le
+     système : on le rattache aux couleurs de contrôle pour qu'il reste identifiable. */
+    .kt-dialog-container__sheet-close {
+      color: ButtonText;
+    }
+    .kt-dialog-container__sheet-close:focus-visible {
+      outline-color: Highlight;
+    }
   }
 
   /* ====================================================================================
@@ -351,6 +375,10 @@
 
   /* La carte : reprend la surface du dialog (déplacée du conteneur, devenu scroller). */
   .cdk-overlay-pane.kt-dialog--sheet .kt-dialog-container__layout {
+    /* Référentiel du bouton de fermeture absolu. IMPÉRATIF que ce soit la CARTE et non le
+     conteneur : celui-ci est le scroller à snap, un ancrage dessus suivrait le geste et sortirait
+     de l'écran au premier glissement. */
+    position: relative;
     scroll-snap-align: end;
     scroll-snap-stop: always;
     display: flex;
@@ -397,6 +425,63 @@
     block-size: 0.25rem;
     border-radius: 999px;
     background: var(--kt-sheet-grab-color, var(--kt-outline, #c4c7c5));
+  }
+
+  /* ===== Bouton de fermeture auto-rendu (option `sheetCloseButton`) =====
+   Hors flux : ancré en absolu sur la carte, il ne décale RIEN (zéro layout shift) et n'impose
+   aucune contrainte au markup projeté. Pas de `touch-action` : le glissement doit rester
+   saisissable AU TRAVERS du bouton (ADR-0005 — la sheet s'attrape partout). Un vrai glissement
+   n'émet pas de `click` (le navigateur le supprime après un défilement) : seul un tap ferme. */
+  .cdk-overlay-pane.kt-dialog--sheet .kt-dialog-container__sheet-close {
+    position: absolute;
+    inset-block-start: var(--dialog-close-inset-block-start);
+    inset-inline-end: var(--dialog-close-inset-inline-end);
+    /* Au-dessus d'un éventuel [ktDialogHeader] collant projeté par le consommateur (z-index 1). */
+    z-index: 2;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    inline-size: var(--dialog-close-size);
+    block-size: var(--dialog-close-size);
+    padding: 0;
+    border: 0;
+    border-radius: 50%;
+    background: var(--dialog-close-bg, transparent);
+    color: var(--dialog-close-color);
+    cursor: pointer;
+  }
+
+  .cdk-overlay-pane.kt-dialog--sheet .kt-dialog-container__sheet-close:focus-visible {
+    outline: var(--dialog-focus-ring-width) solid var(--dialog-focus-ring-color);
+    outline-offset: 2px;
+  }
+
+  .kt-dialog-container__sheet-close-icon {
+    display: inline-grid;
+    place-items: center;
+    inline-size: var(--dialog-close-icon-size);
+    block-size: var(--dialog-close-icon-size);
+    overflow: hidden; /* Sécurité anti-débordement de ligature brute (cf. .kt-alert-dialog__icon) */
+  }
+
+  .kt-dialog-container__sheet-close-icon::before {
+    content: var(--dialog-close-glyph, 'close');
+    font-family: var(--kt-icon-font, 'Material Symbols Outlined');
+    font-weight: var(--kt-icon-font-weight, normal);
+    font-style: normal;
+    font-size: var(--dialog-close-icon-size);
+    line-height: 1;
+    font-feature-settings: 'liga';
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* Réserve horizontale sous la croix : sans elle, un titre long passerait DESSOUS. Ciblage
+   `> * >` (l'hôte du composant projeté est l'intermédiaire) = régions de PREMIER niveau seulement,
+   ce qui exclut volontairement un [ktDialogTitle] imbriqué dans un [ktDialogHeader] — celui-ci
+   garde son padding nul et c'est le header qui porte la réserve. */
+  .cdk-overlay-pane.kt-dialog--sheet .kt-dialog-container__layout--closable > * > [ktDialogTitle],
+  .cdk-overlay-pane.kt-dialog--sheet .kt-dialog-container__layout--closable > * > [ktDialogHeader] {
+    padding-inline-end: calc(var(--dialog-close-size) + var(--dialog-close-inset-inline-end));
   }
 
   /* Mouvement réduit : pas de fondu (WCAG 2.3.3). La sheet gère le sien en JS (scroll instantané). */

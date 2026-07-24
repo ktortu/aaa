@@ -11,6 +11,7 @@ import {
 } from '@ktortu/aaa/forms';
 import { KT_SNACKBAR_CONFIG, type KtSnackbarConfig } from '@ktortu/aaa/snackbar';
 import { KT_TABS_CONFIG, type KtTabsConfig } from '@ktortu/aaa/tabs';
+import { KT_DIALOG_CONFIG, type KtDialogConfig } from '@ktortu/aaa/dialog';
 import { KT_FR_TRANSLATIONS, provideKtDefaultFR, provideKtTranslations } from './public-api';
 
 /** Lit un token de config dans le contexte d'injection du TestBed (optionnel : null si absent). */
@@ -19,7 +20,7 @@ function read<T>(token: ProviderToken<T>): T | null {
 }
 
 describe('i18n — provideKtDefaultFR', () => {
-  it('fournit les libellés français sur les cinq familles de tokens', () => {
+  it('fournit les libellés français sur les six familles de tokens', () => {
     TestBed.configureTestingModule({ providers: [provideKtDefaultFR()] });
 
     expect(read(KT_FIELD_CONFIG)?.clearLabel).toBe('Effacer');
@@ -28,6 +29,7 @@ describe('i18n — provideKtDefaultFR', () => {
     expect(read(KT_SELECT_CONFIG)?.emptyText).toBe('Aucune option');
     expect(read(KT_CHIPS_CONFIG)?.listLabel).toBe('Éléments sélectionnés');
     expect(read(KT_SNACKBAR_CONFIG)?.closeLabel).toBe('Fermer');
+    expect(read(KT_DIALOG_CONFIG)?.sheetCloseLabel).toBe('Fermer');
   });
 
   it('résout les libellés à pluriel (fonctions) en français', () => {
@@ -123,6 +125,9 @@ describe('i18n — complétude FR (anti-dérive)', () => {
     ] satisfies (keyof KtChipsConfig)[],
     snackbar: ['closeLabel'] satisfies (keyof KtSnackbarConfig)[],
     tabs: ['previousLabel', 'nextLabel'] satisfies (keyof KtTabsConfig)[],
+    // `sheetCloseButton` / `sheetHandle` sont des COMPORTEMENTS (booléens), pas des textes : hors
+    // dictionnaire de traduction, comme `closeOnSelect` côté select.
+    dialog: ['sheetCloseLabel'] satisfies (keyof KtDialogConfig)[],
   };
   const FIELD_ERROR_KINDS = [
     'required',

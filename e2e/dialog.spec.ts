@@ -114,6 +114,41 @@ test.describe('Dialog (desktop)', () => {
     expect(serious.map((v) => v.id)).toEqual([]);
   });
 
+  test('sheetCloseButton : croix nommée, clavier-atteignable, et AXE propre', async ({ page }) => {
+    await page.getByRole('button', { name: 'Avec la croix auto-rendue' }).click();
+    const container = page.locator('.cdk-dialog-container');
+    await expect(container).toBeVisible();
+
+    const close = container.getByRole('button', { name: 'Fermer' });
+    await expect(close).toBeVisible();
+    // Le bouton ouvre l'ordre de tabulation (rendu avant le portail de contenu).
+    await close.focus();
+    await expect(close).toBeFocused();
+
+    const results = await new AxeBuilder({ page }).analyze();
+    const serious = results.violations.filter((v) => v.impact === 'serious' || v.impact === 'critical');
+    expect(serious.map((v) => v.id)).toEqual([]);
+
+    await close.click();
+    await expect(container).toBeHidden();
+  });
+
+  test('repli de focus initial : sans [ktDialogFocusInitial], le focus entre dans le dialogue', async ({ page }) => {
+    // Garde-fou du trou CDK : avec `autoFocus` réglé sur un SÉLECTEUR, aucun repli n'existe côté
+    // CDK quand le sélecteur ne correspond à rien — le focus restait sur le déclencheur, HORS du
+    // dialogue, et Tab promenait dans la page derrière. Le sélecteur de thème est ce cas.
+    const trigger = page.getByRole('button', { name: 'Apparence' });
+    await trigger.click();
+    const container = page.locator('.cdk-dialog-container');
+    await expect(container).toBeVisible();
+
+    const focusIsInside = await container.evaluate((el) => el.contains(document.activeElement));
+    expect(focusIsInside).toBe(true);
+
+    await page.keyboard.press('Escape');
+    await expect(container).toBeHidden();
+  });
+
   test.describe('KtQuickDialog (helpers rapides)', () => {
     test('Alerte : ouvre, montre le titre et se ferme via Fermer', async ({ page }) => {
       await page.getByRole('button', { name: 'Alerte (Neutre)', exact: true }).click();

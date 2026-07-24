@@ -57,7 +57,7 @@ export const DIALOG_DIRECTIVE_PROPS: readonly PropRow[] = [
     type: 'Directive (dépréciée)',
     default: '—',
     description:
-      'DÉPRÉCIÉE (ADR-0005) : la poignée décorative est auto-rendue par le conteneur en présentation `sheet` (opt-out : panelClass `kt-dialog--no-handle`) et la sheet s’attrape partout. Directive inerte, à retirer.',
+      'DÉPRÉCIÉE (ADR-0005) : la poignée décorative est auto-rendue par le conteneur en présentation `sheet` (opt-out : option typée `sheetHandle: false`) et la sheet s’attrape partout. Directive inerte, à retirer.',
   },
 ];
 
@@ -113,10 +113,37 @@ export const DIALOG_API_PROPS: readonly PropRow[] = [
       'Provider à ajouter à `app.config.ts` : valeurs par défaut AAA (`ariaModal`, `restoreFocus`, `autoFocus`, classes).',
   },
   {
+    name: 'provideKtDialog()',
+    type: '(config) => Provider',
+    default: '—',
+    description:
+      'Provider des options MAISON du dialog (`sheetCloseButton`, `sheetCloseLabel`, `sheetHandle`) — distinct de `provideKtDialogDefaults()`, qui porte la config du CDK. Surchargeable par ouverture.',
+  },
+  {
     name: 'presentation',
     type: 'KtDialogPresentation',
     default: `'centered'`,
     description: 'Option de l’ouvreur : présentation choisie par le dev, résolue à chaque ouverture.',
+  },
+  {
+    name: 'sheetCloseButton',
+    type: 'boolean',
+    default: 'false',
+    description:
+      'Bouton de fermeture auto-rendu en haut de la bottom-sheet (cible 44px, hors flux). Désactivé par défaut par COMPATIBILITÉ : `[ktDialogHeader]` ne rend aucune croix (simple rangée flex), mais on y pose usuellement la sienne — l’activer par défaut en ferait apparaître une deuxième. RECOMMANDÉ sur toute sheet qui ne pose pas déjà la sienne en tête. Sans effet hors présentation `sheet`.',
+  },
+  {
+    name: 'sheetCloseLabel',
+    type: 'string',
+    default: `'Close'`,
+    description: 'Nom accessible du bouton ci-dessus (WCAG 4.1.2). Traduit par `provideKtDefaultFR()` (« Fermer »).',
+  },
+  {
+    name: 'sheetHandle',
+    type: 'boolean',
+    default: 'true',
+    description:
+      'Poignée décorative auto-rendue en présentation `sheet` (ADR-0005). Remplace le panelClass `kt-dialog--no-handle`, déprécié mais toujours honoré.',
   },
   {
     name: 'KtDialogPresentation',
@@ -181,6 +208,42 @@ export const DIALOG_TOKENS: readonly TokenGroup[] = [
         default: 'var(--kt-focus-ring-width, 2px)',
         description: 'Largeur de l’anneau.',
       },
+    ],
+  },
+  {
+    title: 'Bouton de fermeture de la bottom-sheet',
+    tokens: [
+      {
+        name: '--dialog-close-inset-block-start',
+        default: 'var(--kt-sheet-close-inset-block-start, 0.25rem)',
+        description: 'Décalage depuis le haut de la carte.',
+      },
+      {
+        name: '--dialog-close-inset-inline-end',
+        default: 'var(--kt-sheet-close-inset-inline-end, 0.25rem)',
+        description: 'Décalage depuis le bord de fin (droite en LTR).',
+      },
+      {
+        name: '--dialog-close-size',
+        default: 'var(--kt-sheet-close-size, 44px)',
+        description: 'Cible tactile réelle (WCAG 2.5.5 AAA). Sert aussi de réserve au titre.',
+      },
+      {
+        name: '--dialog-close-icon-size',
+        default: 'var(--kt-sheet-close-icon-size, 1.25rem)',
+        description: 'Taille du glyphe (visuellement petit dans une grande cible).',
+      },
+      {
+        name: '--dialog-close-color',
+        default: 'var(--kt-sheet-close-color, var(--dialog-muted))',
+        description: 'Couleur du glyphe.',
+      },
+      {
+        name: '--dialog-close-bg',
+        default: 'transparent',
+        description: 'Pastille de fond — à poser quand la croix flotte au-dessus d’un média (contraste 1.4.11).',
+      },
+      { name: '--dialog-close-glyph', default: `'close'`, description: 'Ligature du glyphe.' },
     ],
   },
 ];

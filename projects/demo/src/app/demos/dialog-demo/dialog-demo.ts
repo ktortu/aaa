@@ -8,6 +8,7 @@ import { PropsTable } from '../../shared/props-table/props-table';
 import { TokensTable } from '../../shared/tokens-table/tokens-table';
 import { injectConfirmDialog } from './demo-confirm-dialog';
 import { injectTermsDialog } from './demo-content-dialog';
+import { injectPlainSheet, injectPlainSheetWithoutClose } from './demo-plain-sheet';
 import { KtQuickDialog } from '@ktortu/aaa/dialog';
 import {
   DIALOG_API_PROPS,
@@ -40,6 +41,8 @@ export class DialogDemo {
   // restent des choix du consommateur, passés à l'appel.
   private readonly openConfirm = injectConfirmDialog();
   private readonly openTerms = injectTermsDialog();
+  private readonly openPlainSheet = injectPlainSheet();
+  private readonly openPlainSheetWithoutClose = injectPlainSheetWithoutClose();
   private readonly dialog = inject(KtQuickDialog);
 
   /** Dernier résultat renvoyé par le dialog de confirmation (preuve du flux de résultat). */
@@ -130,5 +133,15 @@ export class DialogDemo {
 
   protected showLocked(): void {
     this.openTerms(undefined, { disableClose: true });
+  }
+
+  /** Sheet à titre nu AVEC la croix auto-rendue (`sheetCloseButton`). */
+  protected showSheetWithCloseButton(): void {
+    this.openPlainSheet();
+  }
+
+  /** Le MÊME composant sans l'option (défaut) : témoin de comparaison, aucune croix. */
+  protected showSheetWithoutCloseButton(): void {
+    this.openPlainSheetWithoutClose();
   }
 }

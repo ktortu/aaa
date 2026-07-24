@@ -10,9 +10,15 @@ import {
   PLATFORM_ID,
 } from '@angular/core';
 import { isPlatformBrowser } from '@angular/common';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { CdkDialogContainer, DialogRef } from '@angular/cdk/dialog';
 import { PortalModule } from '@angular/cdk/portal';
 import { KtBodyScrollLock } from '@ktortu/aaa/cdk';
+
+import { DEFAULT_KT_DIALOG_CONFIG, KT_DIALOG_CONFIG, KtDialogConfig } from './dialog-config';
+
+/** panelClass d'opt-out historique de la poignée, conservé comme repli DÉPRÉCIÉ (cf. `sheetHandle`). */
+const LEGACY_NO_HANDLE_CLASS = 'kt-dialog--no-handle';
 
 @Component({
   selector: 'kt-dialog-container',
@@ -39,10 +45,23 @@ import { KtBodyScrollLock } from '@ktortu/aaa/cdk';
            backdrop CDK, la fermeture au tap est donc portée ici (disableClose respecté). -->
       <div class="kt-dialog-container__spacer" aria-hidden="true" (click)="onScrimClick()"></div>
     }
-    <div class="kt-dialog-container__layout">
+    <div class="kt-dialog-container__layout" [class.kt-dialog-container__layout--closable]="showSheetClose()">
+      @if (showSheetClose()) {
+        <!-- Bouton de fermeture AUTO-RENDU (opt-in 'sheetCloseButton'). Placé en TÊTE du document
+             pour ouvrir l'ordre de tabulation, mais ancré en absolu sur la carte (cf. dialog.css) :
+             il ne consomme pas de place dans la colonne. Aucun touch-action ici — le geste de
+             glissement doit rester saisissable au travers du bouton (ADR-0005). -->
+        <button
+          type="button"
+          class="kt-dialog-container__sheet-close"
+          [attr.aria-label]="ktConfig.sheetCloseLabel"
+          (click)="onSheetCloseClick()"
+        >
+          <span class="kt-dialog-container__sheet-close-icon" aria-hidden="true"></span>
+        </button>
+      }
       @if (isSheet() && showSheetHandle()) {
-        <!-- Poignée DÉCORATIVE auto-rendue : la sheet s'attrape partout (opt-out :
-             panelClass additionnel 'kt-dialog--no-handle' à l'ouverture). -->
+        <!-- Poignée DÉCORATIVE auto-rendue : la sheet s'attrape partout (opt-out : 'sheetHandle'). -->
         <div class="kt-dialog-container__sheet-handle" aria-hidden="true"></div>
       }
       <ng-template cdkPortalOutlet></ng-template>
@@ -56,6 +75,15 @@ export class KtDialogContainer extends CdkDialogContainer {
   private readonly platformId = inject(PLATFORM_ID);
   private readonly destroyRef = inject(DestroyRef);
   private readonly bodyScrollLock = inject(KtBodyScrollLock);
+
+  /** Options maison RÉSOLUES. `injectKtDialogOpener` refournit `KT_DIALOG_CONFIG` déjà résolu dans
+      l'injecteur du conteneur : la fusion ci-dessous est alors un no-op. Elle reste indispensable
+      quand le conteneur est monté sans l'ouvreur (`dialog.open` brut), où le token remonte à
+      l'application et n'est que partiel. Un seul chemin de code, idempotent. */
+  protected readonly ktConfig: Required<KtDialogConfig> = {
+    ...DEFAULT_KT_DIALOG_CONFIG,
+    ...(inject(KT_DIALOG_CONFIG, { optional: true }) ?? {}),
+  };
 
   protected readonly isClosing = signal(false);
 
@@ -108,16 +136,87 @@ export class KtDialogContainer extends CdkDialogContainer {
           '[ktDialog] dialog sans nom accessible : ajoutez un [ktDialogTitle] (ou `aria-label` via la config d’ouverture) — WCAG 4.1.2.',
         );
       }
+      this.warnOnConfigMisuse();
     });
+
+    // Repli de FOCUS INITIAL. La config par défaut de la lib vise un SÉLECTEUR
+    // (`autoFocus: '[ktDialogFocusInitial]'`) ; quand aucun élément ne le porte, le CDK ne focalise
+    // RIEN (son repli sur le conteneur n'existe que pour les modes `first-tabbable`/`dialog`/false).
+    // Le focus reste alors sur le déclencheur, HORS du dialog, et Tab promène l'utilisateur dans la
+    // page derrière. On rattrape ici sur le conteneur (tabindex -1) — jamais sur un bouton :
+    // atterrir d'emblée sur « Fermer » est un anti-pattern lecteur d'écran (WCAG 2.4.3).
+    // `preventScroll` : en présentation sheet le conteneur EST le scroller à snap, focaliser ne doit
+    // pas perturber le scroll d'entrée en cours.
+    this._focusTrapped.pipe(takeUntilDestroyed(this.destroyRef)).subscribe(() => {
+      if (this.host.contains(this.host.ownerDocument.activeElement)) return;
+      this.host.focus({ preventScroll: true });
+    });
+  }
+
+  /** Garde-fous dev sur la config maison : usage hors sheet, double bouton de fermeture, opt-out
+      déprécié de la poignée. On AVERTIT sans jamais corriger en silence — un masquage automatique
+      dépendrait de l'ordre de rendu du portail et serait indébogable. */
+  private warnOnConfigMisuse(): void {
+    if (this.hasLegacyNoHandleClass()) {
+      console.warn(
+        `[ktDialog] panelClass '${LEGACY_NO_HANDLE_CLASS}' déprécié : utilisez l’option typée ` +
+          '`sheetHandle: false` (à l’ouverture ou via provideKtDialog).',
+      );
+    }
+
+    if (this.ktConfig.sheetCloseButton && !this.isSheet()) {
+      console.warn(
+        '[ktDialog] `sheetCloseButton` ne s’applique qu’à la présentation `sheet` et reste sans effet ' +
+          'ici : en centré / plein écran, posez le bouton dans un [ktDialogHeader].',
+      );
+    }
+
+    // Collision visuelle recherchée : une croix posée en TÊTE (typiquement dans un [ktDialogHeader]),
+    // qui doublerait celle du conteneur. Un [ktDialogClose] dans la barre d'ACTIONS est légitime
+    // (« Annuler », ou une action qui ferme au passage) et ne collisionne pas : on l'exclut.
+    // Heuristique volontairement partielle par ailleurs : elle voit la forme ATTRIBUT `ktDialogClose`,
+    // pas la forme liée `[ktDialogClose]="x"` (un binding de propriété ne reflète aucun attribut).
+    const strayClose =
+      this.showSheetClose() &&
+      [...this.host.querySelectorAll('[ktDialogClose]')].some((el) => !el.closest('[ktDialogActions]'));
+    if (strayClose) {
+      console.warn(
+        '[ktDialog] double bouton de fermeture : `sheetCloseButton` est actif alors que le contenu ' +
+          'porte déjà un [ktDialogClose] hors barre d’actions (en-tête ?). Gardez l’un OU l’autre.',
+      );
+    }
   }
 
   protected isSheet(): boolean {
     return this._config.panelClass?.includes('kt-dialog--sheet') ?? false;
   }
 
-  /** Poignée décorative auto-rendue en présentation sheet. Opt-out : panelClass `kt-dialog--no-handle`. */
+  /** panelClass d'opt-out historique de la poignée — repli DÉPRÉCIÉ, remplacé par `sheetHandle`. */
+  private hasLegacyNoHandleClass(): boolean {
+    return this._config.panelClass?.includes(LEGACY_NO_HANDLE_CLASS) ?? false;
+  }
+
+  /** Poignée décorative auto-rendue en présentation sheet (ADR-0005). Opt-out : option `sheetHandle`
+      (le panelClass historique reste honoré, en déprécié). */
   protected showSheetHandle(): boolean {
-    return !this._config.panelClass?.includes('kt-dialog--no-handle');
+    if (this.hasLegacyNoHandleClass()) return false;
+    return this.ktConfig.sheetHandle;
+  }
+
+  /** Bouton de fermeture auto-rendu : opt-in `sheetCloseButton`, et UNIQUEMENT en présentation sheet
+      (ailleurs, la croix se pose à la main dans un `[ktDialogHeader]` — cf. `KtDialogConfig`). */
+  protected showSheetClose(): boolean {
+    return this.isSheet() && this.ktConfig.sheetCloseButton;
+  }
+
+  /** Clic sur le bouton de fermeture auto-rendu. Ne consulte VOLONTAIREMENT pas `disableClose` :
+      contrairement au tap-extérieur et à Échap (fermetures « par inadvertance » que `disableClose`
+      protège), ce bouton est une sortie EXPLICITEMENT demandée par le dev via `sheetCloseButton` —
+      le combiner à `disableClose` est le patron « une seule sortie contrôlée ». Le drapeau
+      `isClosing` garde l'idempotence face à un geste de glissement simultané. */
+  protected onSheetCloseClick(): void {
+    if (this.isClosing()) return;
+    this.dialogRef.close();
   }
 
   /** Tap sur le spacer (zone extérieure à la carte) = fermeture, façon backdrop. Le conteneur

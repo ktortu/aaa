@@ -9,6 +9,10 @@ import { Directive, isDevMode } from '@angular/core';
  * aria-labelledby). En usage simple — titre nu sans header — [ktDialogTitle] conserve son propre
  * padding : ce header n'est à utiliser que pour les en-têtes composés (icône, close top-right…).
  *
+ * ⚠️ Ne rend RIEN par lui-même — pas de bouton de fermeture implicite : c'est vous qui posez la
+ * croix (cf. exemple). En présentation `sheet`, l'option `sheetCloseButton` en rend une
+ * automatiquement, hors flux ; les deux ensemble feraient doublon (le conteneur avertit en dev).
+ *
  * @example
  * ```html
  * <header ktDialogHeader>
@@ -63,7 +67,7 @@ export class KtDialogFocusInitial {}
 
 /**
  * @deprecated ADR-0005 — la poignée est désormais RENDUE AUTOMATIQUEMENT par `KtDialogContainer`
- * en présentation `sheet` (opt-out : panelClass additionnel `kt-dialog--no-handle`), et le
+ * en présentation `sheet` (opt-out : option typée `sheetHandle: false`), et le
  * drag-to-dismiss s'attrape sur TOUTE la surface de la sheet (scroll-snap natif). Cette
  * directive est INERTE et son hôte est masqué (évite une double poignée) : retirez-la de vos
  * templates. Sera supprimée dans une prochaine version majeure.

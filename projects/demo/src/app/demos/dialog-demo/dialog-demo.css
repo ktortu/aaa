@@ -50,6 +50,22 @@
   gap: 1rem;
 }
 
+/* Note explicative au sein d'un exemple (aligné sur les pages snackbar / form-showcase). */
+.page__note {
+  flex-basis: 100%;
+  margin: 0 0 0.25rem;
+  max-width: 64ch;
+  font-size: 0.9375rem;
+  line-height: 1.5;
+  color: var(--kt-muted);
+}
+
+.page__note code {
+  font-family: ui-monospace, monospace;
+  font-size: 0.9375em;
+  color: var(--kt-on-surface);
+}
+
 /* Ligne de résultat de l'exemple de confirmation (preuve du flux de résultat). */
 .page__result {
   flex-basis: 100%;

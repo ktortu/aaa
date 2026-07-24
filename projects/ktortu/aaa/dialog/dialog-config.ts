@@ -1,5 +1,5 @@
 import { DEFAULT_DIALOG_CONFIG, DialogConfig } from '@angular/cdk/dialog';
-import { Provider } from '@angular/core';
+import { InjectionToken, Provider } from '@angular/core';
 
 /**
  * Valeurs par défaut orientées AAA pour `@angular/cdk/dialog`.
@@ -53,6 +53,73 @@ export function provideKtDialogDefaults(overrides?: Partial<DialogConfig>): Prov
     provide: DEFAULT_DIALOG_CONFIG,
     useValue: { ...KT_DIALOG_AAA_DEFAULTS, ...overrides },
   };
+}
+
+/**
+ * Options MAISON du dialog (≠ {@link KT_DIALOG_AAA_DEFAULTS}, qui porte la config du CDK).
+ * Conforme à l'ADR-0003 : un token `KT_*_CONFIG` par entry-point, défauts anglais neutres,
+ * cascade `option d'ouverture ?? token ?? défaut`.
+ *
+ * Toutes les clés actuelles ne concernent que la présentation `sheet` (préfixe `sheet*`) : sur les
+ * présentations `centered` / `fullscreen`, la place d'un bouton de fermeture est un
+ * `[ktDialogHeader]`, où on le POSE soi-même, dans le flux. Un usage hors sheet déclenche un
+ * avertissement en mode dev.
+ */
+export interface KtDialogConfig {
+  /**
+   * Bouton de fermeture AUTO-RENDU en haut de la carte, en présentation `sheet`.
+   *
+   * Désactivé par défaut, pour une raison de COMPATIBILITÉ, pas d'ergonomie : `[ktDialogHeader]`
+   * ne rend aucune croix (c'est une simple rangée flex), mais un dialog qui en compose un y place
+   * généralement la sienne à la main. Activer l'option par défaut ferait donc apparaître une
+   * DEUXIÈME croix chez ces consommateurs-là sans qu'ils aient rien changé.
+   *
+   * Recommandé sur toute sheet qui ne pose pas déjà son propre bouton de fermeture en tête.
+   * @default false
+   */
+  sheetCloseButton: boolean;
+  /** Nom accessible du bouton de fermeture auto-rendu (WCAG 4.1.2). @default 'Close' */
+  sheetCloseLabel: string;
+  /** Poignée décorative auto-rendue en présentation `sheet` (ADR-0005). @default true */
+  sheetHandle: boolean;
+}
+
+/**
+ * Défauts effectifs des options maison du dialog. Objet `Required` figé : c'est la SOURCE des
+ * valeurs de repli, lue à la fois par l'ouvreur (résolution) et par le conteneur (fusion
+ * idempotente), et énumérée par la garde de complétude i18n.
+ */
+export const DEFAULT_KT_DIALOG_CONFIG: Required<KtDialogConfig> = {
+  sheetCloseButton: false,
+  sheetCloseLabel: 'Close',
+  sheetHandle: true,
+};
+
+/**
+ * Token des options maison du dialog. Deux usages, un seul chemin de résolution :
+ * - **application** : fourni via {@link provideKtDialog} (valeur partielle) ;
+ * - **par ouverture** : `injectKtDialogOpener` REFOURNIT ce même token, déjà RÉSOLU, dans
+ *   l'injecteur du conteneur (canal `container.providers` du CDK). Le conteneur fusionne
+ *   toujours par-dessus {@link DEFAULT_KT_DIALOG_CONFIG} : l'opération est idempotente sur une
+ *   valeur déjà résolue, et reste correcte si le conteneur est monté sans passer par l'ouvreur.
+ */
+export const KT_DIALOG_CONFIG = new InjectionToken<Partial<KtDialogConfig>>('KT_DIALOG_CONFIG');
+
+/**
+ * Enregistre les options maison du dialog pour l'application (ou un sous-arbre).
+ * Complémentaire de {@link provideKtDialogDefaults}, qui porte la config du CDK : les deux
+ * coexistent et ne se recouvrent pas.
+ *
+ * @example
+ * ```ts
+ * // app.config.ts — bouton de fermeture sur toutes les bottom-sheets
+ * providers: [provideKtDialog({ sheetCloseButton: true })];
+ * ```
+ * @param config Options partielles fusionnées par-dessus `DEFAULT_KT_DIALOG_CONFIG`.
+ * @returns Un `Provider` pour le token `KT_DIALOG_CONFIG`.
+ */
+export function provideKtDialog(config: Partial<KtDialogConfig>): Provider {
+  return { provide: KT_DIALOG_CONFIG, useValue: config };
 }
 
 /**

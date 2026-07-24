@@ -57,6 +57,21 @@
       <button ktButton mode="tonal" (click)="showCenteredSheet()">Centré → bottom-sheet</button>
     </kt-doc-example>
 
+    <kt-doc-example label="Bouton de fermeture de bottom-sheet (sheetCloseButton)">
+      <p class="page__note">
+        Les deux boutons ouvrent <strong>le même composant</strong> : seule l’option change. Sans elle (défaut), la
+        sortie repose sur le glissement, le tap au-dessus de la carte et Échap — rien de visible.
+      </p>
+      <p class="page__note">
+        Le défaut est désactivé par <strong>compatibilité</strong>, pas par ergonomie : <code>[ktDialogHeader]</code> ne
+        rend aucune croix (c’est une rangée flex), mais on y pose usuellement la sienne — comme le dialog « Conditions
+        d’utilisation » ci-dessus. L’activer par défaut en ferait apparaître une seconde. La position s’ajuste par
+        variables CSS (<code>--dialog-close-inset-block-start</code>, <code>--dialog-close-inset-inline-end</code>).
+      </p>
+      <button ktButton mode="tonal" (click)="showSheetWithCloseButton()">Avec la croix auto-rendue</button>
+      <button ktButton mode="outlined" (click)="showSheetWithoutCloseButton()">Sans (défaut)</button>
+    </kt-doc-example>
+
     <kt-doc-example label="Fermeture verrouillée (disableClose)">
       <button ktButton mode="outlined" (click)="showLocked()">Ouvrir (résolution par action)</button>
     </kt-doc-example>
