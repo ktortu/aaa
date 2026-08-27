@@ -83,4 +83,52 @@
   kt-chip-list:not([data-empty]) {
     margin-block-start: 0.5rem;
   }
+
+  /* Pied de la bottom-sheet (bouton Valider), rendu sur téléphone quand validationButtonLabel est configuré. */
+  .kt-select__sheet-footer {
+    display: flex;
+    flex: none;
+    padding-block: 0.75rem calc(0.75rem + env(safe-area-inset-bottom, 0px));
+    padding-inline: 1rem;
+    border-block-start: 1px solid var(--field-border-color, #c4c7c5);
+    background: var(--field-panel-bg, #ffffff);
+    box-sizing: border-box;
+  }
+
+  .kt-select__sheet-validate {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    inline-size: 100%;
+    min-block-size: 44px;
+    padding-block: 0.625rem;
+    padding-inline: 1.25rem;
+    border: 0;
+    border-radius: var(--field-radius, 8px);
+    background: var(--kt-primary, #0b57d0);
+    color: var(--kt-on-primary, #ffffff);
+    font: inherit;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background 120ms ease;
+  }
+
+  .kt-select__sheet-validate:hover {
+    background: color-mix(in srgb, var(--kt-primary, #0b57d0) 90%, black);
+  }
+
+  .kt-select__sheet-validate:active {
+    background: color-mix(in srgb, var(--kt-primary, #0b57d0) 80%, black);
+  }
+
+  .kt-select__sheet-validate:focus-visible {
+    outline: 2px solid var(--field-border-color-focus, #0b57d0);
+    outline-offset: 2px;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .kt-select__sheet-validate {
+      transition: none;
+    }
+  }
 }

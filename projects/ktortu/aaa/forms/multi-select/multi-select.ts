@@ -85,6 +85,8 @@ export class KtMultiSelect<T, V = T> extends KtBaseSelect<T, V> implements FormV
   readonly selectionActions = input(false, { transform: booleanAttribute });
   /** Nombre maximal de chips affichés avant repli derrière un bouton « +N more ». Défaut : illimité. */
   readonly maxVisibleChips = input<number>();
+  /** Libellé du bouton de validation affiché en bas de la sheet mobile. Défaut : `KT_SELECT_CONFIG.validationButtonLabel` ou vide. */
+  readonly validationButtonLabel = input<string>();
 
   // --- Templates projetés ---
   protected readonly optionDef = contentChild(KtMultiSelectOptionDef);
@@ -94,6 +96,12 @@ export class KtMultiSelect<T, V = T> extends KtBaseSelect<T, V> implements FormV
   private readonly chipList = viewChild(KtChipList);
 
   // --- Textes résolus spécifiques multi (input > KT_SELECT_CONFIG > DEFAULT_KT_SELECT_CONFIG centralisé) ---
+  protected readonly resolvedValidationButtonLabel = computed(
+    () =>
+      this.validationButtonLabel() ??
+      this.config?.validationButtonLabel ??
+      DEFAULT_KT_SELECT_CONFIG.validationButtonLabel,
+  );
   protected readonly resolvedRemoveItemLabel = computed(
     () => this.config?.removeItemLabel ?? DEFAULT_KT_SELECT_CONFIG.removeItemLabel,
   );
@@ -314,5 +322,12 @@ export class KtMultiSelect<T, V = T> extends KtBaseSelect<T, V> implements FormV
   /** Annonce immédiate (action ponctuelle, pas de débounce) du total sélectionné. */
   private announceSelectionCount(): void {
     this.announceNow(this.resolvedSelectionCountText()(this.selectedOptions().length));
+  }
+
+  /** Valide la sélection depuis la sheet mobile (ferme le popup, marque le champ comme visité et replace le focus sur le trigger). */
+  protected validateSheet(): void {
+    this.expanded.set(false);
+    this.touched.set(true);
+    this.triggerEl()?.nativeElement.focus();
   }
 }

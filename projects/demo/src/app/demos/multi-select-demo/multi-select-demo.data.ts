@@ -35,6 +35,13 @@ export const MULTI_SELECT_PROPS: readonly PropRow[] = [
     description: 'Nombre de chips affichés avant repli derrière un bouton « +N de plus ».',
   },
   {
+    name: 'validationButtonLabel',
+    type: 'string',
+    default: `'' (KT_SELECT_CONFIG)`,
+    description:
+      'Libellé du bouton de validation affiché en bas de la sheet mobile (mode compact). Aucun bouton si omis ou vide.',
+  },
+  {
     name: 'selectionChange',
     type: 'output<{ value, options }>',
     default: '—',

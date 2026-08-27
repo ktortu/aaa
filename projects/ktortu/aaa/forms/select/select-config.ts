@@ -45,6 +45,8 @@ export interface KtSelectConfigOptions {
   truncatedResultsText: (max: number, total: number) => string;
   /** Annonce de la troncature des résultats (live region). Défaut : `'X results displayed out of Y...'`. */
   truncatedResultsAnnouncement: (max: number, total: number) => string;
+  /** Libellé du bouton de validation en bas de la sheet mobile (opt-in, multi-select). Défaut : `''` (aucun bouton). */
+  validationButtonLabel: string;
 }
 
 export const KT_SELECT_CONFIG = new InjectionToken<Partial<KtSelectConfigOptions>>('KT_SELECT_CONFIG');
@@ -75,4 +77,5 @@ export const DEFAULT_KT_SELECT_CONFIG: Required<KtSelectConfigOptions> = {
   truncatedResultsText: (max, total) => `Showing first ${max} results of ${total}. Refine your search to see more.`,
   truncatedResultsAnnouncement: (max, total) =>
     `${max} results displayed out of ${total}. Refine your search to see more.`,
+  validationButtonLabel: '',
 };

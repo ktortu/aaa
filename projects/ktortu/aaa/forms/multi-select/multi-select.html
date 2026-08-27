@@ -251,6 +251,13 @@
               }
             </ul>
           }
+          @if (compact() && resolvedValidationButtonLabel()) {
+            <footer class="kt-select__sheet-footer" (mousedown)="$event.preventDefault()">
+              <button type="button" class="kt-select__sheet-validate" (click)="validateSheet()">
+                {{ resolvedValidationButtonLabel() }}
+              </button>
+            </footer>
+          }
         </div>
       </div>
     </ng-template>

@@ -1,8 +1,9 @@
-import { Component, signal } from '@angular/core';
+import { Component, Type, computed, signal } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { By } from '@angular/platform-browser';
 import { TestKey } from '@angular/cdk/testing';
 import { TestbedHarnessEnvironment } from '@angular/cdk/testing/testbed';
+import { KtViewport } from '@ktortu/aaa/cdk';
 import { KT_SELECT_CONFIG } from '../select/select-config';
 import { KtMultiSelect } from './multi-select';
 import { KtMultiSelectHarness } from './multi-select.harness';
@@ -205,6 +206,59 @@ class StateHost {
   disabled = signal(false);
   readonly = signal(false);
   value = signal<string[]>(['A', 'B']);
+}
+
+// --- validationButtonLabel (sheet mobile) ---
+@Component({
+  imports: [KtMultiSelect],
+  template: `
+    <kt-multi-select
+      [options]="fruits"
+      label="Fruits"
+      [validationButtonLabel]="buttonLabel()"
+      [(value)]="value"
+      [(touched)]="touched"
+    />
+  `,
+})
+class ValidationButtonHost {
+  fruits = ['Pomme', 'Banane', 'Cerise'];
+  buttonLabel = signal<string | undefined>('Valider la sélection');
+  value = signal<string[]>(['Pomme']);
+  touched = signal(false);
+}
+
+@Component({
+  imports: [KtMultiSelect],
+  providers: [
+    {
+      provide: KT_SELECT_CONFIG,
+      useValue: { validationButtonLabel: 'Confirmer mon choix' },
+    },
+  ],
+  template: ` <kt-multi-select [options]="fruits" label="Fruits" [(value)]="value" [(touched)]="touched" /> `,
+})
+class ValidationButtonConfigHost {
+  fruits = ['Pomme', 'Banane', 'Cerise'];
+  value = signal<string[]>([]);
+  touched = signal(false);
+}
+
+@Component({
+  imports: [KtMultiSelect],
+  providers: [
+    {
+      provide: KT_SELECT_CONFIG,
+      useValue: { validationButtonLabel: 'Config globale' },
+    },
+  ],
+  template: `
+    <kt-multi-select [options]="fruits" label="Fruits" validationButtonLabel="Surcharge locale" [(value)]="value" />
+  `,
+})
+class ValidationButtonOverrideHost {
+  fruits = ['Pomme', 'Banane', 'Cerise'];
+  value = signal<string[]>([]);
 }
 
 describe('MultiSelect', () => {
@@ -852,5 +906,93 @@ describe('MultiSelect — relais clavier (combos non transmis par le combobox)',
   it('popup fermé : Shift+Espace inerte (garde !expanded, pas de preventDefault)', () => {
     const ev = keydownOnTrigger({ key: ' ', shiftKey: true });
     expect(ev.defaultPrevented).toBe(false);
+  });
+});
+
+describe('KtMultiSelect — bouton de validation sheet mobile (validationButtonLabel)', () => {
+  let isCompact: ReturnType<typeof signal<boolean>>;
+
+  beforeEach(() => {
+    Element.prototype.scrollIntoView ??= () => undefined;
+    isCompact = signal(false);
+  });
+
+  function createComponent<T>(type: Type<T>, compact = false) {
+    isCompact.set(compact);
+    TestBed.configureTestingModule({
+      imports: [type],
+      providers: [
+        {
+          provide: KtViewport,
+          useValue: {
+            isCompact,
+            isMobile: isCompact,
+            isTablet: signal(false),
+            isDesktop: computed(() => !isCompact()),
+          },
+        },
+      ],
+    });
+    const fixture = TestBed.createComponent(type);
+    fixture.detectChanges();
+    return fixture;
+  }
+
+  it('desktop (non compact) : le bouton n’est pas rendu même si validationButtonLabel est défini', async () => {
+    const fixture = createComponent(ValidationButtonHost, false);
+    const h = await multiHarness(fixture);
+    await h.open();
+    expect(await h.hasValidationButton()).toBe(false);
+  });
+
+  it('mobile (compact) : le bouton est rendu avec le libellé fourni par input', async () => {
+    const fixture = createComponent(ValidationButtonHost, true);
+    const h = await multiHarness(fixture);
+    await h.open();
+    expect(await h.hasValidationButton()).toBe(true);
+    expect(await h.getValidationButtonText()).toBe('Valider la sélection');
+  });
+
+  it('mobile (compact) : le bouton est absent si validationButtonLabel est undefined ou vide', async () => {
+    const fixture = createComponent(ValidationButtonHost, true);
+    fixture.componentInstance.buttonLabel.set(undefined);
+    fixture.detectChanges();
+    const h = await multiHarness(fixture);
+    await h.open();
+    expect(await h.hasValidationButton()).toBe(false);
+  });
+
+  it('mobile (compact) : le bouton résout la valeur fournie via KT_SELECT_CONFIG', async () => {
+    const fixture = createComponent(ValidationButtonConfigHost, true);
+    const h = await multiHarness(fixture);
+    await h.open();
+    expect(await h.hasValidationButton()).toBe(true);
+    expect(await h.getValidationButtonText()).toBe('Confirmer mon choix');
+  });
+
+  it('mobile (compact) : l’input surcharge la valeur de KT_SELECT_CONFIG', async () => {
+    const fixture = createComponent(ValidationButtonOverrideHost, true);
+    const h = await multiHarness(fixture);
+    await h.open();
+    expect(await h.hasValidationButton()).toBe(true);
+    expect(await h.getValidationButtonText()).toBe('Surcharge locale');
+  });
+
+  it('mobile (compact) : le clic sur le bouton ferme le popup, marque le champ touched et conserve la valeur', async () => {
+    const fixture = createComponent(ValidationButtonHost, true);
+    const h = await multiHarness(fixture);
+    await h.open();
+    expect(await h.isOpen()).toBe(true);
+    expect(fixture.componentInstance.touched()).toBe(false);
+
+    // Toggle another option
+    await h.toggleOption({ text: 'Banane' });
+    expect(fixture.componentInstance.value()).toEqual(['Pomme', 'Banane']);
+
+    // Click validation button
+    await h.clickValidationButton();
+    expect(await h.isOpen()).toBe(false);
+    expect(fixture.componentInstance.touched()).toBe(true);
+    expect(fixture.componentInstance.value()).toEqual(['Pomme', 'Banane']);
   });
 });

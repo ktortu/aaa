@@ -40,6 +40,7 @@ export class MultiSelectDemo {
   protected readonly selectedTags = signal<string[]>(['Angular', 'Signals']);
   protected readonly selectedClearable = signal<string[]>(['CSS']);
   protected readonly selectedMany = signal<string[]>(['Angular', 'TypeScript', 'RxJS', 'CSS']);
+  protected readonly selectedValidated = signal<string[]>(['TypeScript', 'RxJS']);
 
   protected readonly skills: readonly DemoSkill[] = [
     { id: 1, name: 'Accessibilité' },

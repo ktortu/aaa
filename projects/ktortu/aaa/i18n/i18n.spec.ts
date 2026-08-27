@@ -99,8 +99,13 @@ describe('i18n — fonctions FR (messages d’erreur, pluriels)', () => {
 
 describe('i18n — complétude FR (anti-dérive)', () => {
   // Clés NON traduisibles de la config select : placeholder/filterPlaceholder sont propres à l'appli,
-  // closeOnSelect est un comportement (pas un texte). Exclues du contrôle de complétude.
-  const NON_TRANSLATABLE_SELECT_KEYS = new Set(['placeholder', 'filterPlaceholder', 'closeOnSelect']);
+  // closeOnSelect est un comportement (pas un texte), validationButtonLabel est opt-in. Exclues du contrôle de complétude.
+  const NON_TRANSLATABLE_SELECT_KEYS = new Set([
+    'placeholder',
+    'filterPlaceholder',
+    'closeOnSelect',
+    'validationButtonLabel',
+  ]);
 
   it('KT_FR_TRANSLATIONS.select couvre toutes les clés TEXTE de DEFAULT_KT_SELECT_CONFIG', () => {
     const translatable = Object.keys(DEFAULT_KT_SELECT_CONFIG).filter((k) => !NON_TRANSLATABLE_SELECT_KEYS.has(k));

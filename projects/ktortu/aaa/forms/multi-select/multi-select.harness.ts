@@ -23,6 +23,7 @@ export class KtMultiSelectHarness extends KtSelectHarness {
 
   private readonly chipLabelEls = this.locatorForAll('.kt-chip__label');
   private readonly chipRemoveEls = this.locatorForAll('.kt-chip__remove');
+  private readonly validationButtonEl = this.locatorForOptional('.kt-select__sheet-validate');
   // `clear()` / `isClearAvailable()` (bouton « tout effacer ») sont hérités de KtSelectHarness.
 
   /** Toggle une option (ajoute/retire ; le popup reste ouvert). Alias sémantique de `clickOption`. */
@@ -42,5 +43,25 @@ export class KtMultiSelectHarness extends KtSelectHarness {
       throw new Error(`KtMultiSelectHarness: aucun chip à l'index ${index}`);
     }
     await buttons[index].click();
+  }
+
+  /** Indique si le bouton de validation de la sheet mobile est présent dans le DOM. */
+  async hasValidationButton(): Promise<boolean> {
+    return (await this.validationButtonEl()) !== null;
+  }
+
+  /** Récupère le texte du bouton de validation de la sheet mobile. */
+  async getValidationButtonText(): Promise<string> {
+    const btn = await this.validationButtonEl();
+    return btn ? (await btn.text()).trim() : '';
+  }
+
+  /** Clique sur le bouton de validation de la sheet mobile. */
+  async clickValidationButton(): Promise<void> {
+    const btn = await this.validationButtonEl();
+    if (!btn) {
+      throw new Error('KtMultiSelectHarness: aucun bouton de validation présent');
+    }
+    await btn.click();
   }
 }

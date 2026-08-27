@@ -53,6 +53,16 @@
       />
     </kt-doc-example>
 
+    <kt-doc-example label="Bouton de validation sheet mobile (validationButtonLabel)">
+      <kt-multi-select
+        label="Compétences"
+        [options]="tags"
+        [(value)]="selectedValidated"
+        validationButtonLabel="Valider ma sélection"
+        hint="Sur mobile, affiche un bouton de validation en bas de la sheet."
+      />
+    </kt-doc-example>
+
     <kt-doc-example label="États">
       <kt-multi-select label="Désactivé" [options]="tags" [value]="['Angular']" [disabled]="true" />
       <kt-multi-select label="Lecture seule" [options]="tags" [value]="['CSS', 'A11y']" [readonly]="true" />
