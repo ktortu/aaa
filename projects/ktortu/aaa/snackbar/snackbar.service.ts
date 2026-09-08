@@ -67,6 +67,7 @@ export class KtSnackbar implements OnDestroy {
   private readonly queue: KtSnackbarQueueItem[] = [];
   private active: { item: KtSnackbarQueueItem; overlayRef: OverlayRef; cmp: ComponentRef<KtSnackbarContainer> } | null =
     null;
+  private isExiting = false;
   private escapeRegistered = false;
 
   /**
@@ -121,6 +122,7 @@ export class KtSnackbar implements OnDestroy {
     this.unregisterEscape();
     this.active?.overlayRef.dispose();
     this.active = null;
+    this.isExiting = false;
     this.queue.length = 0;
   }
 
@@ -137,7 +139,7 @@ export class KtSnackbar implements OnDestroy {
 
   /** Affiche la tête de file si rien n'est actuellement visible. */
   private showHead(): void {
-    if (this.active || this.queue.length === 0) return;
+    if (this.active || this.isExiting || this.queue.length === 0) return;
     const item = this.queue[0];
 
     const positionStrategy = this.overlay.position().global().centerHorizontally();
@@ -174,11 +176,13 @@ export class KtSnackbar implements OnDestroy {
     if (this.active && this.active.item === item) {
       const { overlayRef, cmp } = this.active;
       this.active = null;
+      this.isExiting = true;
       this.queue.splice(index, 1);
       cmp.instance.playExit(() => {
         overlayRef.dispose();
+        this.isExiting = false;
         this.showHead();
-        if (this.queue.length === 0) this.unregisterEscape();
+        if (this.queue.length === 0 && !this.active) this.unregisterEscape();
       });
       return;
     }

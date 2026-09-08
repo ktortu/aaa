@@ -8,6 +8,7 @@ import { afterEach, describe, expect, it, vi } from 'vitest';
 import { KtSnackbarConfig, KT_SNACKBAR_CONFIG, provideKtSnackbar } from './snackbar-config';
 import { KtSnackbar } from './snackbar.service';
 import { KtSnackbarDismissReason, KtSnackbarRef } from './snackbar-ref';
+import { KtSnackbarContainer } from './snackbar-container';
 import { KtSnackbarHarness } from './snackbar.harness';
 
 /** Hôte vide : sert de point d'ancrage à `documentRootLoader` (la snackbar vit dans l'overlay). */
@@ -253,6 +254,39 @@ describe('KtSnackbar', () => {
     expect(snackbarCount()).toBe(1);
     expect(snackbarEl()?.textContent).toContain('Seconde');
     expect(announce).toHaveBeenNthCalledWith(2, 'Seconde', 'polite');
+  });
+
+  it('ne superpose pas deux overlays si open est appelé pendant l’animation de sortie', () => {
+    const snackbar = setup({ timing: 'manual' });
+    const first = snackbar.open('Première');
+    render();
+
+    // Intercepte playExit sur le composant actif pour simuler une animation asynchrone
+    let finishExit: (() => void) | undefined;
+    const playExitSpy = vi.spyOn(KtSnackbarContainer.prototype, 'playExit').mockImplementation((done: () => void) => {
+      finishExit = done;
+    });
+
+    first.dismiss();
+    expect(snackbarCount()).toBe(1);
+
+    // Ouvre une deuxième snackbar pendant la sortie de la première
+    snackbar.open('Deuxième');
+    render();
+
+    // L'overlay de la deuxième ne doit PAS être créé tant que la sortie n'est pas terminée
+    expect(snackbarCount()).toBe(1);
+    expect(snackbarEl()?.textContent).toContain('Première');
+
+    // Termine l'animation de sortie
+    if (finishExit) finishExit();
+    render();
+
+    // Maintenant la première est disposée et la deuxième est affichée
+    expect(snackbarCount()).toBe(1);
+    expect(snackbarEl()?.textContent).toContain('Deuxième');
+
+    playExitSpy.mockRestore();
   });
 
   it('coalescing : un message identique réutilise la référence existante sans ré-empiler', () => {
