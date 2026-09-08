@@ -1,6 +1,6 @@
 {
   "name": "@ktortu/aaa",
-  "version": "0.10.1",
+  "version": "0.10.2",
   "description": "Bibliothèque de composants Angular headless + thémés par tokens CSS.",
   "keywords": [
     "angular",
