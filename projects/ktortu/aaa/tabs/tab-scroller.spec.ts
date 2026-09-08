@@ -183,6 +183,33 @@ describe('KtTabScroller', () => {
     });
   });
 
+  describe('scroll-into-view — RTL', () => {
+    it('défile vers l’onglet sélectionné en mode RTL avec valeur négative', async () => {
+      const originalGetComputedStyle = window.getComputedStyle;
+      window.getComputedStyle = (el: Element) => {
+        const style = originalGetComputedStyle(el);
+        return new Proxy(style, {
+          get(target, prop) {
+            if (prop === 'direction') return 'rtl';
+            return (target as unknown as Record<string | symbol, unknown>)[prop];
+          },
+        });
+      };
+
+      Object.defineProperty(HTMLElement.prototype, 'offsetLeft', {
+        configurable: true,
+        get(this: HTMLElement) {
+          return this.textContent?.trim() === 'd' ? 0 : 700;
+        },
+      });
+
+      await createHost(HorizontalHost);
+      expect(scrollSpy).toHaveBeenCalledWith({ left: -500, behavior: 'smooth' });
+
+      window.getComputedStyle = originalGetComputedStyle;
+    });
+  });
+
   describe('scroll-into-view — vertical', () => {
     it('défile sur l’axe vertical vers l’onglet hors-champ au montage', async () => {
       await createHost(VerticalHost);

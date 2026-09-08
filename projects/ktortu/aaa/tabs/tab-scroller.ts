@@ -215,6 +215,17 @@ export class KtTabScroller {
       return null;
     }
 
+    if (this.isRtl()) {
+      const selectedStart = container.scrollWidth - (selected.offsetLeft + selected.offsetWidth);
+      const selectedEnd = container.scrollWidth - selected.offsetLeft;
+      const containerStart = -container.scrollLeft;
+      const containerEnd = containerStart + container.clientWidth;
+
+      if (selectedStart < containerStart) return { axis: 'left', value: -selectedStart };
+      if (selectedEnd > containerEnd) return { axis: 'left', value: -(selectedEnd - container.clientWidth) };
+      return null;
+    }
+
     const selectedLeft = selected.offsetLeft;
     const selectedRight = selectedLeft + selected.offsetWidth;
     const containerLeft = container.scrollLeft;
