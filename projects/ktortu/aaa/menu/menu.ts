@@ -1,4 +1,4 @@
-import { Directive, effect, inject, PLATFORM_ID } from '@angular/core';
+import { Directive, effect, inject, signal, PLATFORM_ID } from '@angular/core';
 import { isPlatformBrowser } from '@angular/common';
 import { MenuItem as AriaMenuItem } from '@angular/aria/menu';
 import { KtIdGenerator } from '@ktortu/aaa/cdk';
@@ -51,7 +51,7 @@ export class KtMenu {}
 @Directive({
   selector: '[ktMenuItem]',
   host: {
-    '[style.anchor-name]': 'anchorName',
+    '[style.anchor-name]': 'anchorName()',
   },
 })
 export class KtMenuItem {
@@ -61,7 +61,7 @@ export class KtMenuItem {
 
   // Alloué à la PREMIÈRE détection d'un sous-menu (et non pour chaque item) : un item simple ne
   // consomme pas d'anchor-name.
-  protected anchorName: string | undefined;
+  protected readonly anchorName = signal<string | undefined>(undefined);
   private readonly idGen = inject(KtIdGenerator);
 
   constructor() {
@@ -70,12 +70,13 @@ export class KtMenuItem {
     effect(() => {
       const submenu = this.ariaItem!.submenu()?.element;
       if (!submenu) {
-        this.anchorName = undefined;
+        this.anchorName.set(undefined);
         return;
       }
-      this.anchorName ??= `--kt-submenu-anchor-${this.idGen.generateId('menu')}`;
+      const name = this.anchorName() ?? `--kt-submenu-anchor-${this.idGen.generateId('menu')}`;
+      this.anchorName.set(name);
       if (isPlatformBrowser(this.platformId)) {
-        submenu.style.setProperty('position-anchor', this.anchorName);
+        submenu.style.setProperty('position-anchor', name);
         // Marque la surface comme un SOUS-menu : menu.css l'ouvre en latéral (inline-end) et non
         // sous l'item, avec ses propres fallbacks de débordement.
         submenu.setAttribute('data-kt-submenu', '');
