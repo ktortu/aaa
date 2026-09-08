@@ -364,4 +364,25 @@ describe('TextField', () => {
     fixture.detectChanges();
     expect(el.querySelectorAll('.kt-field__error-message').length).toBe(1);
   });
+
+  it("n'expose l'id que sur le contrôle interne lors d'un passage en attribut statique", () => {
+    @Component({
+      imports: [KtTextField],
+      template: `<kt-text-field id="login-email" label="Email" />`,
+    })
+    class StaticIdHost {}
+
+    const staticFixture = TestBed.createComponent(StaticIdHost);
+    staticFixture.detectChanges();
+    const staticEl = staticFixture.nativeElement as HTMLElement;
+    const fieldEl = staticEl.querySelector('kt-text-field')!;
+    const inputEl = staticEl.querySelector('input')!;
+
+    expect(fieldEl.hasAttribute('id')).toBe(false);
+    expect(inputEl.getAttribute('id')).toBe('login-email');
+    expect(staticEl.querySelectorAll('#login-email').length).toBe(1);
+    expect(staticEl.querySelector('label')!.getAttribute('for')).toBe('login-email');
+    expect(inputEl.labels?.length).toBe(1);
+    expect(inputEl.labels?.[0]).toBe(staticEl.querySelector('label')!);
+  });
 });

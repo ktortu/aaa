@@ -319,4 +319,27 @@ describe('CheckboxGroup', () => {
       ]);
     });
   });
+
+  it("n'expose l'id que sur le conteneur role=group lors d'un passage en attribut statique", () => {
+    @Component({
+      imports: [KtCheckboxGroup, KtCheckbox],
+      template: `
+        <kt-checkbox-group id="group-centres" label="Centres d'intérêt">
+          <kt-checkbox optionValue="sport" label="Sport" />
+        </kt-checkbox-group>
+      `,
+    })
+    class StaticIdCheckboxGroupHost {}
+
+    const staticFixture = TestBed.createComponent(StaticIdCheckboxGroupHost);
+    staticFixture.detectChanges();
+    const staticEl = staticFixture.nativeElement as HTMLElement;
+    const groupHostEl = staticEl.querySelector('kt-checkbox-group')!;
+    const groupDiv = staticEl.querySelector('div[role="group"]')!;
+
+    expect(groupHostEl.hasAttribute('id')).toBe(false);
+    expect(groupDiv.getAttribute('id')).toBe('group-centres');
+    expect(staticEl.querySelectorAll('#group-centres').length).toBe(1);
+    expect(groupDiv.getAttribute('aria-labelledby')).toBe('group-centres-label');
+  });
 });

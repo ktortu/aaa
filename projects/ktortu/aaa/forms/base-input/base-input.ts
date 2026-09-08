@@ -36,7 +36,11 @@ import { KtFieldErrorResolver } from '../field/error-messages';
       protected isEmpty(value: string): boolean { return value.length === 0; }
     }
     ``` */
-@Directive()
+@Directive({
+  host: {
+    '[attr.id]': 'null',
+  },
+})
 export abstract class KtBaseInputField<T> {
   protected readonly config = inject(KT_FIELD_CONFIG, { optional: true });
   private readonly errorResolver = inject(KtFieldErrorResolver);

@@ -30,6 +30,9 @@ import { KtIdGenerator } from '@ktortu/aaa/cdk';
   selector: 'kt-radio',
   changeDetection: ChangeDetectionStrategy.OnPush,
   styleUrl: './radio.css',
+  host: {
+    '[attr.id]': 'null',
+  },
   template: `
     <label class="kt-radio">
       <input

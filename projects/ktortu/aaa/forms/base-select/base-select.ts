@@ -60,6 +60,7 @@ function normalizeForFilter(s: string): string {
       ou la clé extraite quand `optionValue` est fourni). */
 @Directive({
   host: {
+    '[attr.id]': 'null',
     '(keydown)': 'onHostKeydown($event)',
   },
 })

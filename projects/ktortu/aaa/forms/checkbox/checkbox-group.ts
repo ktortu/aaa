@@ -36,9 +36,13 @@ import { KtIdGenerator } from '@ktortu/aaa/cdk';
   selector: 'kt-checkbox-group',
   changeDetection: ChangeDetectionStrategy.OnPush,
   styleUrl: './checkbox-group.css',
+  host: {
+    '[attr.id]': 'null',
+  },
   template: `
     <div
       class="kt-checkbox-group-field"
+      [id]="baseId()"
       [class.kt-checkbox-group-field--invalid]="showInvalid()"
       [class.kt-checkbox-group-field--disabled]="disabled()"
       role="group"

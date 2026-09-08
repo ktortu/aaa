@@ -838,4 +838,23 @@ describe('Select', () => {
       expect(host.value()).toBeNull();
     });
   });
+
+  it("n'expose l'id que sur le bouton trigger interne lors d'un passage en attribut statique", () => {
+    @Component({
+      imports: [KtSelect],
+      template: `<kt-select id="fruit-choice" label="Fruit" [options]="['Pomme', 'Poire']" />`,
+    })
+    class StaticIdSelectHost {}
+
+    const staticFixture = TestBed.createComponent(StaticIdSelectHost);
+    staticFixture.detectChanges();
+    const staticEl = staticFixture.nativeElement as HTMLElement;
+    const selectEl = staticEl.querySelector('kt-select')!;
+    const triggerEl = staticEl.querySelector('.kt-select__trigger')!;
+
+    expect(selectEl.hasAttribute('id')).toBe(false);
+    expect(triggerEl.getAttribute('id')).toBe('fruit-choice');
+    expect(staticEl.querySelectorAll('#fruit-choice').length).toBe(1);
+    expect(staticEl.querySelector('label')!.getAttribute('for')).toBe('fruit-choice');
+  });
 });

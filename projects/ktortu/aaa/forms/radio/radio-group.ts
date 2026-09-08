@@ -37,9 +37,13 @@ import { KtIdGenerator } from '@ktortu/aaa/cdk';
   selector: 'kt-radio-group',
   changeDetection: ChangeDetectionStrategy.OnPush,
   styleUrl: './radio-group.css',
+  host: {
+    '[attr.id]': 'null',
+  },
   template: `
     <div
       class="kt-radio-group-field"
+      [id]="baseId()"
       [class.kt-radio-group-field--invalid]="showInvalid()"
       [class.kt-radio-group-field--disabled]="disabled()"
       role="radiogroup"

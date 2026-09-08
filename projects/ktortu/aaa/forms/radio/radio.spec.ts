@@ -327,4 +327,39 @@ describe('RadioGroup / Radio', () => {
       expect(host.value()).toEqual({ id: 1, name: 'Alice' });
     });
   });
+
+  it("n'expose l'id que sur le conteneur role=radiogroup et sur l'input radio interne", () => {
+    @Component({
+      imports: [KtRadioGroup, KtRadio],
+      template: `
+        <kt-radio-group id="group-civility" label="Civilité">
+          <kt-radio id="radio-mme" optionValue="mme" label="Madame" />
+          <kt-radio id="radio-m" optionValue="m" label="Monsieur" />
+        </kt-radio-group>
+      `,
+    })
+    class StaticIdRadioHost {}
+
+    const staticFixture = TestBed.createComponent(StaticIdRadioHost);
+    staticFixture.detectChanges();
+    const staticEl = staticFixture.nativeElement as HTMLElement;
+    const groupHostEl = staticEl.querySelector('kt-radio-group')!;
+    const groupDiv = staticEl.querySelector('div[role="radiogroup"]')!;
+    const radioHostEls = staticEl.querySelectorAll('kt-radio');
+    const inputEls = staticEl.querySelectorAll<HTMLInputElement>('input[type="radio"]');
+
+    // Group
+    expect(groupHostEl.hasAttribute('id')).toBe(false);
+    expect(groupDiv.getAttribute('id')).toBe('group-civility');
+    expect(staticEl.querySelectorAll('#group-civility').length).toBe(1);
+
+    // Individual radio
+    expect(radioHostEls[0].hasAttribute('id')).toBe(false);
+    expect(inputEls[0].getAttribute('id')).toBe('radio-mme');
+    expect(staticEl.querySelectorAll('#radio-mme').length).toBe(1);
+
+    expect(radioHostEls[1].hasAttribute('id')).toBe(false);
+    expect(inputEls[1].getAttribute('id')).toBe('radio-m');
+    expect(staticEl.querySelectorAll('#radio-m').length).toBe(1);
+  });
 });

@@ -37,6 +37,7 @@ import { KtIdGenerator } from '@ktortu/aaa/cdk';
   changeDetection: ChangeDetectionStrategy.OnPush,
   styleUrl: './chip-listbox.css',
   host: {
+    '[attr.id]': 'null',
     class: 'kt-chip-listbox-container',
     '(keydown)': 'onKeydown($event)',
     '(focusin)': 'onFocusin($event)',

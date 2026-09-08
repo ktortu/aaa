@@ -144,4 +144,27 @@ describe('ChipListbox', () => {
     const errorEl = el.querySelector('.kt-chip-listbox__error')!;
     expect(errorEl.classList.contains('kt-chip-listbox__error--visually-hidden')).toBe(true);
   });
+
+  it("n'expose l'id que sur le conteneur role=listbox lors d'un passage en attribut statique", () => {
+    @Component({
+      imports: [KtChipListbox, KtChip],
+      template: `
+        <kt-chip-listbox id="tags-box" label="Tags">
+          <kt-chip value="a">A</kt-chip>
+        </kt-chip-listbox>
+      `,
+    })
+    class StaticIdChipListboxHost {}
+
+    const staticFixture = TestBed.createComponent(StaticIdChipListboxHost);
+    staticFixture.detectChanges();
+    const staticEl = staticFixture.nativeElement as HTMLElement;
+    const hostEl = staticEl.querySelector('kt-chip-listbox')!;
+    const listboxEl = staticEl.querySelector('div[role="listbox"]')!;
+
+    expect(hostEl.hasAttribute('id')).toBe(false);
+    expect(listboxEl.getAttribute('id')).toBe('tags-box');
+    expect(staticEl.querySelectorAll('#tags-box').length).toBe(1);
+    expect(listboxEl.getAttribute('aria-labelledby')).toBe('tags-box-label');
+  });
 });

@@ -41,6 +41,9 @@ import { KtIdGenerator } from '@ktortu/aaa/cdk';
   selector: 'kt-switch',
   changeDetection: ChangeDetectionStrategy.OnPush,
   styleUrl: './switch.css',
+  host: {
+    '[attr.id]': 'null',
+  },
   template: `
     <div
       class="kt-switch-field"

@@ -306,6 +306,26 @@ describe('Switch', () => {
     });
   });
 
+  it("n'expose l'id que sur le bouton interne lors d'un passage en attribut statique", () => {
+    @Component({
+      imports: [KtSwitch],
+      template: `<kt-switch id="switch-notif" label="Notifications" />`,
+    })
+    class StaticIdSwitchHost {}
+
+    const staticFixture = TestBed.createComponent(StaticIdSwitchHost);
+    staticFixture.detectChanges();
+    const staticEl = staticFixture.nativeElement as HTMLElement;
+    const switchHostEl = staticEl.querySelector('kt-switch')!;
+    const btnEl = staticEl.querySelector('button[role="switch"]')!;
+    const labelEl = staticEl.querySelector('label')!;
+
+    expect(switchHostEl.hasAttribute('id')).toBe(false);
+    expect(btnEl.getAttribute('id')).toBe('switch-notif');
+    expect(staticEl.querySelectorAll('#switch-notif').length).toBe(1);
+    expect(labelEl.getAttribute('for')).toBe('switch-notif');
+  });
+
   // Accès aux coulisses pour valider les signaux internes
   function internals(): KtSwitch {
     return fixture.debugElement.query((de) => de.componentInstance instanceof KtSwitch).componentInstance as KtSwitch;

@@ -298,4 +298,25 @@ describe('Checkbox — garde-fou a11y dev (nom accessible)', () => {
     f.destroy();
     TestBed.resetTestingModule();
   });
+
+  it("n'expose l'id que sur l'input interne lors d'un passage en attribut statique", () => {
+    @Component({
+      imports: [KtCheckbox],
+      template: `<kt-checkbox id="check-cgu" label="J'accepte" />`,
+    })
+    class StaticIdCheckboxHost {}
+
+    const staticFixture = TestBed.createComponent(StaticIdCheckboxHost);
+    staticFixture.detectChanges();
+    const staticEl = staticFixture.nativeElement as HTMLElement;
+    const checkboxHostEl = staticEl.querySelector('kt-checkbox')!;
+    const inputEl = staticEl.querySelector<HTMLInputElement>('input[type="checkbox"]')!;
+    const labelEl = staticEl.querySelector('label')!;
+
+    expect(checkboxHostEl.hasAttribute('id')).toBe(false);
+    expect(inputEl.getAttribute('id')).toBe('check-cgu');
+    expect(staticEl.querySelectorAll('#check-cgu').length).toBe(1);
+    expect(inputEl.labels?.length).toBe(1);
+    expect(inputEl.labels?.[0]).toBe(labelEl);
+  });
 });

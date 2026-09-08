@@ -51,6 +51,9 @@ import { KtIdGenerator } from '@ktortu/aaa/cdk';
   selector: 'kt-checkbox',
   changeDetection: ChangeDetectionStrategy.OnPush,
   styleUrl: './checkbox.css',
+  host: {
+    '[attr.id]': 'null',
+  },
   template: `
     <div
       class="kt-checkbox-field"
