@@ -60,5 +60,9 @@ export class KtDialogDescription implements OnInit, OnDestroy {
     if (this.dialogRef?.config.ariaDescribedBy === this.id) {
       this.dialogRef.config.ariaDescribedBy = null;
     }
+    const container = this.host.closest('.cdk-dialog-container');
+    if (container && container.getAttribute('aria-describedby') === this.id) {
+      this.renderer.removeAttribute(container, 'aria-describedby');
+    }
   }
 }

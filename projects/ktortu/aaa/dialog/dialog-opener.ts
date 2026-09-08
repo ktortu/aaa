@@ -97,7 +97,6 @@ export function injectKtDialogOpener<C, D, R = unknown>(
 
     const uid = idGen.generateId('dialog');
     const titleId = `kt-dialog-title-${uid}`;
-    const descId = `kt-dialog-desc-${uid}`;
 
     return dialog.open<R, D, C>(component, {
       // Plancher a11y garanti par l'opener (ariaModal/role/restoreFocus/autoFocus…), même si le
@@ -110,7 +109,6 @@ export function injectKtDialogOpener<C, D, R = unknown>(
         providers: () => [{ provide: KT_DIALOG_CONFIG, useValue: ktConfig }],
       },
       ariaLabelledBy: titleId,
-      ariaDescribedBy: descId,
       ...rest,
       panelClass: merged,
       data,
