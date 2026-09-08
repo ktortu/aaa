@@ -620,6 +620,16 @@ describe('MultiSelect', () => {
       expect(chipsStatusText(el)).toBe('0 selected');
     });
 
+    it('clearable : bouton visible et fonctionnel même avec des clés orphelines', () => {
+      host.value.set(['CléOrphelineInexistante']);
+      fixture.detectChanges();
+      const clear = el.querySelector<HTMLButtonElement>('.kt-select__clear')!;
+      expect(clear).toBeTruthy();
+      clear.click();
+      fixture.detectChanges();
+      expect(host.value()).toEqual([]);
+    });
+
     it('replie les chips au-delà de maxVisibleChips et déplie au clic (+N more)', async () => {
       host.value.set(['Pomme', 'Banane', 'Cerise', 'Pêche']);
       fixture.detectChanges();

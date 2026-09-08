@@ -164,8 +164,11 @@ export class KtMultiSelect<T, V = T> extends KtBaseSelect<T, V> implements FormV
   );
 
   // --- Tout effacer depuis le champ (clearable) ---
+  /** Affiche le bouton « effacer » (×) sur le champ dès qu'une valeur est présente (`clearable`).
+      Basé sur `value()` et non `selectedOptions()` : des clés orphelines (options retirées des données)
+      restent effaçables (aligné sur `KtSelect`). */
   protected readonly showClear = computed(
-    () => this.clearable() && !this.disabled() && !this.readonly() && this.selectedOptions().length > 0,
+    () => this.clearable() && !this.disabled() && !this.readonly() && (this.value()?.length ?? 0) > 0,
   );
 
   /** Le popup utilise la structure « panneau dialog » (champ de filtre et/ou barre d'actions). */
