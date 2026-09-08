@@ -112,5 +112,18 @@ describe('KtSidenavComponent', () => {
       const sidenav = fixture.debugElement.children[0];
       expect(sidenav).toBeTruthy();
     });
+
+    it('should close mobile drawer when Escape key is pressed', () => {
+      service.open();
+      fixture.detectChanges();
+      const sidenav = fixture.nativeElement.querySelector('kt-sidenav');
+      expect(service.isMobileOpen()).toBe(true);
+
+      sidenav.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape', bubbles: true }));
+      fixture.detectChanges();
+
+      expect(service.isMobileOpen()).toBe(false);
+      expect(sidenav.classList.contains('is-mobile-open')).toBe(false);
+    });
   });
 });

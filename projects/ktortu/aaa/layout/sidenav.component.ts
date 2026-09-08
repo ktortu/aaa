@@ -18,6 +18,7 @@ import { KtLayoutService } from './layout.service';
     '[class.is-mobile-open]': 'layout.isMobileOpen()',
     '[attr.aria-expanded]': 'layout.isExpanded()',
     '[attr.aria-hidden]': 'isHidden()',
+    '(document:keydown.escape)': 'onEscape($event)',
     role: 'navigation',
   },
   hostDirectives: [CdkTrapFocus],
@@ -33,5 +34,12 @@ export class KtSidenavComponent {
       this.trapFocus.autoCapture = this.layout.isMobileOpen();
       this.trapFocus.enabled = this.layout.isMobileOpen();
     });
+  }
+
+  protected onEscape(event: Event): void {
+    if (this.layout.isMobileOpen()) {
+      event.stopPropagation();
+      this.layout.close();
+    }
   }
 }
