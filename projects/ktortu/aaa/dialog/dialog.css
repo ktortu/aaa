@@ -107,11 +107,15 @@
     outline: none; /* le focus visible est porté par les éléments internes, pas le conteneur */
   }
 
-  /* Le contenu projeté est encapsulé dans l'hôte du composant dialog (<kt-*-dialog>), SEUL enfant
-   direct du conteneur CDK. On le relaie en colonne flex pour que titre / contenu / actions en
-   deviennent les vrais items — sans quoi [ktDialogContent] ne pourrait pas scroller (l'hôte,
-   item unique, prendrait toute la hauteur du contenu). */
-  .kt-dialog .cdk-dialog-container > * {
+  /* Relais flex vers le layout et l'hôte projeté : le composant dialog est monté dans
+     .kt-dialog-container__layout. On relaie la colonne flex pour que header / contenu / actions
+     deviennent les vrais items — sans quoi [ktDialogContent] ne pourrait pas scroller (l'hôte,
+     item intermédiaire, prendrait toute la hauteur du contenu sans rétrécir).
+     La règle *:has(> [ktDialogContent]) garantit la propagation quel que soit le conteneur
+     direct du contenu défilable (hôte de composant ou wrapper intermédiaire). */
+  .kt-dialog .cdk-dialog-container > *,
+  .kt-dialog .kt-dialog-container__layout > *,
+  .kt-dialog .cdk-dialog-container *:has(> [ktDialogContent]) {
     display: flex;
     flex-direction: column;
     flex: 1 1 auto;

@@ -57,6 +57,33 @@ test.describe('Dialog (desktop)', () => {
     expect(rect.x + rect.width).toBeLessThanOrEqual(viewport.width);
   });
 
+  test('défilement : le contenu long défile quand la hauteur est contrainte', async ({ page }) => {
+    // Hauteur réduite (480px) simulant un écran compact, zoom élevé ou contenu long
+    await page.setViewportSize({ width: 1280, height: 480 });
+    await page.getByRole('button', { name: 'Centré', exact: true }).click();
+    const container = page.locator('.cdk-dialog-container');
+    await expect(container).toBeVisible();
+
+    const host = container.locator('kt-demo-content-dialog');
+    const content = container.locator('[ktDialogContent]');
+
+    // L'hôte est contraint par le conteneur et ne le déborde pas
+    const containerHeight = await container.evaluate((el) => el.clientHeight);
+    const hostHeight = await host.evaluate((el) => el.clientHeight);
+    expect(hostHeight).toBeLessThanOrEqual(containerHeight);
+
+    // [ktDialogContent] est défilable : scrollHeight dépasse clientHeight
+    const isScrollable = await content.evaluate((el) => el.scrollHeight > el.clientHeight);
+    expect(isScrollable).toBe(true);
+
+    // Défilement fonctionnel
+    await content.evaluate((el) => {
+      el.scrollTop = 80;
+    });
+    const scrollTop = await content.evaluate((el) => el.scrollTop);
+    expect(scrollTop).toBeGreaterThan(0);
+  });
+
   test('clic sur le scrim : ferme le dialog par défaut', async ({ page }) => {
     await page.getByRole('button', { name: 'Supprimer le fichier…' }).click();
     const container = page.locator('.cdk-dialog-container');
