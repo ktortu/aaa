@@ -185,4 +185,62 @@ test.describe('Dialog (mobile)', () => {
     });
     await expect(container).toBeHidden();
   });
+
+  test('bottom-sheet avec multiselect : l’ajout de lignes garde le bouton de validation visible et cliquable', async ({
+    page,
+  }) => {
+    // 1. Ouvre la bottom-sheet avec multi-select (initialement vide)
+    await page.getByRole('button', { name: 'Bottom-sheet avec MultiSelect' }).click();
+    const container = page.locator('.cdk-dialog-container');
+    await expect(container).toBeVisible();
+    await settleSheetOpen(container);
+
+    // Initialement : 0 ligne sélectionnée
+    await expect(container.locator('.selected-row')).toHaveCount(0);
+
+    // 2. Le bouton de validation doit être visible et dans le viewport
+    const validerBtn = container.getByRole('button', { name: /Valider/ });
+    await expect(validerBtn).toBeVisible();
+    const viewport = page.viewportSize()!;
+    const btnBoxInitial = (await validerBtn.boundingBox())!;
+    expect(btnBoxInitial.y + btnBoxInitial.height).toBeLessThanOrEqual(viewport.height);
+
+    // 3. Ouvrir le multi-select (popup/sheet)
+    const selectTrigger = container.locator('.kt-select__trigger');
+    await selectTrigger.click();
+    const selectPopup = container.locator('.kt-select__popup');
+    await expect(selectPopup).toBeVisible();
+    await settleSheetOpen(selectPopup);
+
+    // Sélectionner 12 options pour agrandir considérablement la liste
+    const options = selectPopup.locator('.kt-select__option');
+    await expect(options.first()).toBeVisible();
+    for (let i = 0; i < 12; i++) {
+      await options.nth(i).tap();
+    }
+
+    // 4. Fermer la popup du sélecteur via Échap
+    await page.keyboard.press('Escape');
+
+    // 5. La liste des lignes sélectionnées s'est agrandie (12 lignes)
+    const selectedRows = container.locator('.selected-row');
+    await expect(selectedRows).toHaveCount(12);
+
+    // 6. VÉRIFICATION CRUCIALE : Le bouton de validation DOIT toujours être visible et dans le viewport
+    await expect(validerBtn).toBeVisible();
+    const btnBoxAfter = (await validerBtn.boundingBox())!;
+    expect(btnBoxAfter.y + btnBoxAfter.height).toBeLessThanOrEqual(viewport.height);
+
+    // [ktDialogContent] absorbe le débordement et scrolle
+    const content = container.locator('[ktDialogContent]');
+    const isScrollable = await content.evaluate((el) => el.scrollHeight > el.clientHeight);
+    expect(isScrollable).toBe(true);
+
+    // 7. Le bouton de validation est cliquable et transmet le résultat
+    await validerBtn.click();
+    await expect(container).toBeHidden();
+
+    // Vérifier le résultat reflété sur la page démo
+    await expect(page.locator('.page__result', { hasText: 'Dernier résultat :' })).toContainText('12');
+  });
 });

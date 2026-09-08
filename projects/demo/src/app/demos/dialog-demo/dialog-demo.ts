@@ -9,6 +9,7 @@ import { TokensTable } from '../../shared/tokens-table/tokens-table';
 import { injectConfirmDialog } from './demo-confirm-dialog';
 import { injectTermsDialog } from './demo-content-dialog';
 import { injectPlainSheet, injectPlainSheetWithoutClose } from './demo-plain-sheet';
+import { injectSheetMultiSelectDialog } from './demo-sheet-multi-select-dialog';
 import { KtQuickDialog } from '@ktortu/aaa/dialog';
 import {
   DIALOG_API_PROPS,
@@ -43,6 +44,7 @@ export class DialogDemo {
   private readonly openTerms = injectTermsDialog();
   private readonly openPlainSheet = injectPlainSheet();
   private readonly openPlainSheetWithoutClose = injectPlainSheetWithoutClose();
+  private readonly openSheetMultiSelect = injectSheetMultiSelectDialog();
   private readonly dialog = inject(KtQuickDialog);
 
   /** Dernier résultat renvoyé par le dialog de confirmation (preuve du flux de résultat). */
@@ -143,5 +145,12 @@ export class DialogDemo {
   /** Le MÊME composant sans l'option (défaut) : témoin de comparaison, aucune croix. */
   protected showSheetWithoutCloseButton(): void {
     this.openPlainSheetWithoutClose();
+  }
+
+  /** Sheet avec MultiSelect et liste dynamique pour valider la fixation des actions et le scroll. */
+  protected showSheetMultiSelect(): void {
+    this.openSheetMultiSelect(undefined).closed.subscribe((result) => {
+      if (result) this.lastResult.set(`Validé (${result.length} éléments)`);
+    });
   }
 }
