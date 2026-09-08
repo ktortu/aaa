@@ -448,6 +448,20 @@ describe('Tooltip', () => {
       expect(currentTip()).toBeNull();
       expect(trigger.hasAttribute('aria-describedby')).toBe(false);
     });
+
+    it('disables the tooltip while it is open without crashing with signal write in effect error', () => {
+      setup();
+      trigger.dispatchEvent(new MouseEvent('mouseenter'));
+      vi.advanceTimersByTime(100);
+      fixture.detectChanges();
+      expect(currentTip()).toBeTruthy();
+
+      host.disabled.set(true);
+      fixture.detectChanges();
+
+      expect(currentTip()).toBeNull();
+      expect(trigger.hasAttribute('aria-describedby')).toBe(false);
+    });
   });
 
   describe('cleanup', () => {
