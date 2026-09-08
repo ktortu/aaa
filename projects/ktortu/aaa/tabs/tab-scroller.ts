@@ -204,6 +204,35 @@ export class KtTabScroller {
     if (!selected) return null;
 
     const container = this.list;
+    const selectedRect = selected.getBoundingClientRect();
+    const containerRect = container.getBoundingClientRect();
+
+    // En environnement réel de rendu (navigateur), getBoundingClientRect est géométriquement
+    // universel (indépendant du signe de scrollLeft, de RTL/LTR et des arrondis subpixel).
+    // En jsdom (tests unitaires sans layout), les rectangles sont à 0 -> repli sur offsetLeft/Top.
+    const hasLayout =
+      selectedRect.width > 0 || selectedRect.height > 0 || selectedRect.left !== 0 || selectedRect.top !== 0;
+
+    if (hasLayout) {
+      if (this.isVertical()) {
+        if (selectedRect.top < containerRect.top) {
+          return { axis: 'top', value: container.scrollTop + (selectedRect.top - containerRect.top) };
+        }
+        if (selectedRect.bottom > containerRect.bottom) {
+          return { axis: 'top', value: container.scrollTop + (selectedRect.bottom - containerRect.bottom) };
+        }
+        return null;
+      }
+
+      if (selectedRect.left < containerRect.left) {
+        return { axis: 'left', value: container.scrollLeft + (selectedRect.left - containerRect.left) };
+      }
+      if (selectedRect.right > containerRect.right) {
+        return { axis: 'left', value: container.scrollLeft + (selectedRect.right - containerRect.right) };
+      }
+      return null;
+    }
+
     if (this.isVertical()) {
       const selectedTop = selected.offsetTop;
       const selectedBottom = selectedTop + selected.offsetHeight;
