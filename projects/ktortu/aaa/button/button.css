@@ -213,6 +213,7 @@
   /* ============ ICON-ONLY (carré = hauteur, icône centrée ; forme suit --btn-radius) ============ */
   [ktButton][data-icon-only] {
     --btn-pad-x: 0;
+    padding-inline: 0 !important;
     gap: 0;
     inline-size: var(--btn-height-md, 44px);
     min-inline-size: var(--btn-height-md, 44px);
@@ -225,6 +226,87 @@
   [ktButton][data-size='lg'][data-icon-only] {
     inline-size: var(--btn-height-lg, 52px);
     min-inline-size: var(--btn-height-lg, 52px);
+  }
+
+  /* Icône compacte : s'active en mode iconOnly */
+  [ktButton][data-compact-icon][data-icon-only]::before {
+    content: attr(data-compact-icon);
+    font-family: var(--btn-icon-font, var(--kt-icon-font, 'Material Symbols Outlined'));
+    font-weight: var(--btn-icon-font-weight, var(--kt-icon-font-weight, normal));
+    font-style: normal;
+    font-size: var(--btn-icon-size, 20px);
+    line-height: 1;
+    font-feature-settings: 'liga';
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* Masquage visuel accessible (sr-only) du libellé en mode iconOnly */
+  [ktButton][data-icon-only] [ktButtonLabel],
+  [ktButton][data-icon-only] .kt-button-label,
+  [ktButton][data-icon-only] > span:not([data-icon]):not(.kt-icon):not([class*='icon']) {
+    position: absolute;
+    inset-block-start: 0;
+    inset-inline-start: 0;
+    inline-size: 1px;
+    block-size: 1px;
+    min-block-size: 0;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
+
+  /* ============ BASCULE RESPONSIVE CSS (COLLAPSE-COMPACT) ============ */
+  @media (max-width: 599.98px) {
+    [ktButton][data-collapse-compact],
+    [ktButton][data-icon][data-collapse-compact] {
+      --btn-pad-x: 0;
+      padding-inline: 0 !important;
+      gap: 0;
+      inline-size: var(--btn-height-md, 44px);
+      min-inline-size: var(--btn-height-md, 44px);
+      position: relative;
+    }
+
+    [ktButton][data-size='sm'][data-collapse-compact] {
+      inline-size: var(--btn-height-sm, 32px);
+      min-inline-size: var(--btn-height-sm, 32px);
+    }
+
+    [ktButton][data-size='lg'][data-collapse-compact] {
+      inline-size: var(--btn-height-lg, 52px);
+      min-inline-size: var(--btn-height-lg, 52px);
+    }
+
+    /* Remplacement d'icône compacte sous seuil mobile */
+    [ktButton][data-compact-icon][data-collapse-compact]::before {
+      content: attr(data-compact-icon);
+      font-family: var(--btn-icon-font, var(--kt-icon-font, 'Material Symbols Outlined'));
+      font-weight: var(--btn-icon-font-weight, var(--kt-icon-font-weight, normal));
+      font-style: normal;
+      font-size: var(--btn-icon-size, 20px);
+      line-height: 1;
+      font-feature-settings: 'liga';
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* Masquage visuel accessible du libellé sous seuil mobile */
+    [ktButton][data-collapse-compact] [ktButtonLabel],
+    [ktButton][data-collapse-compact] .kt-button-label,
+    [ktButton][data-collapse-compact] > span:not([data-icon]):not(.kt-icon):not([class*='icon']) {
+      position: absolute;
+      inset-block-start: 0;
+      inset-inline-start: 0;
+      inline-size: 1px;
+      block-size: 1px;
+      min-block-size: 0;
+      padding: 0;
+      margin: -1px;
+      overflow: hidden;
+      clip-path: inset(50%);
+      white-space: nowrap;
+    }
   }
 
   /* sm boutons : zone de clic étendue à au moins 44x44px (AAA 2.5.5) via ::after transparent.

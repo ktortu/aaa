@@ -1,10 +1,11 @@
 import { Component, signal } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { type KtButtonColor, type KtButtonMode, type KtButtonSize, KT_BUTTON_CONFIG, KtButton } from './button';
+import { KtButtonLabel } from './button-label.directive';
 import { KT_AUDIT_ENABLED } from '@ktortu/aaa/cdk';
 
 @Component({
-  imports: [KtButton],
+  imports: [KtButton, KtButtonLabel],
   template: `
     <button
       ktButton
@@ -13,6 +14,8 @@ import { KT_AUDIT_ENABLED } from '@ktortu/aaa/cdk';
       [size]="size()"
       [fullWidth]="fullWidth()"
       [iconOnly]="iconOnly()"
+      [collapseCompact]="collapseCompact()"
+      [compactIcon]="compactIcon()"
       [ariaLabel]="ariaLabel()"
       [type]="type()"
       [loading]="loading()"
@@ -22,7 +25,7 @@ import { KT_AUDIT_ENABLED } from '@ktortu/aaa/cdk';
       [disabledInteractive]="disabledInteractive()"
       (click)="onClicked()"
     >
-      Test
+      <span ktButtonLabel>Test</span>
     </button>
   `,
 })
@@ -32,6 +35,8 @@ class TestHost {
   size = signal<KtButtonSize>('md');
   fullWidth = signal(false);
   iconOnly = signal(false);
+  collapseCompact = signal(false);
+  compactIcon = signal<string | undefined>(undefined);
   ariaLabel = signal<string | undefined>(undefined);
   type = signal<'button' | 'submit' | 'reset'>('button');
   loading = signal(false);
@@ -582,6 +587,74 @@ describe('Button', () => {
       expect(configButton.getAttribute('data-color')).toBe('danger');
       expect(configButton.getAttribute('data-size')).toBe('lg');
       configFixture.destroy();
+    });
+  });
+
+  describe('responsive collapse and compact icon', () => {
+    it('should set data-collapse-compact attribute when collapseCompact is true', () => {
+      setup();
+      expect(button.hasAttribute('data-collapse-compact')).toBe(false);
+      host.collapseCompact.set(true);
+      fixture.detectChanges();
+      expect(button.hasAttribute('data-collapse-compact')).toBe(true);
+    });
+
+    it('should set data-compact-icon attribute when compactIcon is provided', () => {
+      setup();
+      expect(button.hasAttribute('data-compact-icon')).toBe(false);
+      host.compactIcon.set('file_download');
+      fixture.detectChanges();
+      expect(button.getAttribute('data-compact-icon')).toBe('file_download');
+    });
+
+    it('should attach kt-button-label class to KtButtonLabel', () => {
+      setup();
+      const labelElement = button.querySelector('span');
+      expect(labelElement?.classList.contains('kt-button-label')).toBe(true);
+    });
+
+    it('should not warn in audit when collapseCompact has icon and text label', async () => {
+      vi.useFakeTimers();
+      const warn = vi.spyOn(console, 'warn').mockImplementation(() => undefined);
+      setup(true);
+      host.collapseCompact.set(true);
+      host.icon.set('download');
+      fixture.detectChanges();
+      await fixture.whenStable();
+      vi.runAllTimers();
+
+      expect(warn).not.toHaveBeenCalled();
+      fixture.destroy();
+      TestBed.resetTestingModule();
+    });
+
+    it('should accept compactIcon as valid icon in collapseCompact audit', async () => {
+      vi.useFakeTimers();
+      const warn = vi.spyOn(console, 'warn').mockImplementation(() => undefined);
+      setup(true);
+      host.collapseCompact.set(true);
+      host.compactIcon.set('download');
+      fixture.detectChanges();
+      await fixture.whenStable();
+      vi.runAllTimers();
+
+      expect(warn).not.toHaveBeenCalled();
+      fixture.destroy();
+      TestBed.resetTestingModule();
+    });
+
+    it('should warn when collapseCompact has no icon and no compactIcon', async () => {
+      vi.useFakeTimers();
+      const warn = vi.spyOn(console, 'warn').mockImplementation(() => undefined);
+      setup(true);
+      host.collapseCompact.set(true);
+      fixture.detectChanges();
+      await fixture.whenStable();
+      vi.runAllTimers();
+
+      expect(warn).toHaveBeenCalledWith('[ktButton] collapseCompact attend une icône via [icon] ou [compactIcon].');
+      fixture.destroy();
+      TestBed.resetTestingModule();
     });
   });
 });

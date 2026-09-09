@@ -69,11 +69,13 @@ export function provideKtButton(config: Partial<KtButtonConfig>): Provider {
     '[attr.data-size]': 'size()',
     '[attr.data-full-width]': 'fullWidth() ? "" : null',
     '[attr.data-icon-only]': 'iconOnly() ? "" : null',
+    '[attr.data-collapse-compact]': 'collapseCompact() ? "" : null',
     '[attr.type]': '!isLink ? type() : null',
     '[attr.aria-label]': 'resolvedAriaLabel()',
     '[class.loading]': 'loading()',
     '[class.disabled]': 'isDisabled()',
     '[attr.data-icon]': 'icon()',
+    '[attr.data-compact-icon]': 'compactIcon()',
     '[attr.data-icon-position]': 'iconPosition()',
     '[attr.disabled]': 'isDisabled() && !disabledInteractive() && !isLink ? "" : null',
     '[attr.aria-disabled]': 'isDisabled() && (disabledInteractive() || isLink) ? "true" : null',
@@ -110,6 +112,9 @@ export class KtButton implements AfterViewInit {
   /** Bouton carré sans texte ; impose un nom accessible via `ariaLabel`. @default false */
   readonly iconOnly = input<boolean, unknown>(false, { transform: booleanAttribute });
 
+  /** Bascule automatiquement le bouton en icône seule sous le seuil compact (600px). @default false */
+  readonly collapseCompact = input<boolean, unknown>(false, { transform: booleanAttribute });
+
   /** Nom accessible. **Obligatoire si `iconOnly`** ; à défaut, l'`aria-label` natif est préservé. @default undefined */
   readonly ariaLabel = input<string>();
 
@@ -121,6 +126,13 @@ export class KtButton implements AfterViewInit {
 
   /** Nom de l'icône (rendu via CSS `data-icon`). @default undefined */
   readonly icon = input<string>();
+
+  /**
+   * Nom de l'icône spécifique au mode compact (`iconOnly` ou `collapseCompact`).
+   * Permet d'avoir un bouton avec texte seul sur grand écran et une icône dédiée sur petit écran.
+   * @default undefined
+   */
+  readonly compactIcon = input<string>();
 
   /** Position de l'icône relative au texte. @default 'start' */
   readonly iconPosition = input<'start' | 'end'>('start');
@@ -148,16 +160,28 @@ export class KtButton implements AfterViewInit {
       if (this.isDestroyed) return;
       if (!isPlatformBrowser(this.platformId)) return;
       if (!this.viewInitialized()) return;
-      if (!this.auditEnabled || !this.iconOnly()) return;
+      if (!this.auditEnabled) return;
 
-      if (!this.icon()) {
-        console.warn('[ktButton] iconOnly attend une icône via [icon].');
-      }
-      if (!this.resolvedAriaLabel() && !this.host.hasAttribute('aria-labelledby')) {
-        console.warn(
-          '[ktButton] iconOnly sans nom accessible : ajoutez [ariaLabel] (WCAG 4.1.2) — ' +
-            'le bouton serait annoncé sans libellé.',
-        );
+      if (this.iconOnly()) {
+        if (!this.icon() && !this.compactIcon()) {
+          console.warn('[ktButton] iconOnly attend une icône via [icon].');
+        }
+        if (!this.resolvedAriaLabel() && !this.host.hasAttribute('aria-labelledby')) {
+          console.warn(
+            '[ktButton] iconOnly sans nom accessible : ajoutez [ariaLabel] (WCAG 4.1.2) — ' +
+              'le bouton serait annoncé sans libellé.',
+          );
+        }
+      } else if (this.collapseCompact()) {
+        if (!this.icon() && !this.compactIcon()) {
+          console.warn('[ktButton] collapseCompact attend une icône via [icon] ou [compactIcon].');
+        }
+        const hasText = Boolean(this.host.textContent?.trim());
+        if (!this.resolvedAriaLabel() && !this.host.hasAttribute('aria-labelledby') && !hasText) {
+          console.warn(
+            '[ktButton] collapseCompact sans nom accessible : ajoutez un libellé ou [ariaLabel] (WCAG 4.1.2).',
+          );
+        }
       }
     });
   }

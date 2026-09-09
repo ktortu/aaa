@@ -33,6 +33,12 @@ export const BUTTON_PROPS: readonly PropRow[] = [
     description: 'Mode carré, icône seule ; exige un `ariaLabel`.',
   },
   {
+    name: 'collapseCompact',
+    type: 'boolean',
+    default: 'false',
+    description: 'Bascule automatiquement le bouton en icône seule sous 600px (en pur CSS).',
+  },
+  {
     name: 'ariaLabel',
     type: 'string | undefined',
     default: '',
@@ -43,6 +49,12 @@ export const BUTTON_PROPS: readonly PropRow[] = [
     type: 'string | undefined',
     default: '',
     description: 'Nom/ligature de l’icône (rendue en `::before` via CSS).',
+  },
+  {
+    name: 'compactIcon',
+    type: 'string | undefined',
+    default: '',
+    description: 'Icône spécifique affichée uniquement en mode compact (`iconOnly` ou `collapseCompact`).',
   },
   {
     name: 'iconPosition',

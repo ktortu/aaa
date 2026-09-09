@@ -39,6 +39,18 @@
       <button ktButton iconOnly icon="close" ariaLabel="Fermer" mode="text"></button>
     </kt-doc-example>
 
+    <kt-doc-example label="Bascule réactive & icône compacte">
+      <button ktButton icon="download" collapseCompact>
+        <span ktButtonLabel>Télécharger</span>
+      </button>
+      <button ktButton compactIcon="edit" collapseCompact mode="tonal">
+        <span ktButtonLabel>Modifier</span>
+      </button>
+      <button ktButton [iconOnly]="viewport.isCompact()" icon="share" mode="outlined">
+        <span ktButtonLabel>Partager</span>
+      </button>
+    </kt-doc-example>
+
     <kt-doc-example label="États">
       <button ktButton [loading]="true">Chargement</button>
       <button ktButton [disabled]="true">Désactivé</button>
